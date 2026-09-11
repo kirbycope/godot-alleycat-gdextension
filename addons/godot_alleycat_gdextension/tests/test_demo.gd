@@ -44,7 +44,7 @@ func test_the_game_fills_the_screen_and_the_hud_shows() -> void:
 ## naming something outside the list the game published is a dead button, and this is what says so.
 func test_every_slot_names_an_input_the_game_listens_for() -> void:
 	var expected: PackedStringArray = AlleyCat.get_expected_inputs()
-	for slot: String in AlleyCatControls.KEYS:
+	for slot: String in AlleyCatControls.BINDINGS:
 		var action: StringName = demo.controls.get(&"action_" + slot)
 		assert_ne(String(action), "", "%s should name an action" % slot)
 		assert_true(expected.has(String(action)), "%s names an input the game reads" % slot)
@@ -54,7 +54,7 @@ func test_every_slot_names_an_input_the_game_listens_for() -> void:
 ## setup answers are the ones that bite: the game will not go on until one of them is pressed.
 func test_every_input_the_game_listens_for_has_a_button() -> void:
 	var mapped: Array[String] = []
-	for slot: String in AlleyCatControls.KEYS:
+	for slot: String in AlleyCatControls.BINDINGS:
 		mapped.append(String(demo.controls.get(&"action_" + slot)))
 	for action: String in AlleyCat.get_expected_inputs():
 		if action == "alleycat_button_2" or action == "alleycat_restart":
@@ -66,7 +66,7 @@ func test_every_input_the_game_listens_for_has_a_button() -> void:
 ## them exists by the time the HUD is ready. A slot naming an action nothing registers is a dead
 ## button that still draws, and here it would also be an input the game never hears.
 func test_the_addon_registered_every_action_the_slots_name() -> void:
-	for slot: String in AlleyCatControls.KEYS:
+	for slot: String in AlleyCatControls.BINDINGS:
 		var action: StringName = demo.controls.get(&"action_" + slot)
 		assert_true(InputMap.has_action(action), "%s is registered" % action)
 
@@ -84,7 +84,8 @@ func test_the_hud_picks_from_the_list_the_game_published() -> void:
 ## A blank slot is a button the game does not use, and the addon hides it. Alley Cat is a one-stick
 ## game with nothing on the shoulders, the triggers or the right stick.
 func test_the_buttons_the_game_does_not_use_are_left_blank() -> void:
-	for slot: String in ["button_7", "button_8", "look_up", "look_down", "look_left", "look_right"]:
+	for slot: String in ["button_7", "button_8", "button_9", "button_10", "axis_4_plus",
+			"axis_5_plus", "look_up", "look_down", "look_left", "look_right"]:
 		assert_eq(String(demo.controls.get(&"action_" + slot)), "", "%s is not a button here" % slot)
 
 
@@ -102,8 +103,8 @@ func test_the_labels_swap_for_the_setup_questions_and_back() -> void:
 	demo.controls.set_setting_up(true)
 	assert_eq(demo.controls.joypad_button_3_label.text, "Yes")
 	assert_eq(demo.controls.joypad_button_2_label.text, "No")
-	assert_eq(demo.controls.joypad_button_9_label.text, "Kitten")
-	assert_eq(demo.controls.joypad_axis_5_plus_label.text, "Alley Cat")
+	assert_eq(demo.controls.joypad_button_11_label.text, "Kitten")
+	assert_eq(demo.controls.joypad_button_14_label.text, "Alley Cat")
 
 	demo.controls.set_setting_up(false)
 	assert_eq(demo.controls.joypad_button_0_label.text, "Jump", "the scene's own words come back")

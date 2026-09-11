@@ -13,28 +13,28 @@ extends Controls
 ## action, so the HUD's keyboard art names the key the game itself answers to, and the words for the
 ## setup questions, which the same buttons answer differently.
 
-## The key behind each slot's action. The addon registers these alongside the button the slot is drawn
-## on, so the HUD lights up for a key press as well as a pad press, and its keyboard art tells the
-## truth. The game reads these actions, so binding a key here really does bind it.
-const KEYS: Dictionary = {
-	"button_0": KEY_ALT,
-	"button_1": KEY_S,
-	"button_2": KEY_N,
-	"button_3": KEY_Y,
-	"button_4": KEY_ESCAPE,
-	"button_6": KEY_M,
-	"button_9": KEY_K,
-	"button_10": KEY_H,
-	"axis_4_plus": KEY_T,
-	"axis_5_plus": KEY_A,
-	"button_11": KEY_UP,
-	"button_12": KEY_DOWN,
-	"button_13": KEY_LEFT,
-	"button_14": KEY_RIGHT,
-	"move_up": KEY_UP,
-	"move_down": KEY_DOWN,
-	"move_left": KEY_LEFT,
-	"move_right": KEY_RIGHT,
+## What each slot's action answers to besides the button it is drawn on. The addon registers these,
+## so the HUD lights up for a key press as well as a pad press and its keyboard art tells the truth,
+## and because the game reads these actions, binding something here really does bind it.
+##
+## Every button does exactly the one thing drawn on it. The d-pad is the skill menu, not a second way
+## to walk: the game asks that menu in text and a pad has no letters, so those four need a home, and
+## putting the directions on both clusters draws the player two identical d-pads and lies about one.
+const BINDINGS: Dictionary = {
+	"button_0": {"keys": [KEY_ALT]},
+	"button_1": {"keys": [KEY_S]},
+	"button_2": {"keys": [KEY_N]},
+	"button_3": {"keys": [KEY_Y]},
+	"button_4": {"keys": [KEY_ESCAPE]},
+	"button_6": {"keys": [KEY_M]},
+	"button_11": {"keys": [KEY_K]},
+	"button_12": {"keys": [KEY_H]},
+	"button_13": {"keys": [KEY_T]},
+	"button_14": {"keys": [KEY_A]},
+	"move_up": {"keys": [KEY_UP]},
+	"move_down": {"keys": [KEY_DOWN]},
+	"move_left": {"keys": [KEY_LEFT]},
+	"move_right": {"keys": [KEY_RIGHT]},
 }
 
 ## What the buttons mean while the game is still asking its setup questions. It asks them in text and
@@ -48,14 +48,10 @@ const SETUP_LABELS: Dictionary = {
 	"button_3": "Yes",
 	"button_4": "",
 	"button_6": "",
-	"button_9": "Kitten",
-	"button_10": "House Cat",
-	"axis_4_plus": "Tomcat",
-	"axis_5_plus": "Alley Cat",
-	"button_11": "",
-	"button_12": "",
-	"button_13": "",
-	"button_14": "",
+	"button_11": "Kitten",
+	"button_12": "House Cat",
+	"button_13": "Tomcat",
+	"button_14": "Alley Cat",
 	"left_joystick": "",
 }
 
@@ -67,10 +63,6 @@ const LABEL_PROPERTIES: Dictionary = {
 	"button_3": "joypad_button_3_label",
 	"button_4": "joypad_button_4_label",
 	"button_6": "joypad_button_6_label",
-	"button_9": "joypad_button_9_label",
-	"button_10": "joypad_button_10_label",
-	"axis_4_plus": "joypad_axis_4_plus_label",
-	"axis_5_plus": "joypad_axis_5_plus_label",
 	"button_11": "joypad_button_11_label",
 	"button_12": "joypad_button_12_label",
 	"button_13": "joypad_button_13_label",
@@ -84,10 +76,10 @@ var _setting_up: bool = false ## Whether the setup words are the ones currently 
 func _ready() -> void:
 	# The addon registers extra_actions before it fills in the gaps itself, and a subclass sets them
 	# here rather than from a parent, because a child is ready before whatever owns it.
-	for slot: String in KEYS:
+	for slot: String in BINDINGS:
 		var action: StringName = get(&"action_" + slot)
 		if action != &"":
-			extra_actions[String(action)] = {"keys": [KEYS[slot]]}
+			extra_actions[String(action)] = BINDINGS[slot]
 	super()
 	# Changing device redraws the HUD from the scene's own text, and so does a world prompt handing
 	# its label back, so the setup words have to go on again afterwards or they are lost the moment

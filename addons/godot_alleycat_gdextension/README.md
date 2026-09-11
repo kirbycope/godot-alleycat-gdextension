@@ -114,10 +114,17 @@ answers to and lights up when it is pressed, and the words for the setup questio
 buttons answer differently. `set_setting_up` swaps them with the addon's own `set_labels` and
 `reset_labels`.
 
-The keyboard art names Alley Cat's own keys throughout, not the addon's defaults: Alt, S, N and Y on
-the face buttons, K, H, T and A on the shoulders and triggers, Esc and M above, and the arrow keys on
-both the stick and the d-pad. Every one of those is a `keyboard_mouse_*` texture set in the inherited
-scene.
+Every button on the HUD does exactly the one thing drawn on it, which took some deciding. The stick
+and the arrow keys move the cat. The d-pad and the K, H, T and A keys are the skill menu, because the
+game asks that in text and a pad has no letters, so those four answers need a home and the d-pad is
+the only cluster free to be one - it deliberately does not double as a second way to walk, or the
+player is shown two identical d-pads and one of them is lying. The face buttons are Alt, Sound, No
+and Yes; Esc and Ctrl-M sit above. The shoulders, the triggers and the right stick are blank, and the
+addon hides a blank slot.
+
+The keyboard art names Alley Cat's own keys throughout rather than the addon's defaults, one
+`keyboard_mouse_*` texture per slot set in the inherited scene, so a key drawn on the HUD is a key
+the game answers to.
 
 ## Tests
 

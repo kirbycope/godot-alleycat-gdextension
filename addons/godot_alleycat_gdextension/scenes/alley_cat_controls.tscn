@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=36 format=3]
 
 [ext_resource type="PackedScene" path="res://addons/controls/controls.tscn" id="1_controls"]
 [ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_controls.gd" id="2_script"]
@@ -23,6 +23,18 @@
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_left.svg" id="20_arrow_left"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_right_outline.svg" id="21_arrow_right_outline"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_right.svg" id="22_arrow_right"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_k_outline.svg" id="25_skill_k_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_k.svg" id="26_skill_k"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_h_outline.svg" id="27_skill_h_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_h.svg" id="28_skill_h"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_t_outline.svg" id="29_skill_t_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_t.svg" id="30_skill_t"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_a_outline.svg" id="31_skill_a_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_a.svg" id="32_skill_a"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_n_outline.svg" id="33_answer_n_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_n.svg" id="34_answer_n"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_y_outline.svg" id="35_answer_y_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_y.svg" id="36_answer_y"]
 
 [node name="AlleyCatControls" instance=ExtResource("1_controls")]
 script = ExtResource("2_script")
@@ -31,10 +43,10 @@ action_button_0 = &"alleycat_alt"
 action_button_1 = &"alleycat_sound"
 action_button_2 = &"alleycat_no"
 action_button_3 = &"alleycat_yes"
-action_button_9 = &"alleycat_kitten"
-action_button_10 = &"alleycat_house_cat"
-action_axis_4_plus = &"alleycat_tomcat"
-action_axis_5_plus = &"alleycat_alley_cat"
+action_button_9 = &""
+action_button_10 = &""
+action_axis_4_plus = &""
+action_axis_5_plus = &""
 action_button_7 = &""
 action_button_8 = &""
 action_move_up = &"alleycat_up"
@@ -45,10 +57,10 @@ action_look_up = &""
 action_look_down = &""
 action_look_left = &""
 action_look_right = &""
-action_button_11 = &"alleycat_up"
-action_button_12 = &"alleycat_down"
-action_button_13 = &"alleycat_left"
-action_button_14 = &"alleycat_right"
+action_button_11 = &"alleycat_kitten"
+action_button_12 = &"alleycat_house_cat"
+action_button_13 = &"alleycat_tomcat"
+action_button_14 = &"alleycat_alley_cat"
 action_button_4 = &"alleycat_esc"
 action_button_6 = &"alleycat_menu"
 ; The keyboard art is exported so a project that binds different keys than the addon's
@@ -57,10 +69,10 @@ keyboard_mouse_button_0_normal = ExtResource("3_alt_normal")
 keyboard_mouse_button_0_pressed = ExtResource("4_alt_pressed")
 keyboard_mouse_button_1_normal = ExtResource("5_s_normal")
 keyboard_mouse_button_1_pressed = ExtResource("6_s_pressed")
-keyboard_mouse_button_2_normal = ExtResource("7_t_normal")
-keyboard_mouse_button_2_pressed = ExtResource("8_t_pressed")
-keyboard_mouse_button_3_normal = ExtResource("9_a_normal")
-keyboard_mouse_button_3_pressed = ExtResource("10_a_pressed")
+keyboard_mouse_button_2_normal = ExtResource("33_answer_n_outline")
+keyboard_mouse_button_2_pressed = ExtResource("34_answer_n")
+keyboard_mouse_button_3_normal = ExtResource("35_answer_y_outline")
+keyboard_mouse_button_3_pressed = ExtResource("36_answer_y")
 keyboard_mouse_button_4_normal = ExtResource("11_escape_normal")
 keyboard_mouse_button_4_pressed = ExtResource("12_escape_pressed")
 keyboard_mouse_button_6_normal = ExtResource("13_m_normal")
@@ -74,26 +86,26 @@ keyboard_mouse_move_left_normal = ExtResource("19_arrow_left_outline")
 keyboard_mouse_move_left_pressed = ExtResource("20_arrow_left")
 keyboard_mouse_move_right_normal = ExtResource("21_arrow_right_outline")
 keyboard_mouse_move_right_pressed = ExtResource("22_arrow_right")
-keyboard_mouse_button_11_normal = ExtResource("15_arrow_up_outline")
-keyboard_mouse_button_11_pressed = ExtResource("16_arrow_up")
-keyboard_mouse_button_12_normal = ExtResource("17_arrow_down_outline")
-keyboard_mouse_button_12_pressed = ExtResource("18_arrow_down")
-keyboard_mouse_button_13_normal = ExtResource("19_arrow_left_outline")
-keyboard_mouse_button_13_pressed = ExtResource("20_arrow_left")
-keyboard_mouse_button_14_normal = ExtResource("21_arrow_right_outline")
-keyboard_mouse_button_14_pressed = ExtResource("22_arrow_right")
+keyboard_mouse_button_11_normal = ExtResource("25_skill_k_outline")
+keyboard_mouse_button_11_pressed = ExtResource("26_skill_k")
+keyboard_mouse_button_12_normal = ExtResource("27_skill_h_outline")
+keyboard_mouse_button_12_pressed = ExtResource("28_skill_h")
+keyboard_mouse_button_13_normal = ExtResource("29_skill_t_outline")
+keyboard_mouse_button_13_pressed = ExtResource("30_skill_t")
+keyboard_mouse_button_14_normal = ExtResource("31_skill_a_outline")
+keyboard_mouse_button_14_pressed = ExtResource("32_skill_a")
 
 [node name="Label" parent="BottomLeft/JoypadButton11" index="0"]
-text = "Up"
+text = "Kitten"
 
 [node name="Label" parent="BottomLeft/JoypadButton12" index="0"]
-text = "Down"
+text = "House Cat"
 
 [node name="Label" parent="BottomLeft/JoypadButton13" index="0"]
-text = "Left"
+text = "Tomcat"
 
 [node name="Label" parent="BottomLeft/JoypadButton14" index="0"]
-text = "Right"
+text = "Alley Cat"
 
 [node name="Label" parent="BottomLeft/LeftJoystick" index="0"]
 text = "Move"
@@ -102,16 +114,16 @@ text = "Move"
 text = "Move"
 
 [node name="Label" parent="BottomLeft/KeyI" index="0"]
-text = "Up"
+text = "Kitten"
 
 [node name="Label" parent="BottomLeft/KeyJ" index="0"]
-text = "Left"
+text = "Tomcat"
 
 [node name="Label" parent="BottomLeft/KeyK" index="0"]
-text = "Down"
+text = "House Cat"
 
 [node name="Label" parent="BottomLeft/KeyL" index="0"]
-text = "Right"
+text = "Alley Cat"
 
 [node name="Label" parent="BottomRight/JoypadButton0" index="0"]
 text = "Jump"
@@ -120,10 +132,10 @@ text = "Jump"
 text = "Sound"
 
 [node name="Label" parent="BottomRight/JoypadButton2" index="0"]
-text = ""
+text = "No"
 
 [node name="Label" parent="BottomRight/JoypadButton3" index="0"]
-text = ""
+text = "Yes"
 
 [node name="Label" parent="TopCenter/JoypadButton4" index="0"]
 text = "Paws"
