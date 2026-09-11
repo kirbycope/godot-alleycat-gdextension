@@ -1,5 +1,7 @@
 #pragma once
 
+#include <godot_cpp/classes/audio_stream_generator_playback.hpp>
+#include <godot_cpp/classes/audio_stream_player.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/input_event.hpp>
@@ -28,16 +30,26 @@ class AlleyCat : public TextureRect {
 	String exe_path = "res://addons/godot_alleycat_gdextension/assets/CAT.EXE";
 	bool autostart = true;
 	double speed = 1.0;
+	// The PC speaker had no volume control, and a bare square wave at full scale is
+	// unpleasant, so the host picks an amplitude.
+	double volume = 0.12;
 
 	bool loaded = false;
 	bool running = false;
 	double pending_instructions = 0.0;
+
+	// Must match alleycat_audio_rate(), or every tone comes out at the wrong pitch.
+	static const int MIX_RATE = 22050;
+	AudioStreamPlayer *speaker = nullptr;
+	Ref<AudioStreamGeneratorPlayback> playback;
+	double phase = 0.0; // carried between frames so the square wave stays continuous
 
 	PackedByteArray pixels; // RGBA8, FRAME_WIDTH * FRAME_HEIGHT * 4
 	Ref<Image> image;
 	Ref<ImageTexture> texture;
 
 	void present_frame();
+	void mix_audio();
 	void handle_key(const Ref<InputEvent> &event);
 
 protected:
@@ -65,6 +77,15 @@ public:
 	// Non-zero framebuffer bytes. The game blanks the screen to ask a question and paints
 	// it while playing, so a host uses this to decide whether to overlay get_text().
 	int get_screen_painted() const;
+	// The tone the game has programmed, and whether the gate is open.
+	int get_speaker_hz() const;
+	bool is_speaker_on() const;
+	// Samples generated but not yet drained. Should hover near zero; a climbing figure
+	// means the host is not draining fast enough and audio will start dropping.
+	int get_audio_available() const;
+
+	void set_volume(double value);
+	double get_volume() const;
 	int64_t get_instructions() const;
 	String get_status() const;
 

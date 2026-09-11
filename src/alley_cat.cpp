@@ -2,6 +2,7 @@
 
 #include "PureAlleyCat.h"
 
+#include <godot_cpp/classes/audio_stream_generator.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/input_event_key.hpp>
@@ -20,6 +21,13 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_frame"), &AlleyCat::get_frame);
 	ClassDB::bind_method(D_METHOD("get_text"), &AlleyCat::get_text);
 	ClassDB::bind_method(D_METHOD("get_screen_painted"), &AlleyCat::get_screen_painted);
+	ClassDB::bind_method(D_METHOD("get_speaker_hz"), &AlleyCat::get_speaker_hz);
+	ClassDB::bind_method(D_METHOD("is_speaker_on"), &AlleyCat::is_speaker_on);
+	ClassDB::bind_method(D_METHOD("get_audio_available"), &AlleyCat::get_audio_available);
+	ClassDB::bind_method(D_METHOD("set_volume", "value"), &AlleyCat::set_volume);
+	ClassDB::bind_method(D_METHOD("get_volume"), &AlleyCat::get_volume);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "volume", PROPERTY_HINT_RANGE, "0.0,1.0,0.01"),
+			"set_volume", "get_volume");
 	ClassDB::bind_method(D_METHOD("get_instructions"), &AlleyCat::get_instructions);
 	ClassDB::bind_method(D_METHOD("get_status"), &AlleyCat::get_status);
 
@@ -51,6 +59,17 @@ void AlleyCat::_ready() {
 	set_texture(texture);
 	// The frame is 320x200 of chunky pixels; smoothing it looks wrong.
 	set_texture_filter(CanvasItem::TEXTURE_FILTER_NEAREST);
+
+	// The PC speaker is one square wave, so a generator the node fills itself is the whole of it.
+	speaker = memnew(AudioStreamPlayer);
+	add_child(speaker);
+	Ref<AudioStreamGenerator> generator;
+	generator.instantiate();
+	generator->set_mix_rate(MIX_RATE);
+	generator->set_buffer_length(0.08);
+	speaker->set_stream(generator);
+	speaker->play();
+	playback = speaker->get_stream_playback();
 
 	if (autostart && !Engine::get_singleton()->is_editor_hint()) {
 		if (load_game()) {
@@ -115,6 +134,34 @@ void AlleyCat::_process(double delta) {
 		alleycat_run(budget);
 	}
 	present_frame();
+	mix_audio();
+}
+
+// Drains the audio the library generated while it was running instructions. It is produced
+// inside the instruction loop at AUDIO_RATE, so a tone lasting less than a frame is still in
+// there; sampling the speaker once per frame from out here would miss most of them.
+void AlleyCat::mix_audio() {
+	if (playback.is_null()) {
+		return;
+	}
+	int room = playback->get_frames_available();
+	if (room <= 0) {
+		return;
+	}
+	static int16_t samples[4096];
+	int want = room < 4096 ? room : 4096;
+	int got = alleycat_audio_read(samples, want);
+	if (got <= 0) {
+		return;
+	}
+	PackedVector2Array buffer;
+	buffer.resize(got);
+	Vector2 *out = buffer.ptrw();
+	for (int i = 0; i < got; i++) {
+		float sample = (float)(samples[i] / 32768.0 * volume);
+		out[i] = Vector2(sample, sample);
+	}
+	playback->push_buffer(buffer);
 }
 
 void AlleyCat::present_frame() {
@@ -197,6 +244,11 @@ String AlleyCat::get_text() const {
 	return out;
 }
 int AlleyCat::get_screen_painted() const { return alleycat_screen_painted(); }
+int AlleyCat::get_speaker_hz() const { return alleycat_speaker_hz(); }
+bool AlleyCat::is_speaker_on() const { return alleycat_speaker_on() != 0; }
+int AlleyCat::get_audio_available() const { return alleycat_audio_available(); }
+void AlleyCat::set_volume(double value) { volume = value; }
+double AlleyCat::get_volume() const { return volume; }
 int64_t AlleyCat::get_instructions() const { return (int64_t)alleycat_instructions(); }
 String AlleyCat::get_status() const { return String(alleycat_status()); }
 
