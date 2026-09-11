@@ -1,19 +1,16 @@
 extends Control
 
-## Demo for the AlleyCat node: the game filling the window with the controls card down each side, the
-## on-screen pad for a player with no keyboard, or an explanation of what is missing.
+## Demo for the AlleyCat node: the game on screen with the controls HUD around it, or an explanation
+## of what is missing.
 ##
-## The game node is built here rather than placed in [code]demo.tscn[/code]. A scene that names a
-## GDExtension type cannot be opened at all where the library is not built, which would turn "this
-## platform has no build yet" into a broken scene; instantiating it by name degrades instead.
+## The HUD is the [Controls] addon, instanced in this scene as [code]Controls[/code]. Which action
+## sits on which button, and what each one is called, are set in
+## [code]scenes/alley_cat_controls.tscn[/code] and edited there rather than here.
+##
+## The game node is the one thing built in code. A scene that names a GDExtension type cannot be
+## opened at all where the library is not built, which would turn "this platform has no build yet"
+## into a broken scene; instantiating it by name degrades instead.
 
-const CARD_INSET: float = 210.0 ## Room down each side of the monitor for the controls card.
-## Room for the on-screen pad: the thumb clusters in the bottom corners and the face buttons down the
-## right reach further in than the card does.
-const PAD_INSET_SIDE: float = 190.0
-const PAD_INSET_BOTTOM: float = 160.0
-## The controls card's wording for each of the controls addon's InputType values, in its enum's order.
-const CARD_INPUT_TYPES: Array[String] = ["keyboard", "xbox", "nintendo", "playstation", "touch"]
 ## How much of the framebuffer has to be painted before the game counts as playing rather than asking
 ## a question. It blanks the screen to ask and paints it to play.
 const PAINTED: int = 512
@@ -21,17 +18,14 @@ const PAINTED: int = 512
 @onready var screen: AspectRatioContainer = $Screen
 @onready var missing: Label = $Missing
 @onready var prompt: Label = $Prompt
-@onready var overlay: AlleyCatControlsOverlay = $AlleyCatControlsOverlay
-@onready var pad: AlleyCatVirtualPad = $VirtualPad
+@onready var controls: AlleyCatControls = $Controls
 
 var game: TextureRect ## The AlleyCat node, null where the library is not built for this platform.
 
-var _setting_up: bool = true ## Whether the game is on its text questions rather than playing.
+var _setting_up: bool = false ## Whether the game is on its text questions rather than playing.
 
 
 func _ready() -> void:
-	pad.device_changed.connect(_on_device_changed)
-	_on_device_changed(pad.current_input_type())
 	if not ClassDB.class_exists(&"AlleyCat"):
 		_on_load_failed("The AlleyCat library is not built for this platform.")
 		return
@@ -52,25 +46,14 @@ func _ready() -> void:
 
 func _on_loaded() -> void:
 	missing.hide()
-	overlay.show()
+	controls.show()
 
 
 func _on_load_failed(reason: String) -> void:
 	missing.text = "Alley Cat could not start.\n\n%s" % reason
 	missing.show()
-	overlay.hide()
+	controls.hide()
 	prompt.hide()
-
-
-## The card beside the monitor words itself for the device in hand. On a phone it steps aside for the
-## pad, whose buttons say what they do themselves, and the monitor pulls in to leave the thumbs clear.
-func _on_device_changed(input_type: int) -> void:
-	overlay.input_type = CARD_INPUT_TYPES[input_type]
-	var touch: bool = input_type == AlleyCatVirtualPad.TOUCH
-	overlay.visible = not touch and not missing.visible
-	screen.offset_left = PAD_INSET_SIDE if touch else CARD_INSET
-	screen.offset_right = -screen.offset_left
-	screen.offset_bottom = -PAD_INSET_BOTTOM if touch else 0.0
 
 
 func _process(_delta: float) -> void:
@@ -85,7 +68,6 @@ func _process(_delta: float) -> void:
 	prompt.text = game.call(&"get_text") if asking else ""
 	prompt.visible = asking
 	if asking != _setting_up:
-		# The same buttons mean different things on the two screens, so the card changes with them.
+		# The same buttons mean different things on the game's two screens, so the HUD says which.
 		_setting_up = asking
-		overlay.setting_up = asking
-		pad.set_setting_up(asking)
+		controls.set_setting_up(asking)

@@ -1,0 +1,105 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="PackedScene" path="res://addons/controls/controls.tscn" id="1_controls"]
+[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_controls.gd" id="2_script"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_alt_outline.svg" id="3_alt_normal"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_alt.svg" id="4_alt_pressed"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_s_outline.svg" id="5_s_normal"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_s.svg" id="6_s_pressed"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_t_outline.svg" id="7_t_normal"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_t.svg" id="8_t_pressed"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_a_outline.svg" id="9_a_normal"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_a.svg" id="10_a_pressed"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_escape_outline.svg" id="11_escape_normal"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_escape.svg" id="12_escape_pressed"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_m_outline.svg" id="13_m_normal"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_m.svg" id="14_m_pressed"]
+
+[node name="AlleyCatControls" instance=ExtResource("1_controls")]
+script = ExtResource("2_script")
+action_button_0 = &"alleycat_jump"
+action_button_1 = &"alleycat_sound"
+action_button_2 = &"alleycat_tomcat"
+action_button_3 = &"alleycat_alley_cat"
+action_button_9 = &""
+action_button_10 = &""
+action_axis_4_plus = &""
+action_axis_5_plus = &""
+action_button_7 = &""
+action_button_8 = &""
+action_move_up = &"alleycat_move_up"
+action_move_down = &"alleycat_move_down"
+action_move_left = &"alleycat_move_left"
+action_move_right = &"alleycat_move_right"
+action_look_up = &""
+action_look_down = &""
+action_look_left = &""
+action_look_right = &""
+action_button_11 = &"alleycat_up"
+action_button_12 = &"alleycat_down"
+action_button_13 = &"alleycat_left"
+action_button_14 = &"alleycat_right"
+action_button_4 = &"alleycat_pause"
+action_button_6 = &"alleycat_menu"
+; The keyboard art is exported so a project that binds different keys than the addon's
+; defaults shows its own. These are the keys Alley Cat itself answers to.
+keyboard_mouse_button_0_normal = ExtResource("3_alt_normal")
+keyboard_mouse_button_0_pressed = ExtResource("4_alt_pressed")
+keyboard_mouse_button_1_normal = ExtResource("5_s_normal")
+keyboard_mouse_button_1_pressed = ExtResource("6_s_pressed")
+keyboard_mouse_button_2_normal = ExtResource("7_t_normal")
+keyboard_mouse_button_2_pressed = ExtResource("8_t_pressed")
+keyboard_mouse_button_3_normal = ExtResource("9_a_normal")
+keyboard_mouse_button_3_pressed = ExtResource("10_a_pressed")
+keyboard_mouse_button_4_normal = ExtResource("11_escape_normal")
+keyboard_mouse_button_4_pressed = ExtResource("12_escape_pressed")
+keyboard_mouse_button_6_normal = ExtResource("13_m_normal")
+keyboard_mouse_button_6_pressed = ExtResource("14_m_pressed")
+
+[node name="Label" parent="BottomLeft/JoypadButton11" index="0"]
+text = "Up"
+
+[node name="Label" parent="BottomLeft/JoypadButton12" index="0"]
+text = "Down"
+
+[node name="Label" parent="BottomLeft/JoypadButton13" index="0"]
+text = "Left"
+
+[node name="Label" parent="BottomLeft/JoypadButton14" index="0"]
+text = "Right"
+
+[node name="Label" parent="BottomLeft/LeftJoystick" index="0"]
+text = "Move"
+
+[node name="Label" parent="BottomLeft/KeyW" index="0"]
+text = "Move"
+
+[node name="Label" parent="BottomLeft/KeyI" index="0"]
+text = "Up"
+
+[node name="Label" parent="BottomLeft/KeyJ" index="0"]
+text = "Left"
+
+[node name="Label" parent="BottomLeft/KeyK" index="0"]
+text = "Down"
+
+[node name="Label" parent="BottomLeft/KeyL" index="0"]
+text = "Right"
+
+[node name="Label" parent="BottomRight/JoypadButton0" index="0"]
+text = "Jump"
+
+[node name="Label" parent="BottomRight/JoypadButton1" index="0"]
+text = "Sound"
+
+[node name="Label" parent="BottomRight/JoypadButton2" index="0"]
+text = ""
+
+[node name="Label" parent="BottomRight/JoypadButton3" index="0"]
+text = ""
+
+[node name="Label" parent="TopCenter/JoypadButton4" index="0"]
+text = "Paws"
+
+[node name="Label" parent="TopCenter/JoypadButton6" index="0"]
+text = "Menu"

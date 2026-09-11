@@ -77,24 +77,38 @@ The stick also goes out as arrow keys, and Alt counts as the joystick button, so
 keyboard both work whichever way the joystick question was answered. Set `joystick` to `false` to
 have the game report no adapter at all, which is the keyboard-only machine.
 
-## The controls card
+## The HUD
 
-The demo shows Alley Cat's controls in two plain-text columns down each side of the monitor, worded
-for the device in hand and for which of the two screens the game is on. It is
-[alley_cat_controls_overlay.tscn](addons/godot_alleycat_gdextension/scenes/alley_cat_controls_overlay.tscn)
-reading `resources/controls.tres`, which is a resource rather than code: editing it changes what the
-card says and nothing else, so it can be reworded without touching the mapping it documents.
+The demo's on-screen controls are [godot-controls](https://github.com/kirbycope/godot-controls)
+itself, instanced in `demo.tscn` as `Controls`. It draws every button in the art of whatever device
+is being played on, keyboard included, and redraws when that changes.
 
-## The on-screen pad
+**The mapping is a scene, not code.** Open
+[alley_cat_controls.tscn](addons/godot_alleycat_gdextension/scenes/alley_cat_controls.tscn), which
+inherits the addon's `controls.tscn`, and every slot is an inspector field: which action sits on
+each button, what its label says, and which key face the keyboard art shows. A slot left blank is a
+button this game does not use, and the addon hides it, which is why the shoulders, the triggers and
+the right stick are absent.
 
-On a touchscreen the demo fills itself with the HUD from
-[godot-controls](https://github.com/kirbycope/godot-controls) and turns its taps back into joypad
-events, so the same C++ mapping serves a phone with no keyboard. The addon is optional: without it
-the demo still runs, just without the pad. `addons/controls/` is fetched rather than committed:
+The script beside it,
+[alley_cat_controls.gd](addons/godot_alleycat_gdextension/scripts/alley_cat_controls.gd), subclasses
+the addon's `Controls` and adds the two things the addon leaves to the game: the keyboard key behind
+each action, and turning a tap on the on-screen pad back into the joypad event the extension reads,
+since a `TouchScreenButton` sends an `InputEventAction` and the mapping is in C++.
+
+The setup questions are the one thing the scene cannot say on its own, because the same buttons mean
+something different there. `set_setting_up` swaps the words with the addon's own `set_labels`, and
+`reset_labels` puts the scene's back, which is what those are for.
+
+`addons/controls/` is fetched rather than committed, so a fresh clone needs:
 
 ```bash
 python tools/pull_addons.py
 ```
+
+Known gap: the addon exports the key face for each **face** button, so those show Alt, S, Esc and M
+as they should, but the stick and d-pad are hard-wired to WASD and IJKL. Alley Cat moves on the
+arrow keys, so that half of the keyboard art is wrong until the addon exports those textures too.
 
 ## Tests
 
@@ -102,11 +116,11 @@ python tools/pull_addons.py
 godot --headless --audio-driver Dummy --path . -s addons/gut/gut_cmdln.gd -gdir=res://addons/godot_alleycat_gdextension/tests -gexit
 ```
 
-Four suites. Two cover the tables the card and the on-screen pad are built from, and two drive the
-real thing: `test_alley_cat.gd` sends actual joypad and key events and asks the node and the game
-what happened - the pad answering the setup questions and starting play is one test end to end -
-while `test_demo.gd` checks which of the card and the pad is on screen for the device in hand, and
-that both follow the game between its setup screen and play.
+Two suites, and both drive the real thing rather than asserting against a table.
+`test_alley_cat.gd` sends actual joypad and key events and asks the node and the game what happened;
+the pad answering the setup questions and starting play is one test end to end. `test_demo.gd`
+opens the demo scene and checks the wiring: every slot mapped, every action it names registered,
+the labels the scene carries, and the HUD following the game between its setup screen and play.
 
 `get_joystick_state()` is what makes the mapping assertable without reading pixels, which is the
 only other way to tell a stick pushed left from one that went nowhere.
@@ -166,16 +180,14 @@ private, so the deployed demo is a public copy of the game.
 | `src/register_types.{h,cpp}` | GDExtension entry point |
 | `addons/.../thirdparty/PureAlleyCat.h` | the library, vendored |
 | `addons/.../scenes/demo/` | the demo scene |
-| `addons/.../scripts/alley_cat_virtual_pad.gd` | the touchscreen pad, built on godot-controls |
-| `addons/.../scenes/alley_cat_controls_overlay.tscn` | the controls card down each side |
-| `addons/.../resources/controls.tres` | what the card says, per device |
+| `addons/.../scenes/alley_cat_controls.tscn` | the HUD mapping, inherited from godot-controls |
+| `addons/.../scripts/alley_cat_controls.gd` | the `Controls` subclass behind it |
 | `addons/.../tests/` | GUT tests |
 | `tools/addons.json` | what `pull_addons.py` fetches into `addons/` |
 
 ## Licence
 
-The code here is MIT and is original work: the node, the controls card, the on-screen pad and the
-build. `assets/CAT.EXE` is not covered by it and is not ours to license - see **The game** above.
+The code here is MIT and is original work: the node, the HUD mapping and the build. `assets/CAT.EXE` is not covered by it and is not ours to license - see **The game** above.
 
 See [PureAlleyCat](https://github.com/kirbycope/PureAlleyCat) for what the library is and how it was
 verified, and `alley-decomp` for the reverse engineering that established the graphics format.
