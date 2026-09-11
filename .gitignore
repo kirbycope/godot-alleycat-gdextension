@@ -27,3 +27,7 @@ config.log
 # Build and import logs
 build.log
 import.log
+# MSVC leaves ~-prefixed temporaries beside the linked output.
+~*
+# Godot metadata for build intermediates; src/.gdignore stops these being made now.
+src/*.import
