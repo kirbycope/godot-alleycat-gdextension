@@ -1,9 +1,9 @@
 {
   "controls": {
-    "commit": "0a9486f6ecc6bbbc6b691d4430721f566da054ef",
-    "pulled": "2026-09-11T20:02:54Z",
+    "commit": "e817b36b20916cdc758aca20f6da998ff15692f9",
+    "pulled": "2026-09-11T20:30:05Z",
     "ref": "main",
     "repo": "https://github.com/kirbycope/godot-controls.git",
-    "subject": "Export the stick and d-pad key faces, like the face buttons"
+    "subject": "Let a game publish the list of inputs its slots can pick from"
   }
 }

@@ -4,15 +4,20 @@
 #include <godot_cpp/classes/audio_stream_player.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
-#include <godot_cpp/classes/input_event.hpp>
 #include <godot_cpp/classes/texture_rect.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 
 namespace godot {
 
 // Runs Alley Cat (PureAlleyCat) in-process and shows its 320x200 frame as this TextureRect's
-// texture. Feed it input events, the way a SubViewport's push_input reaches _input.
+// texture.
+//
+// Input is InputMap actions and nothing else: the node listens for the actions in
+// get_expected_inputs() and has no opinion about which key or button fires them. A project binds
+// them itself, or lets the controls addon do it; a project that binds none of them has a game that
+// cannot be played, which is why get_missing_inputs() exists to say so.
 //
 // The game is not distributed with this addon: point exe_path at your own copy of CAT.EXE. The
 // file holds both the code and all of the artwork, so it is the only asset needed.
@@ -56,40 +61,35 @@ class AlleyCat : public TextureRect {
 	Ref<Image> image;
 	Ref<ImageTexture> texture;
 
-	// The emulated game port is a level, not a stream of events: the game samples it whenever it
-	// likes, and reads the stick's position rather than its changes. So the pad's state is held
-	// here and handed to the library every frame.
-	float stick_x = 0.0f;
-	float stick_y = 0.0f;
-	int dpad_x = 0;
-	int dpad_y = 0;
+	enum { AXIS_NONE = 0, AXIS_X = 1, AXIS_Y = 2 };
+
+	// One thing the game answers to: the action a host binds to it, the scancodes it sends, and
+	// what it does to the emulated game port. See INPUTS in the .cpp for the table itself.
+	struct GameInput {
+		const char *action;
+		int scancodes[2]; // a chord sends both, in order; 0 ends the list
+		int axis;
+		int direction;
+		int port_button;
+	};
+	static const GameInput INPUTS[];
+	static const int INPUT_COUNT;
+
+	// Which of them are held. The game port holds a position rather than reporting changes, so the
+	// held set is what push_joystick adds up every frame.
+	bool input_held[32] = {};
 	bool pad_button_1 = false;
 	bool pad_button_2 = false;
-	// The arrow keys and Alt drive the emulated port as well, so a player who answered yes to
-	// the joystick question with no pad in their hands is not stranded on "press the joystick
-	// button to start". The game reads either the port or the keyboard, never both, so feeding
-	// both costs nothing.
-	int key_x = 0;
-	int key_y = 0;
-	bool key_action = false;
-	// The last direction turned into arrow-key presses, so a held stick is one make code rather
-	// than one per frame. The game reads the keyboard instead of the port when the player
-	// answered no to the joystick question, and the pad should work either way.
-	int sent_key_x = 0;
-	int sent_key_y = 0;
-	// The last position handed to the game port, kept so a host - and the tests - can see what the
-	// node is sending without having to read it back out of the game's pixels.
+	// The last position handed to the port, kept so a host - and the tests - can see what the node
+	// is sending without having to read it back out of the game's pixels.
 	int sent_x = 0;
 	int sent_y = 0;
 
 	void present_frame();
 	void mix_audio();
-	void handle_key(const Ref<InputEvent> &event);
-	void handle_joypad(const Ref<InputEvent> &event);
+	void read_inputs();
+	void set_input_held(int index, bool held);
 	void push_joystick();
-	// Sends a face button as whatever it means on the screen that is up: the setup questions want
-	// letters, gameplay wants the game port and Alt.
-	void press_pad_button(int button, bool pressed);
 
 protected:
 	static void _bind_methods();
@@ -99,7 +99,6 @@ public:
 
 	void _ready() override;
 	void _process(double delta) override;
-	void _input(const Ref<InputEvent> &event) override;
 
 	// Reads exe_path and resets the machine. Emits loaded or load_failed.
 	bool load_game();
@@ -122,9 +121,12 @@ public:
 	// Samples generated but not yet drained. Should hover near zero; a climbing figure
 	// means the host is not draining fast enough and audio will start dropping.
 	int get_audio_available() const;
-	// What the pad is telling the game port right now: "x" and "y" are -1, 0 or 1, and "button_1"
-	// and "button_2" are pressed or not.
+	// What the held inputs are telling the game port right now: "x" and "y" are -1, 0 or 1, and
+	// "button_1" and "button_2" are pressed or not.
 	Dictionary get_joystick_state() const;
+	// Every action this node listens for. Nothing else reaches the game, so a host binds these and
+	// an editor can offer them as a list to pick from.
+	static PackedStringArray get_expected_inputs();
 
 	void set_volume(double value);
 	double get_volume() const;
@@ -139,6 +141,9 @@ public:
 	double get_speed() const;
 	void set_joystick(bool value);
 	bool get_joystick() const;
+	// The expected inputs no one has registered, so a host can say what is unbound rather than
+	// leaving the player with a game that does not answer.
+	PackedStringArray get_missing_inputs() const;
 };
 
 } // namespace godot

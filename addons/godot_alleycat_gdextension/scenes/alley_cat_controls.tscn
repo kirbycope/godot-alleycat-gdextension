@@ -1,7 +1,8 @@
-[gd_scene load_steps=23 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="PackedScene" path="res://addons/controls/controls.tscn" id="1_controls"]
 [ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_controls.gd" id="2_script"]
+[ext_resource type="Resource" path="res://addons/godot_alleycat_gdextension/resources/alley_cat_inputs.tres" id="2_catalog"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_alt_outline.svg" id="3_alt_normal"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_alt.svg" id="4_alt_pressed"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_s_outline.svg" id="5_s_normal"]
@@ -25,20 +26,21 @@
 
 [node name="AlleyCatControls" instance=ExtResource("1_controls")]
 script = ExtResource("2_script")
-action_button_0 = &"alleycat_jump"
+input_catalog = ExtResource("2_catalog")
+action_button_0 = &"alleycat_alt"
 action_button_1 = &"alleycat_sound"
-action_button_2 = &"alleycat_tomcat"
-action_button_3 = &"alleycat_alley_cat"
-action_button_9 = &""
-action_button_10 = &""
-action_axis_4_plus = &""
-action_axis_5_plus = &""
+action_button_2 = &"alleycat_no"
+action_button_3 = &"alleycat_yes"
+action_button_9 = &"alleycat_kitten"
+action_button_10 = &"alleycat_house_cat"
+action_axis_4_plus = &"alleycat_tomcat"
+action_axis_5_plus = &"alleycat_alley_cat"
 action_button_7 = &""
 action_button_8 = &""
-action_move_up = &"alleycat_move_up"
-action_move_down = &"alleycat_move_down"
-action_move_left = &"alleycat_move_left"
-action_move_right = &"alleycat_move_right"
+action_move_up = &"alleycat_up"
+action_move_down = &"alleycat_down"
+action_move_left = &"alleycat_left"
+action_move_right = &"alleycat_right"
 action_look_up = &""
 action_look_down = &""
 action_look_left = &""
@@ -47,7 +49,7 @@ action_button_11 = &"alleycat_up"
 action_button_12 = &"alleycat_down"
 action_button_13 = &"alleycat_left"
 action_button_14 = &"alleycat_right"
-action_button_4 = &"alleycat_pause"
+action_button_4 = &"alleycat_esc"
 action_button_6 = &"alleycat_menu"
 ; The keyboard art is exported so a project that binds different keys than the addon's
 ; defaults shows its own. These are the keys Alley Cat itself answers to.
@@ -128,3 +130,15 @@ text = "Paws"
 
 [node name="Label" parent="TopCenter/JoypadButton6" index="0"]
 text = "Menu"
+
+[node name="Label" parent="TopLeft/JoypadButton9" index="0"]
+text = ""
+
+[node name="Label" parent="TopRight/JoypadButton10" index="0"]
+text = ""
+
+[node name="Label" parent="TopLeft/JoypadAxis4Plus" index="0"]
+text = ""
+
+[node name="Label" parent="TopRight/JoypadAxis5Plus" index="0"]
+text = ""

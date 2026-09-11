@@ -5,9 +5,8 @@
 #include <godot_cpp/classes/audio_stream_generator.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/file_access.hpp>
-#include <godot_cpp/classes/input_event_joypad_button.hpp>
-#include <godot_cpp/classes/input_event_joypad_motion.hpp>
-#include <godot_cpp/classes/input_event_key.hpp>
+#include <godot_cpp/classes/input.hpp>
+#include <godot_cpp/classes/input_map.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace godot;
@@ -26,6 +25,8 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_speaker_on"), &AlleyCat::is_speaker_on);
 	ClassDB::bind_method(D_METHOD("get_audio_available"), &AlleyCat::get_audio_available);
 	ClassDB::bind_method(D_METHOD("get_joystick_state"), &AlleyCat::get_joystick_state);
+	ClassDB::bind_static_method("AlleyCat", D_METHOD("get_expected_inputs"), &AlleyCat::get_expected_inputs);
+	ClassDB::bind_method(D_METHOD("get_missing_inputs"), &AlleyCat::get_missing_inputs);
 	ClassDB::bind_method(D_METHOD("set_volume", "value"), &AlleyCat::set_volume);
 	ClassDB::bind_method(D_METHOD("get_volume"), &AlleyCat::get_volume);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "volume", PROPERTY_HINT_RANGE, "0.0,1.0,0.01"),
@@ -83,7 +84,7 @@ void AlleyCat::_ready() {
 		}
 	}
 	set_process(true);
-	set_process_input(true);
+
 }
 
 bool AlleyCat::load_game() {
@@ -138,8 +139,9 @@ void AlleyCat::_process(double delta) {
 	if (!running) {
 		return;
 	}
-	// The game port holds a position rather than reporting changes, so the pad's current state
-	// goes in before the machine gets a chance to sample it.
+	// The game port holds a position rather than reporting changes, so what is held goes in before
+	// the machine gets a chance to sample it.
+	read_inputs();
 	push_joystick();
 	// Run the number of instructions that much wall time is worth, keeping the fraction so a
 	// long frame does not quietly lose time.
@@ -197,188 +199,113 @@ void AlleyCat::present_frame() {
 	texture->update(image);
 }
 
-void AlleyCat::_input(const Ref<InputEvent> &event) {
-	if (!running) {
-		return;
+// What the game answers to, and nothing else reaches it. Each entry is one action a host binds
+// however it likes; the scancodes are IBM PC set-1 make codes, which is what the game's own INT 9
+// handler reads from port 0x60, and axis and button are the emulated game port.
+//
+// This table is the whole mapping. A host that wants a different button on a different thing rebinds
+// the action - in the controls addon's inspector, or in its own project.godot - and nothing here
+// changes. get_expected_inputs() hands the list out so an editor can offer it as a choice.
+const AlleyCat::GameInput AlleyCat::INPUTS[] = {
+	{ "alleycat_up", { 0x48, 0 }, AXIS_Y, -1, 0 },
+	{ "alleycat_down", { 0x50, 0 }, AXIS_Y, 1, 0 },
+	{ "alleycat_left", { 0x4B, 0 }, AXIS_X, -1, 0 },
+	{ "alleycat_right", { 0x4D, 0 }, AXIS_X, 1, 0 },
+	// Alt is the game's action key and the joystick button at once: the setup's last question asks
+	// for the button, and the game reads one or the other depending on how the first was answered.
+	{ "alleycat_alt", { ALLEYCAT_KEY_ALT, 0 }, AXIS_NONE, 0, 1 },
+	{ "alleycat_button_2", { 0, 0 }, AXIS_NONE, 0, 2 },
+	{ "alleycat_esc", { ALLEYCAT_KEY_ESC, 0 }, AXIS_NONE, 0, 0 },
+	// The three chords the game prints on its own setup screen.
+	{ "alleycat_sound", { ALLEYCAT_KEY_CTRL, ALLEYCAT_KEY_S }, AXIS_NONE, 0, 0 },
+	{ "alleycat_restart", { ALLEYCAT_KEY_CTRL, 0x13 }, AXIS_NONE, 0, 0 },
+	{ "alleycat_menu", { ALLEYCAT_KEY_CTRL, ALLEYCAT_KEY_M }, AXIS_NONE, 0, 0 },
+	// The setup answers. The game asks them in text, so a pad needs a button on each or the player
+	// is stuck at a question with nothing that answers it.
+	{ "alleycat_yes", { ALLEYCAT_KEY_Y, 0 }, AXIS_NONE, 0, 0 },
+	{ "alleycat_no", { ALLEYCAT_KEY_N, 0 }, AXIS_NONE, 0, 0 },
+	{ "alleycat_kitten", { 0x25, 0 }, AXIS_NONE, 0, 0 },
+	{ "alleycat_house_cat", { 0x23, 0 }, AXIS_NONE, 0, 0 },
+	{ "alleycat_tomcat", { 0x14, 0 }, AXIS_NONE, 0, 0 },
+	{ "alleycat_alley_cat", { 0x1E, 0 }, AXIS_NONE, 0, 0 },
+};
+
+const int AlleyCat::INPUT_COUNT = (int)(sizeof(AlleyCat::INPUTS) / sizeof(AlleyCat::INPUTS[0]));
+
+PackedStringArray AlleyCat::get_expected_inputs() {
+	PackedStringArray out;
+	for (int i = 0; i < INPUT_COUNT; i++) {
+		out.push_back(INPUTS[i].action);
 	}
-	handle_key(event);
-	handle_joypad(event);
+	return out;
 }
 
-void AlleyCat::handle_key(const Ref<InputEvent> &event) {
-	Ref<InputEventKey> key = event;
-	if (key.is_null() || key->is_echo()) {
+// Reads every action the game answers to and holds the result. Polled rather than listened for,
+// because Godot's VirtualJoystick presses its actions straight into the input state without ever
+// sending an event, so a touch stick would be silent to _input. Polling catches the pad, the
+// keyboard and the on-screen stick through one path, and the game port wants a level anyway.
+void AlleyCat::read_inputs() {
+	Input *input = Input::get_singleton();
+	InputMap *map = InputMap::get_singleton();
+	for (int i = 0; i < INPUT_COUNT; i++) {
+		const StringName action(INPUTS[i].action);
+		// A host that has not registered an action simply has that input unbound; asking the
+		// InputMap about one it does not know is an error, not an answer.
+		set_input_held(i, map->has_action(action) && input->is_action_pressed(action));
+	}
+}
+
+// Presses or releases one of the game's inputs. A chord goes down in order and comes up in reverse,
+// the way a hand does it, because the game reads make and break codes rather than a key state.
+void AlleyCat::set_input_held(int index, bool held) {
+	if (held == input_held[index]) {
 		return;
 	}
-
-	// Map the whole keyboard, not a chosen few. The setup asks for Y/N and then K, H, T or A for
-	// the skill level, and a hand-picked list of "the keys the game uses" silently loses whichever
-	// one was overlooked. These are IBM PC set-1 make codes, which is what the game's own INT 9
-	// handler reads from port 0x60.
-	static const struct { Key key; int code; } SCANCODES[] = {
-		{ KEY_ESCAPE, 0x01 }, { KEY_1, 0x02 }, { KEY_2, 0x03 }, { KEY_3, 0x04 },
-		{ KEY_4, 0x05 }, { KEY_5, 0x06 }, { KEY_6, 0x07 }, { KEY_7, 0x08 },
-		{ KEY_8, 0x09 }, { KEY_9, 0x0A }, { KEY_0, 0x0B }, { KEY_MINUS, 0x0C },
-		{ KEY_EQUAL, 0x0D }, { KEY_BACKSPACE, 0x0E }, { KEY_TAB, 0x0F },
-		{ KEY_Q, 0x10 }, { KEY_W, 0x11 }, { KEY_E, 0x12 }, { KEY_R, 0x13 },
-		{ KEY_T, 0x14 }, { KEY_Y, 0x15 }, { KEY_U, 0x16 }, { KEY_I, 0x17 },
-		{ KEY_O, 0x18 }, { KEY_P, 0x19 }, { KEY_ENTER, 0x1C }, { KEY_CTRL, 0x1D },
-		{ KEY_A, 0x1E }, { KEY_S, 0x1F }, { KEY_D, 0x20 }, { KEY_F, 0x21 },
-		{ KEY_G, 0x22 }, { KEY_H, 0x23 }, { KEY_J, 0x24 }, { KEY_K, 0x25 },
-		{ KEY_L, 0x26 }, { KEY_SHIFT, 0x2A }, { KEY_Z, 0x2C }, { KEY_X, 0x2D },
-		{ KEY_C, 0x2E }, { KEY_V, 0x2F }, { KEY_B, 0x30 }, { KEY_N, 0x31 },
-		{ KEY_M, 0x32 }, { KEY_COMMA, 0x33 }, { KEY_PERIOD, 0x34 }, { KEY_SLASH, 0x35 },
-		{ KEY_ALT, 0x38 }, { KEY_SPACE, 0x39 },
-		{ KEY_UP, 0x48 }, { KEY_LEFT, 0x4B }, { KEY_RIGHT, 0x4D }, { KEY_DOWN, 0x50 },
-	};
-	int scancode = 0;
-	Key keycode = key->get_keycode();
-	for (unsigned i = 0; i < sizeof(SCANCODES) / sizeof(SCANCODES[0]); i++) {
-		if (SCANCODES[i].key == keycode) {
-			scancode = SCANCODES[i].code;
-			break;
+	input_held[index] = held;
+	const int *codes = INPUTS[index].scancodes;
+	if (held) {
+		for (int i = 0; i < 2 && codes[i]; i++) {
+			alleycat_key(codes[i], 1);
 		}
-	}
-	if (scancode == 0) {
-		return;
-	}
-	const bool pressed = key->is_pressed();
-	// The same keys drive the emulated game port, so answering yes to the joystick question and
-	// then reaching for the keyboard works. push_joystick reads these.
-	switch (scancode) {
-		case ALLEYCAT_KEY_LEFT: key_x = pressed ? -1 : 0; break;
-		case ALLEYCAT_KEY_RIGHT: key_x = pressed ? 1 : 0; break;
-		case ALLEYCAT_KEY_UP: key_y = pressed ? -1 : 0; break;
-		case ALLEYCAT_KEY_DOWN: key_y = pressed ? 1 : 0; break;
-		case ALLEYCAT_KEY_ALT: key_action = pressed; break;
-		default: break;
-	}
-
-	alleycat_key(scancode, pressed ? 1 : 0);
-}
-
-// A face button means different things on the two screens the game has. During setup it wants a
-// letter, and a pad has none; while playing it wants the game port and Alt. Each setup button
-// sends both of the letters it could mean at once - the joystick question answers to Y or N and
-// the skill menu to K, H, T or A, and each ignores anything else - so no state has to be kept.
-void AlleyCat::press_pad_button(int button, bool pressed) {
-	const int down = pressed ? 1 : 0;
-	// The game blanks the graphics screen to ask a question and paints it to play, which is the
-	// same test the demo uses to decide whether to show the text rows over the top.
-	const bool setting_up = alleycat_screen_painted() < 512;
-	switch (button) {
-		case JOY_BUTTON_A:
-			// The joystick button, on every screen. The last thing the setup asks is to press it,
-			// and that screen is still a text one, so gating this on playing leaves the player
-			// stuck reading "press the joystick button to start" with nothing that presses it.
-			pad_button_1 = pressed;
-			if (setting_up) {
-				alleycat_key(ALLEYCAT_KEY_Y, down);  // yes, a joystick
-				alleycat_key(0x25, down);            // K: Kitten
-			} else {
-				alleycat_key(ALLEYCAT_KEY_ALT, down);
+	} else {
+		for (int i = 1; i >= 0; i--) {
+			if (codes[i]) {
+				alleycat_key(codes[i], 0);
 			}
-			break;
-		case JOY_BUTTON_B:
-			if (setting_up) {
-				alleycat_key(ALLEYCAT_KEY_N, down);  // no joystick
-				alleycat_key(0x23, down);            // H: House Cat
-			} else {
-				// The game reads joystick button 1 and never button 2, so the port gets the
-				// press for the sake of behaving like the hardware and the sound toggle is
-				// what the button actually does.
-				pad_button_2 = pressed;
-				alleycat_key(ALLEYCAT_KEY_CTRL, down);
-				alleycat_key(ALLEYCAT_KEY_S, down);
-			}
-			break;
-		case JOY_BUTTON_X:
-			if (setting_up) {
-				alleycat_key(0x14, down);            // T: Tomcat
-			}
-			break;
-		case JOY_BUTTON_Y:
-			if (setting_up) {
-				alleycat_key(0x1E, down);            // A: Alley Cat
-			}
-			break;
-		case JOY_BUTTON_BACK:
-			alleycat_key(ALLEYCAT_KEY_ESC, down);    // paws mode
-			break;
-		case JOY_BUTTON_START:                       // Ctrl-M: back to the menu
-			alleycat_key(ALLEYCAT_KEY_CTRL, down);
-			alleycat_key(ALLEYCAT_KEY_M, down);
-			break;
-		default:
-			break;
-	}
-}
-
-void AlleyCat::handle_joypad(const Ref<InputEvent> &event) {
-	Ref<InputEventJoypadButton> button = event;
-	if (button.is_valid()) {
-		const bool pressed = button->is_pressed();
-		switch (button->get_button_index()) {
-			case JOY_BUTTON_DPAD_UP: dpad_y = pressed ? -1 : 0; break;
-			case JOY_BUTTON_DPAD_DOWN: dpad_y = pressed ? 1 : 0; break;
-			case JOY_BUTTON_DPAD_LEFT: dpad_x = pressed ? -1 : 0; break;
-			case JOY_BUTTON_DPAD_RIGHT: dpad_x = pressed ? 1 : 0; break;
-			default: press_pad_button(button->get_button_index(), pressed); break;
-		}
-		return;
-	}
-
-	Ref<InputEventJoypadMotion> motion = event;
-	if (motion.is_valid()) {
-		// Only the left stick steers. Alley Cat has one stick's worth of controls, and reading
-		// the right one as well would fight it.
-		switch (motion->get_axis()) {
-			case JOY_AXIS_LEFT_X: stick_x = motion->get_axis_value(); break;
-			case JOY_AXIS_LEFT_Y: stick_y = motion->get_axis_value(); break;
-			default: break;
 		}
 	}
 }
 
-// Hands the pad's current state to the library. The stick goes to the emulated game port and to
-// the arrow keys at the same time: the game reads one or the other depending on how the setup
-// question was answered, and they are exclusive inside the game, so feeding both means the pad
-// works either way round.
+// Hands the game port the position the held inputs add up to. The port holds a position rather than
+// reporting changes, so the game samples it whenever it likes and this runs every frame.
 void AlleyCat::push_joystick() {
-	// What the pad alone is saying: the d-pad wins over the stick, because a player using both
-	// means the d-pad.
-	const int pad_x = dpad_x != 0 ? dpad_x
-			: (stick_x < -STICK_THRESHOLD ? -1 : (stick_x > STICK_THRESHOLD ? 1 : 0));
-	const int pad_y = dpad_y != 0 ? dpad_y
-			: (stick_y < -STICK_THRESHOLD ? -1 : (stick_y > STICK_THRESHOLD ? 1 : 0));
-
-	// The port gets the pad, or the arrow keys when the pad is idle.
-	sent_x = pad_x != 0 ? pad_x : key_x;
-	sent_y = pad_y != 0 ? pad_y : key_y;
-	alleycat_joystick(sent_x, sent_y, (pad_button_1 || key_action) ? 1 : 0, pad_button_2 ? 1 : 0);
-
-	// And the pad's direction also goes out as arrow keys, for a player who answered no to the
-	// joystick question. Only the pad's own direction: a real arrow key is already on its way
-	// through handle_key, and sending it twice would leave the game holding a key that is up.
-	if (pad_x != sent_key_x) {
-		if (sent_key_x != 0) {
-			alleycat_key(sent_key_x < 0 ? ALLEYCAT_KEY_LEFT : ALLEYCAT_KEY_RIGHT, 0);
+	int x = 0;
+	int y = 0;
+	bool button_1 = false;
+	bool button_2 = false;
+	for (int i = 0; i < INPUT_COUNT; i++) {
+		if (!input_held[i]) {
+			continue;
 		}
-		if (pad_x != 0) {
-			alleycat_key(pad_x < 0 ? ALLEYCAT_KEY_LEFT : ALLEYCAT_KEY_RIGHT, 1);
+		if (INPUTS[i].axis == AXIS_X) {
+			x += INPUTS[i].direction;
+		} else if (INPUTS[i].axis == AXIS_Y) {
+			y += INPUTS[i].direction;
 		}
-		sent_key_x = pad_x;
+		if (INPUTS[i].port_button == 1) {
+			button_1 = true;
+		} else if (INPUTS[i].port_button == 2) {
+			button_2 = true;
+		}
 	}
-	if (pad_y != sent_key_y) {
-		if (sent_key_y != 0) {
-			alleycat_key(sent_key_y < 0 ? ALLEYCAT_KEY_UP : ALLEYCAT_KEY_DOWN, 0);
-		}
-		if (pad_y != 0) {
-			alleycat_key(pad_y < 0 ? ALLEYCAT_KEY_UP : ALLEYCAT_KEY_DOWN, 1);
-		}
-		sent_key_y = pad_y;
-	}
+	// Holding both ways at once is a centred stick, not a doubled one.
+	sent_x = x < 0 ? -1 : (x > 0 ? 1 : 0);
+	sent_y = y < 0 ? -1 : (y > 0 ? 1 : 0);
+	pad_button_1 = button_1;
+	pad_button_2 = button_2;
+	alleycat_joystick(sent_x, sent_y, button_1 ? 1 : 0, button_2 ? 1 : 0);
 }
+
 
 bool AlleyCat::is_running() const { return running; }
 bool AlleyCat::is_loaded() const { return loaded; }
@@ -403,9 +330,21 @@ Dictionary AlleyCat::get_joystick_state() const {
 	Dictionary state;
 	state["x"] = sent_x;
 	state["y"] = sent_y;
-	state["button_1"] = pad_button_1 || key_action;
+	state["button_1"] = pad_button_1;
 	state["button_2"] = pad_button_2;
 	return state;
+}
+
+PackedStringArray AlleyCat::get_missing_inputs() const {
+	PackedStringArray missing;
+	InputMap *map = InputMap::get_singleton();
+	for (int i = 0; i < INPUT_COUNT; i++) {
+		const StringName action(INPUTS[i].action);
+		if (!map->has_action(action)) {
+			missing.push_back(INPUTS[i].action);
+		}
+	}
+	return missing;
 }
 void AlleyCat::set_volume(double value) { volume = value; }
 double AlleyCat::get_volume() const { return volume; }

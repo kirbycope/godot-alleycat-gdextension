@@ -13,38 +13,51 @@ const FAST: float = 20.0
 const PAINTED: int = 512
 
 var game: TextureRect
+var _bound: Array[String] = []
 
 
 func before_each() -> void:
 	if not ClassDB.class_exists(&"AlleyCat"):
 		return
+	_bind_inputs()
 	game = ClassDB.instantiate(&"AlleyCat") as TextureRect
 	game.set(&"exe_path", EXE)
 	game.set(&"speed", FAST)
 	add_child_autofree(game)
 
 
-## Presses a pad button and holds it long enough for the game to notice. The game samples its port
-## every couple of BIOS ticks, and a press of a frame or two can fall entirely between two looks.
-func _tap_pad(button: int, frames: int = 30) -> void:
-	var down := InputEventJoypadButton.new()
-	down.button_index = button
-	down.pressed = true
-	Input.parse_input_event(down)
+func after_each() -> void:
+	_release_inputs()
+
+
+## Binds every action the game listens for to a key of its own, the way a host without the controls
+## addon has to. Nothing reaches the game until something does this, which is the contract.
+func _bind_inputs() -> void:
+	var key: int = KEY_F1
+	for action: String in AlleyCat.get_expected_inputs():
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
+			var event := InputEventKey.new()
+			event.physical_keycode = key
+			InputMap.action_add_event(action, event)
+			_bound.append(action)
+			key += 1
+
+
+func _release_inputs() -> void:
+	for action: String in _bound:
+		if InputMap.has_action(action):
+			InputMap.erase_action(action)
+	_bound.clear()
+
+
+## Holds an action down for long enough that the game notices. It samples its port every couple of
+## BIOS ticks, and a press of a frame or two can fall entirely between two looks.
+func _hold(action: String, frames: int = 30) -> void:
+	Input.action_press(action)
 	await wait_process_frames(frames)
-	var up := InputEventJoypadButton.new()
-	up.button_index = button
-	up.pressed = false
-	Input.parse_input_event(up)
+	Input.action_release(action)
 	await wait_process_frames(10)
-
-
-func _push_stick(axis: int, value: float) -> void:
-	var motion := InputEventJoypadMotion.new()
-	motion.axis = axis
-	motion.axis_value = value
-	Input.parse_input_event(motion)
-	await wait_process_frames(4)
 
 
 ## Runs until the game asks its first question, or gives up. The attract screen plays first.
@@ -78,121 +91,111 @@ func test_the_setup_questions_arrive_as_text() -> void:
 	assert_lt(game.call(&"get_screen_painted"), PAINTED, "and blank the screen to ask it")
 
 
-## The whole point of the game port: answering yes has to get somewhere. Before the port was
-## emulated the game failed its own adapter check here and the answer did nothing.
-func test_the_pad_answers_the_setup_and_starts_the_game() -> void:
+## The setup, start to finish, on the inputs a pad can reach. Each question has an action of its own
+## now: the game asks them in text and nothing overloads one button into answering all three, which
+## is what the published input list buys.
+func test_the_setup_is_answerable_and_starts_the_game() -> void:
 	if game == null:
 		pass_test("AlleyCat is not built for this platform")
 		return
 	assert_true(await _wait_for_the_question(), "the game should ask about a joystick")
 
-	await _tap_pad(JOY_BUTTON_A)
+	await _hold("alleycat_yes")
 	assert_string_contains(game.call(&"get_text"), "skill level",
-			"A answers yes, and the skill menu follows")
+			"yes, and the skill menu follows")
 
-	await _tap_pad(JOY_BUTTON_A)
+	await _hold("alleycat_kitten")
 	assert_string_contains(game.call(&"get_text"), "joystick button to start",
-			"A picks Kitten, and the game asks for the button")
+			"a skill, and the game asks for the button")
 
-	# The last thing the setup asks for is the joystick button, on a screen that is still text, so
-	# this is the press that would have been swallowed if A only worked once play had started.
-	await _tap_pad(JOY_BUTTON_A, 120)
+	# The last thing the setup asks for is the joystick button, and Alt is it.
+	await _hold("alleycat_alt", 120)
 	await wait_process_frames(60)
 	assert_gt(game.call(&"get_screen_painted"), PAINTED, "the alley should be on screen")
 
 
-func test_the_stick_and_the_dpad_reach_the_game_port() -> void:
+func test_the_directions_reach_the_game_port() -> void:
 	if game == null:
 		pass_test("AlleyCat is not built for this platform")
 		return
 	await wait_process_frames(10)
-	assert_eq(game.call(&"get_joystick_state")["x"], 0, "nothing pushed, nothing sent")
+	assert_eq(game.call(&"get_joystick_state")["x"], 0, "nothing held, nothing sent")
 
-	await _push_stick(JOY_AXIS_LEFT_X, 1.0)
+	Input.action_press("alleycat_right")
+	await wait_process_frames(4)
 	assert_eq(game.call(&"get_joystick_state")["x"], 1, "right")
-	await _push_stick(JOY_AXIS_LEFT_X, -1.0)
+	Input.action_release("alleycat_right")
+	Input.action_press("alleycat_left")
+	await wait_process_frames(4)
 	assert_eq(game.call(&"get_joystick_state")["x"], -1, "left")
-	await _push_stick(JOY_AXIS_LEFT_X, 0.0)
+	Input.action_release("alleycat_left")
+	await wait_process_frames(4)
 	assert_eq(game.call(&"get_joystick_state")["x"], 0, "centred")
 
-	await _push_stick(JOY_AXIS_LEFT_Y, -1.0)
+	Input.action_press("alleycat_up")
+	await wait_process_frames(4)
 	assert_eq(game.call(&"get_joystick_state")["y"], -1, "up the fence")
-	await _push_stick(JOY_AXIS_LEFT_Y, 1.0)
+	Input.action_release("alleycat_up")
+	Input.action_press("alleycat_down")
+	await wait_process_frames(4)
 	assert_eq(game.call(&"get_joystick_state")["y"], 1, "down")
-	await _push_stick(JOY_AXIS_LEFT_Y, 0.0)
-
-	var right := InputEventJoypadButton.new()
-	right.button_index = JOY_BUTTON_DPAD_RIGHT
-	right.pressed = true
-	Input.parse_input_event(right)
-	await wait_process_frames(4)
-	assert_eq(game.call(&"get_joystick_state")["x"], 1, "the d-pad steers too")
-	right.pressed = false
-	Input.parse_input_event(right)
-	await wait_process_frames(4)
-	assert_eq(game.call(&"get_joystick_state")["x"], 0)
+	Input.action_release("alleycat_down")
 
 
-## A stick barely off centre is drift, not a direction. The game resolves three positions per axis
-## and nothing finer, so anything short of the threshold has to read as centred.
-func test_a_nudged_stick_is_not_a_direction() -> void:
+## Holding both ways at once is a centred stick, not a doubled one, which is what a player rolling a
+## thumb across a d-pad does for a frame or two.
+func test_opposite_directions_cancel() -> void:
 	if game == null:
 		pass_test("AlleyCat is not built for this platform")
 		return
-	await _push_stick(JOY_AXIS_LEFT_X, 0.3)
-	assert_eq(game.call(&"get_joystick_state")["x"], 0, "drift is not a push")
-	await _push_stick(JOY_AXIS_LEFT_X, 0.9)
-	assert_eq(game.call(&"get_joystick_state")["x"], 1, "a real push is")
-	await _push_stick(JOY_AXIS_LEFT_X, 0.0)
+	Input.action_press("alleycat_left")
+	Input.action_press("alleycat_right")
+	await wait_process_frames(4)
+	assert_eq(game.call(&"get_joystick_state")["x"], 0, "left and right together is neither")
+	Input.action_release("alleycat_left")
+	await wait_process_frames(4)
+	assert_eq(game.call(&"get_joystick_state")["x"], 1, "letting one go leaves the other")
+	Input.action_release("alleycat_right")
 
 
-## The arrow keys drive the port as well as the keyboard, so a player who answered yes to the
-## joystick question and then reached for the keyboard is not stranded.
-func test_the_arrow_keys_drive_the_port_too() -> void:
+## Alt is the game's action key and its joystick button at once, so the port has to see it too.
+func test_the_action_key_is_the_joystick_button() -> void:
 	if game == null:
 		pass_test("AlleyCat is not built for this platform")
 		return
 	await wait_process_frames(10)
-	var left := InputEventKey.new()
-	left.keycode = KEY_LEFT
-	left.physical_keycode = KEY_LEFT
-	left.pressed = true
-	Input.parse_input_event(left)
-	await wait_process_frames(4)
-	assert_eq(game.call(&"get_joystick_state")["x"], -1, "Left is left on the port as well")
-	left.pressed = false
-	Input.parse_input_event(left)
-	await wait_process_frames(4)
-	assert_eq(game.call(&"get_joystick_state")["x"], 0)
-
-	var alt := InputEventKey.new()
-	alt.keycode = KEY_ALT
-	alt.physical_keycode = KEY_ALT
-	alt.pressed = true
-	Input.parse_input_event(alt)
+	assert_false(game.call(&"get_joystick_state")["button_1"])
+	Input.action_press("alleycat_alt")
 	await wait_process_frames(4)
 	assert_true(game.call(&"get_joystick_state")["button_1"], "Alt is the joystick button too")
-	alt.pressed = false
-	Input.parse_input_event(alt)
+	Input.action_release("alleycat_alt")
 	await wait_process_frames(4)
 	assert_false(game.call(&"get_joystick_state")["button_1"])
 
 
-## The pad must not be the only way in. A held d-pad wins over a stick a player is also touching.
-func test_the_dpad_wins_over_the_stick() -> void:
+## The node reads the InputMap and nothing else, so the list it publishes is the whole contract. A
+## host binds these or the game cannot be played, and the catalog the HUD picks from is a copy of it.
+func test_the_published_input_list_is_the_whole_contract() -> void:
+	var expected: PackedStringArray = AlleyCat.get_expected_inputs()
+	assert_gt(expected.size(), 0, "the node says what it listens for")
+	var catalog: ControlsInputCatalog = load(
+			"res://addons/godot_alleycat_gdextension/resources/alley_cat_inputs.tres")
+	var published: Array[StringName] = catalog.actions
+	assert_eq(published.size(), expected.size(), "the catalog lists exactly what the node listens for")
+	for action: String in expected:
+		assert_true(published.has(StringName(action)), "%s is in the catalog" % action)
+
+
+## Unbound is not the same as unused, and a player staring at a game that ignores them deserves a
+## better answer than silence.
+func test_an_unbound_input_is_reported() -> void:
 	if game == null:
 		pass_test("AlleyCat is not built for this platform")
 		return
-	await _push_stick(JOY_AXIS_LEFT_X, -1.0)
-	var right := InputEventJoypadButton.new()
-	right.button_index = JOY_BUTTON_DPAD_RIGHT
-	right.pressed = true
-	Input.parse_input_event(right)
-	await wait_process_frames(4)
-	assert_eq(game.call(&"get_joystick_state")["x"], 1, "the d-pad is the deliberate one")
-	right.pressed = false
-	Input.parse_input_event(right)
-	await _push_stick(JOY_AXIS_LEFT_X, 0.0)
+	assert_eq(game.call(&"get_missing_inputs").size(), 0, "the suite binds them all")
+	_release_inputs()
+	var missing: PackedStringArray = game.call(&"get_missing_inputs")
+	assert_eq(missing.size(), AlleyCat.get_expected_inputs().size(), "with none bound, all are missing")
 
 
 ## Turning the adapter off is how a host says "keyboard only". The game then refuses the joystick

@@ -40,29 +40,51 @@ func test_the_game_fills_the_screen_and_the_hud_shows() -> void:
 	assert_true(demo.controls.visible, "the HUD shows around the screen")
 
 
-## The HUD is the controls addon, and the mapping lives in the inherited scene rather than in code,
-## so this is what catches a slot cleared or renamed in the editor by accident.
-func test_every_button_the_game_uses_is_mapped_in_the_scene() -> void:
-	for slot: String in AlleyCatControls.JOYPAD:
-		assert_ne(String(demo.controls.get(&"action_" + slot)), "", "%s should name an action" % slot)
-	for slot: String in AlleyCatControls.STICK:
-		assert_ne(String(demo.controls.get(&"action_" + slot)), "", "%s should name an action" % slot)
+## The scene is the mapping now: the game reads these actions and nothing else reaches it. So a slot
+## naming something outside the list the game published is a dead button, and this is what says so.
+func test_every_slot_names_an_input_the_game_listens_for() -> void:
+	var expected: PackedStringArray = AlleyCat.get_expected_inputs()
+	for slot: String in AlleyCatControls.KEYS:
+		var action: StringName = demo.controls.get(&"action_" + slot)
+		assert_ne(String(action), "", "%s should name an action" % slot)
+		assert_true(expected.has(String(action)), "%s names an input the game reads" % slot)
+
+
+## Every input the game listens for needs a button, or it cannot be reached with a pad at all. The
+## setup answers are the ones that bite: the game will not go on until one of them is pressed.
+func test_every_input_the_game_listens_for_has_a_button() -> void:
+	var mapped: Array[String] = []
+	for slot: String in AlleyCatControls.KEYS:
+		mapped.append(String(demo.controls.get(&"action_" + slot)))
+	for action: String in AlleyCat.get_expected_inputs():
+		if action == "alleycat_button_2" or action == "alleycat_restart":
+			continue # The game never reads button 2, and a restart is not something to leave on a pad.
+		assert_true(mapped.has(action), "%s is on a button" % action)
 
 
 ## The addon registers any action a slot names that the project has not declared, so every one of
 ## them exists by the time the HUD is ready. A slot naming an action nothing registers is a dead
-## button that still draws.
+## button that still draws, and here it would also be an input the game never hears.
 func test_the_addon_registered_every_action_the_slots_name() -> void:
-	for slot: String in AlleyCatControls.JOYPAD:
+	for slot: String in AlleyCatControls.KEYS:
 		var action: StringName = demo.controls.get(&"action_" + slot)
 		assert_true(InputMap.has_action(action), "%s is registered" % action)
+
+
+## The catalog is what turns the slots into a picker, so without it they are free text again and the
+## whole point of publishing the list is lost.
+func test_the_hud_picks_from_the_list_the_game_published() -> void:
+	assert_not_null(demo.controls.input_catalog, "the HUD was handed the game's list")
+	for property: Dictionary in demo.controls.get_property_list():
+		if String(property["name"]).begins_with("action_"):
+			assert_eq(property["hint"], PROPERTY_HINT_ENUM, "%s is a picker" % property["name"])
+			break
 
 
 ## A blank slot is a button the game does not use, and the addon hides it. Alley Cat is a one-stick
 ## game with nothing on the shoulders, the triggers or the right stick.
 func test_the_buttons_the_game_does_not_use_are_left_blank() -> void:
-	for slot: String in ["button_7", "button_8", "button_9", "button_10", "axis_4_plus",
-			"axis_5_plus", "look_up", "look_down", "look_left", "look_right"]:
+	for slot: String in ["button_7", "button_8", "look_up", "look_down", "look_left", "look_right"]:
 		assert_eq(String(demo.controls.get(&"action_" + slot)), "", "%s is not a button here" % slot)
 
 
@@ -78,10 +100,10 @@ func test_the_slots_are_labelled_with_what_the_game_does() -> void:
 ## them while it does, and the scene's own words come back when play starts.
 func test_the_labels_swap_for_the_setup_questions_and_back() -> void:
 	demo.controls.set_setting_up(true)
-	assert_eq(demo.controls.joypad_button_0_label.text, "Yes / Kitten")
-	assert_eq(demo.controls.joypad_button_1_label.text, "No / House Cat")
-	assert_eq(demo.controls.joypad_button_2_label.text, "Tomcat")
-	assert_eq(demo.controls.joypad_button_3_label.text, "Alley Cat")
+	assert_eq(demo.controls.joypad_button_3_label.text, "Yes")
+	assert_eq(demo.controls.joypad_button_2_label.text, "No")
+	assert_eq(demo.controls.joypad_button_9_label.text, "Kitten")
+	assert_eq(demo.controls.joypad_axis_5_plus_label.text, "Alley Cat")
 
 	demo.controls.set_setting_up(false)
 	assert_eq(demo.controls.joypad_button_0_label.text, "Jump", "the scene's own words come back")
@@ -106,7 +128,7 @@ func test_the_hud_follows_the_game_onto_its_setup_screen() -> void:
 	await wait_process_frames(2)
 	assert_true(demo.prompt.visible, "the question is printed, not drawn, so the demo shows the text")
 	assert_string_contains(demo.prompt.text, "joystick")
-	assert_eq(demo.controls.joypad_button_0_label.text, "Yes / Kitten",
+	assert_eq(demo.controls.joypad_button_3_label.text, "Yes",
 			"and the HUD says which button answers it")
 
 

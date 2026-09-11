@@ -46,69 +46,78 @@ your own copy; the node reports a missing file on screen rather than failing sil
 | `get_joystick_state()` | what the pad is telling the game port: `x`, `y`, `button_1`, `button_2` |
 | `get_instructions()`, `get_status()` | diagnostics |
 
-## Controls
+## What the game answers to
 
-Cursor keys move, Alt acts, Ctrl-S toggles sound, Ctrl-M returns to the menu, Esc pauses. They are
-the game's own, not remapped here; the node feeds scancodes through the INT 9 handler the game
-installs for itself.
+Cursor keys move, Alt acts, Ctrl-S toggles sound, Ctrl-R restarts, Ctrl-M returns to the menu and Esc
+pauses. Those are the game's own, printed on its own setup screen, and the node feeds them as
+scancodes through the INT 9 handler the game installs for itself.
 
-A joypad works too, and the game's own question about it now has a real answer. Alley Cat asks
-"Do you want to use a joystick (Y/N)?", checks the BIOS equipment list for a game adapter, and then
-times the one-shots on port 0x201 the way an IBM PC game port behaves. PureAlleyCat emulates all of
-that, and the node drives it from the left stick and the d-pad.
+A joystick works too, and the game's own question about it has a real answer. Alley Cat asks "Do you
+want to use a joystick (Y/N)?", checks the BIOS equipment list for a game adapter, and then times the
+one-shots on port 0x201 the way an IBM PC game port behaves. PureAlleyCat emulates all of that, and
+the node drives the port from the same four directions and from Alt, which is the game's action key
+and its joystick button at once. The game reads the port or the keyboard depending on how its
+question was answered, never both, so feeding both costs nothing and works either way round.
 
-| Pad | While the questions are up | While playing |
-| --- | --- | --- |
-| Left stick, d-pad | | move the cat |
-| A | yes, and Kitten | jump, and the joystick button the game asks you to press |
-| B | no, and House Cat | sound on and off (Ctrl-S) |
-| X | Tomcat | |
-| Y | Alley Cat | |
-| Back | | Esc, paws mode |
-| Start | | Ctrl-M, back to the menu |
+Set `joystick` to `false` to have the game report no adapter at all, which is the keyboard-only
+machine.
 
-The game reads joystick button 1 and never button 2, so B is free and carries the sound toggle.
+The setup questions are the ones to plan for. The game asks them in text and will not go on until
+they are answered, so Y, N and the four skill letters each need something to press them; on a pad
+that means six buttons, not one button that guesses.
 
-The face buttons read two ways because the game asks its setup questions as text and a pad has no
-letters. Each one sends both of the letters it could mean at once; the game ignores whichever is
-not an answer to the question in front of it, so nothing has to keep track of which screen is up.
+## Input is InputMap actions, and nothing else
 
-The stick also goes out as arrow keys, and Alt counts as the joystick button, so the pad and the
-keyboard both work whichever way the joystick question was answered. Set `joystick` to `false` to
-have the game report no adapter at all, which is the keyboard-only machine.
+The node reads the InputMap. It listens for the actions below and has no opinion about which key or
+button fires them; nothing else reaches the game.
+
+| Action | What the game gets |
+| --- | --- |
+| `alleycat_up` `alleycat_down` `alleycat_left` `alleycat_right` | the arrow keys, and the game port's two axes |
+| `alleycat_alt` | Alt, the action key, and the game port's button |
+| `alleycat_button_2` | the port's second button, which the game never reads |
+| `alleycat_esc` | Esc, paws mode |
+| `alleycat_sound` `alleycat_restart` `alleycat_menu` | Ctrl-S, Ctrl-R and Ctrl-M |
+| `alleycat_yes` `alleycat_no` | Y and N, the joystick question |
+| `alleycat_kitten` `alleycat_house_cat` `alleycat_tomcat` `alleycat_alley_cat` | K, H, T and A, the skill menu |
+
+`AlleyCat.get_expected_inputs()` returns that list at runtime and
+`get_missing_inputs()` returns the ones nothing has registered, so a host can say what is unbound
+rather than leaving the player with a game that ignores them.
+
+**Nothing is bound for you.** A project registers these actions itself, or installs the controls
+addon and lets it do it. That is the whole contract: bind `alleycat_up` to whatever you like and the
+cat walks.
+
+```gdscript
+InputMap.add_action("alleycat_up")
+var event := InputEventKey.new()
+event.physical_keycode = KEY_W
+InputMap.action_add_event("alleycat_up", event)
+```
 
 ## The HUD
 
 The demo's on-screen controls are [godot-controls](https://github.com/kirbycope/godot-controls)
-itself, instanced in `demo.tscn` as `Controls`. It draws every button in the art of whatever device
-is being played on, keyboard included, and redraws when that changes.
+itself, instanced in `demo.tscn` as `Controls`, and because the game reads actions the HUD **is** the
+mapping rather than a picture of one. Change a slot and you change what the button does.
 
-**The mapping is a scene, not code.** Open
-[alley_cat_controls.tscn](./scenes/alley_cat_controls.tscn), which
-inherits the addon's `controls.tscn`, and every slot is an inspector field: which action sits on
-each button, what its label says, and which key face the keyboard art shows. A slot left blank is a
-button this game does not use, and the addon hides it, which is why the shoulders, the triggers and
-the right stick are absent.
+Open [alley_cat_controls.tscn](./scenes/alley_cat_controls.tscn), which inherits the addon's
+`controls.tscn`, and every slot is an inspector field. Its `input_catalog` is
+[alley_cat_inputs.tres](./resources/alley_cat_inputs.tres), a copy of the list above, so each
+`action_*` is a dropdown of the actions the game actually reads and a slot cannot name something
+that will never arrive. A slot left blank is a button this game does not use, and the addon hides it.
 
-The script beside it,
-[alley_cat_controls.gd](./scripts/alley_cat_controls.gd), subclasses
-the addon's `Controls` and adds the two things the addon leaves to the game: the keyboard key behind
-each action, and turning a tap on the on-screen pad back into the joypad event the extension reads,
-since a `TouchScreenButton` sends an `InputEventAction` and the mapping is in C++.
+[alley_cat_controls.gd](./scripts/alley_cat_controls.gd) subclasses the addon's `Controls` and adds
+two things: the keyboard key behind each action, so the HUD's keyboard art names the key the game
+answers to and lights up when it is pressed, and the words for the setup questions, which the same
+buttons answer differently. `set_setting_up` swaps them with the addon's own `set_labels` and
+`reset_labels`.
 
-The setup questions are the one thing the scene cannot say on its own, because the same buttons mean
-something different there. `set_setting_up` swaps the words with the addon's own `set_labels`, and
-`reset_labels` puts the scene's back, which is what those are for.
-
-`addons/controls/` is fetched rather than committed, so a fresh clone needs:
-
-```bash
-python tools/pull_addons.py
-```
-
-The keyboard art names Alley Cat's own keys throughout, not the addon's defaults: Alt, S, T and A
-on the face buttons, Esc and M above, and the arrow keys on both the stick and the d-pad. Every one
-of those is a `keyboard_mouse_*` texture set in the inherited scene.
+The keyboard art names Alley Cat's own keys throughout, not the addon's defaults: Alt, S, N and Y on
+the face buttons, K, H, T and A on the shoulders and triggers, Esc and M above, and the arrow keys on
+both the stick and the d-pad. Every one of those is a `keyboard_mouse_*` texture set in the inherited
+scene.
 
 ## Tests
 

@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="ControlsInputCatalog" format=3]
+
+[ext_resource type="Script" path="res://addons/controls/input_catalog.gd" id="1_catalog"]
+
+[resource]
+script = ExtResource("1_catalog")
+actions = Array[StringName]([&"alleycat_up", &"alleycat_down", &"alleycat_left", &"alleycat_right", &"alleycat_alt", &"alleycat_button_2", &"alleycat_esc", &"alleycat_sound", &"alleycat_restart", &"alleycat_menu", &"alleycat_yes", &"alleycat_no", &"alleycat_kitten", &"alleycat_house_cat", &"alleycat_tomcat", &"alleycat_alley_cat"])
