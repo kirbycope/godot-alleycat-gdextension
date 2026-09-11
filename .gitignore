@@ -1,10 +1,6 @@
 # godot-cpp is cloned, not vendored. See the README.
 godot-cpp/
 
-# The game is not ours to distribute. Bring your own CAT.EXE.
-*.EXE
-addons/godot_alleycat_gdextension/assets/*.exe
-
 # Dumped from the engine you build against; regenerate it rather than commit 7 MB.
 extension_api.json
 

@@ -17,18 +17,16 @@ func _ready() -> void:
     game.load_failed.connect(func(reason): push_warning(reason))
 ```
 
-## You supply the game
+## The game
 
-**Alley Cat is not distributed here.** It is still under copyright: written by Bill Williams,
-published by Synapse Software / Atari. Copy your own `CAT.EXE` to:
+`addons/godot_alleycat_gdextension/assets/CAT.EXE` is the whole of Alley Cat: 55 KB holding the code
+*and* all 29 KB of the artwork, so it is the only asset the addon needs. It is committed here, which
+is why the demo and the web export both just run.
 
-```
-addons/godot_alleycat_gdextension/assets/CAT.EXE
-```
-
-That single file holds the code *and* all 29 KB of the artwork, so it is the only asset needed.
-Without it the demo says so on screen rather than failing silently, and `.gitignore` is set up to
-stop a copy being committed by accident.
+Alley Cat was written by Bill Williams and published by Synapse Software and IBM in 1984. It is
+long out of print and circulates freely as abandonware, but it has never been placed in the public
+domain and the copyright has not lapsed. Point `exe_path` somewhere else if you would rather supply
+your own copy; the node reports a missing file on screen rather than failing silently.
 
 ## The node
 
@@ -144,11 +142,10 @@ python -m http.server --directory build
 The export is single-threaded, so a plain static server is enough; no cross-origin isolation headers
 are needed.
 
-Alley Cat itself is the one thing CI has no copy of. The workflow takes it from a repository secret,
-`CAT_EXE_BASE64`, and writes it into `assets/` before exporting, so the game never enters this
-repository's history. Without the secret the export still deploys and simply says the game is
-missing. Note that a GitHub Pages site is public even when the repository is private, so publishing
-this way puts a copy of the game on a public URL.
+`CAT.EXE` is committed, so CI exports a playable build with no extra setup. The export preset names
+it in `include_filter` explicitly, because Godot has no importer for a DOS executable and would
+otherwise leave it out of the pack. A GitHub Pages site is public even when the repository is
+private, so the deployed demo is a public copy of the game.
 
 ## Layout
 
@@ -167,6 +164,8 @@ this way puts a copy of the game on a public URL.
 
 ## Licence
 
-MIT, and the code here is original work. It contains no part of Alley Cat; see
-[PureAlleyCat](https://github.com/kirbycope/PureAlleyCat) for what the library is and how it was
+The code here is MIT and is original work: the node, the controls card, the on-screen pad and the
+build. `assets/CAT.EXE` is not covered by it and is not ours to license - see **The game** above.
+
+See [PureAlleyCat](https://github.com/kirbycope/PureAlleyCat) for what the library is and how it was
 verified, and `alley-decomp` for the reverse engineering that established the graphics format.
