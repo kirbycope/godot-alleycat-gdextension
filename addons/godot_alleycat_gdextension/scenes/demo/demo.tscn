@@ -43,11 +43,6 @@ grow_horizontal = 2
 grow_vertical = 2
 ratio = 1.6
 
-[node name="Game" type="AlleyCat" parent="Screen"]
-layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
 [node name="Missing" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 15

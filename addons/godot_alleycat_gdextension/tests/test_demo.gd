@@ -16,14 +16,26 @@ func before_each() -> void:
 	add_child_autofree(demo)
 
 
+## The demo has to open on a platform with no built library, which is why the game node is built in
+## code rather than placed in the scene: a scene naming a GDExtension type cannot load without it.
+func test_the_demo_opens_without_the_library_and_says_why() -> void:
+	if ClassDB.class_exists(&"AlleyCat"):
+		assert_not_null(demo.game, "with the library there is a game to show")
+		pass_test("AlleyCat is built for this platform")
+		return
+	assert_null(demo.game)
+	assert_true(demo.missing.visible, "the demo says what is missing rather than failing to open")
+	assert_string_contains(demo.missing.text, "not built for this platform")
+	assert_false(demo.overlay.visible, "and the card is no use with nothing to control")
+
+
 func test_the_game_fills_the_screen_and_the_card_shows() -> void:
 	if not ClassDB.class_exists(&"AlleyCat"):
-		assert_true(demo.missing.visible, "Without the library the demo should say so")
 		pass_test("AlleyCat is not built for this platform")
 		return
 	assert_not_null(demo.game)
 	assert_eq(demo.game.get_parent(), demo.screen, "the game belongs in the aspect ratio container")
-	assert_true(demo.game.is_loaded(), "CAT.EXE ships with the addon")
+	assert_true(demo.game.call(&"is_loaded"), "CAT.EXE ships with the addon")
 	assert_false(demo.missing.visible)
 	assert_true(demo.overlay.visible, "the controls card shows beside the screen")
 
@@ -63,11 +75,11 @@ func test_the_card_and_the_pad_follow_the_game_onto_its_setup_screen() -> void:
 	if not ClassDB.class_exists(&"AlleyCat"):
 		pass_test("AlleyCat is not built for this platform")
 		return
-	demo.game.speed = 20.0
+	demo.game.set(&"speed", 20.0)
 	var asked := false
 	for i in 4000:
 		await wait_process_frames(1)
-		if demo.game.get_screen_painted() < PAINTED and "joystick" in demo.game.get_text():
+		if demo.game.call(&"get_screen_painted") < PAINTED and "joystick" in demo.game.call(&"get_text"):
 			asked = true
 			break
 	assert_true(asked, "the game should get as far as its first question")
@@ -79,9 +91,10 @@ func test_the_card_and_the_pad_follow_the_game_onto_its_setup_screen() -> void:
 	assert_string_contains(demo.overlay.get_node("Left").text, "SETUP")
 
 
+## The pad is a dependency of the demo, not of the extension, so a project that takes the extension
+## alone must still run. This is the branch that makes that true, and it holds with or without a
+## built library, so it is the one test here that never skips.
 func test_the_pad_is_only_built_where_the_controls_addon_is_installed() -> void:
-	# The addon is a dependency of the demo, not of the extension, so a project that takes the
-	# extension alone must still run. This is the branch that makes that true.
 	if ResourceLoader.exists(AlleyCatVirtualPad.CONTROLS_SCENE):
 		assert_not_null(demo.pad.controls, "with the addon installed the HUD is built")
 		assert_eq(demo.pad.current_input_type(), demo.pad.controls.get(&"current_input_type"))
@@ -91,9 +104,6 @@ func test_the_pad_is_only_built_where_the_controls_addon_is_installed() -> void:
 
 
 func test_a_missing_game_is_explained_rather_than_blank() -> void:
-	if not ClassDB.class_exists(&"AlleyCat"):
-		pass_test("AlleyCat is not built for this platform")
-		return
 	demo._on_load_failed("Copy your own CAT.EXE to somewhere")
 	assert_true(demo.missing.visible)
 	assert_string_contains(demo.missing.text, "CAT.EXE")
