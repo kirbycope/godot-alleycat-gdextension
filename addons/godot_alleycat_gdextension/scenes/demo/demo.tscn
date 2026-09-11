@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scenes/demo/demo.gd" id="1_demo"]
 [ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_virtual_pad.gd" id="2_pad"]
+[ext_resource type="PackedScene" path="res://addons/godot_alleycat_gdextension/scenes/alley_cat_controls_overlay.tscn" id="3_overlay"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_missing"]
 font_size = 22
@@ -11,10 +12,6 @@ font_size = 18
 font_color = Color(1, 1, 1, 1)
 shadow_size = 4
 shadow_color = Color(0, 0, 0, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_hint"]
-font_size = 14
-font_color = Color(0.62, 0.62, 0.62, 1)
 
 [node name="Demo" type="Control"]
 texture_filter = 1
@@ -40,8 +37,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 24.0
-offset_bottom = -32.0
+offset_left = 210.0
+offset_right = -210.0
 grow_horizontal = 2
 grow_vertical = 2
 ratio = 1.6
@@ -64,34 +61,22 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="Hint" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -28.0
-grow_horizontal = 2
-grow_vertical = 0
-text = "Cursor keys move  ·  Alt acts  ·  Ctrl-S sound  ·  Ctrl-M menu  ·  Esc pauses"
-label_settings = SubResource("LabelSettings_hint")
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="Prompt" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 48.0
+offset_left = 250.0
 offset_top = 40.0
-offset_right = -48.0
+offset_right = -250.0
 offset_bottom = -48.0
 grow_horizontal = 2
 grow_vertical = 2
 text = ""
 label_settings = SubResource("LabelSettings_prompt")
 vertical_alignment = 1
+
+[node name="AlleyCatControlsOverlay" parent="." instance=ExtResource("3_overlay")]
 
 [node name="VirtualPad" type="Node" parent="."]
 script = ExtResource("2_pad")

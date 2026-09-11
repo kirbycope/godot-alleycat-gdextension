@@ -1,25 +1,25 @@
 extends Control
 
-## Demo for the AlleyCat node: shows the game filling the window, or an explanation of where to put
-## CAT.EXE if it is not there. The game is not distributed with this addon.
+## Demo for the AlleyCat node: the game filling the window with the controls card down each side, the
+## on-screen pad for a player with no keyboard, or an explanation of where to put CAT.EXE if it is not
+## there. The game is not distributed with this addon.
 
-const PAD_INSET_SIDE: float = 120.0 ## Room down each side for the on-screen pad's thumb clusters.
-const PAD_INSET_BOTTOM: float = 140.0
-
-## The bottom button, named for the device in hand. Indexed by the controls addon's InputType.
-const ACT_BUTTON: Array[String] = ["Alt", "A", "B", "Cross", "the button"]
-## The right-hand button, same order. Nintendo swaps the pair round and Sony has its own shapes.
-const SECOND_BUTTON: Array[String] = ["", "B", "A", "Circle", ""]
+const CARD_INSET: float = 210.0 ## Room down each side of the monitor for the controls card.
+## Room for the on-screen pad: the thumb clusters in the bottom corners and the face buttons down the
+## right reach further in than the card does.
+const PAD_INSET_SIDE: float = 190.0
+const PAD_INSET_BOTTOM: float = 160.0
+## The controls card's wording for each of the controls addon's InputType values, in its enum's order.
+const CARD_INPUT_TYPES: Array[String] = ["keyboard", "xbox", "nintendo", "playstation", "touch"]
 
 @onready var game: AlleyCat = $Screen/Game
 @onready var screen: AspectRatioContainer = $Screen
 @onready var missing: Label = $Missing
-@onready var hint: Label = $Hint
 @onready var prompt: Label = $Prompt
+@onready var overlay: AlleyCatControlsOverlay = $AlleyCatControlsOverlay
 @onready var pad: AlleyCatVirtualPad = $VirtualPad
 
-var _input_type: int = AlleyCatVirtualPad.KEYBOARD_MOUSE
-var _setting_up: bool = true
+var _setting_up: bool = true ## Whether the game is on its text questions rather than playing.
 
 
 func _ready() -> void:
@@ -37,25 +37,25 @@ func _ready() -> void:
 
 func _on_loaded() -> void:
 	missing.hide()
-	_refresh_hint()
+	overlay.show()
 
 
 func _on_load_failed(reason: String) -> void:
 	missing.text = "Alley Cat is not included with this addon.\n\n%s" % reason
 	missing.show()
-	hint.hide()
+	overlay.hide()
 	prompt.hide()
 
 
-## The pad is only for a touchscreen, which has no buttons to name, so the hint line and the pad
-## never share the screen. The monitor pulls in to leave the thumb clusters clear.
+## The card beside the monitor words itself for the device in hand. On a phone it steps aside for the
+## pad, whose buttons say what they do themselves, and the monitor pulls in to leave the thumbs clear.
 func _on_device_changed(input_type: int) -> void:
-	_input_type = input_type
+	overlay.input_type = CARD_INPUT_TYPES[input_type]
 	var touch: bool = input_type == AlleyCatVirtualPad.TOUCH
-	screen.offset_left = PAD_INSET_SIDE if touch else 0.0
+	overlay.visible = not touch and not missing.visible
+	screen.offset_left = PAD_INSET_SIDE if touch else CARD_INSET
 	screen.offset_right = -screen.offset_left
-	screen.offset_bottom = -PAD_INSET_BOTTOM if touch else -32.0
-	_refresh_hint()
+	screen.offset_bottom = -PAD_INSET_BOTTOM if touch else 0.0
 
 
 func _process(_delta: float) -> void:
@@ -71,26 +71,7 @@ func _process(_delta: float) -> void:
 	prompt.text = game.get_text() if asking else ""
 	prompt.visible = asking
 	if asking != _setting_up:
+		# The same buttons mean different things on the two screens, so the card changes with them.
 		_setting_up = asking
+		overlay.setting_up = asking
 		pad.set_setting_up(asking)
-		_refresh_hint()
-
-
-## The hint line says what the device in hand does, and the two screens want different words: the
-## setup questions are answered with letters a pad does not have, so its buttons stand in for them.
-func _refresh_hint() -> void:
-	if missing.visible:
-		return
-	if _input_type == AlleyCatVirtualPad.TOUCH:
-		hint.hide()
-		return
-	hint.show()
-	var act: String = ACT_BUTTON[_input_type]
-	if _input_type == AlleyCatVirtualPad.KEYBOARD_MOUSE:
-		hint.text = ("Y or N, then K, H, T or A" if _setting_up
-				else "Cursor keys move  ·  Alt acts  ·  Ctrl-S sound  ·  Ctrl-M menu  ·  Esc pauses")
-		return
-	var second: String = SECOND_BUTTON[_input_type]
-	hint.text = ("%s is yes and Kitten  ·  %s is no and House Cat  ·  X and Y are the harder two"
-			% [act, second] if _setting_up
-			else "Stick or D-pad moves  ·  %s acts  ·  Start opens the menu  ·  Back pauses" % act)

@@ -27,8 +27,8 @@ const AXES: Array[int] = [JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y]
 ## shoulders, the triggers and the right stick do nothing, and the share button is left to the addon, which
 ## puts its own screenshot on it.
 const SLOTS: Dictionary = {
-	"button_0": {"action": &"alleycat_action", "button": JOY_BUTTON_A},
-	"button_1": {"action": &"alleycat_action_2", "button": JOY_BUTTON_B},
+	"button_0": {"action": &"alleycat_jump", "button": JOY_BUTTON_A},
+	"button_1": {"action": &"alleycat_sound", "button": JOY_BUTTON_B},
 	"button_2": {"action": &"alleycat_tomcat", "button": JOY_BUTTON_X},
 	"button_3": {"action": &"alleycat_alley_cat", "button": JOY_BUTTON_Y},
 	"button_4": {"action": &"alleycat_pause", "button": JOY_BUTTON_BACK},
@@ -47,8 +47,8 @@ const SLOTS: Dictionary = {
 ## setup questions in text and a pad has no letters: while the questions are up they answer them, and once
 ## play starts the bottom button is the joystick button the game keeps talking about.
 const LABELS: Dictionary = {
-	"button_0": "Act",
-	"button_1": "Claw",
+	"button_0": "Jump",
+	"button_1": "Sound",
 	"button_2": "",
 	"button_3": "",
 	"button_4": "Paws",
@@ -124,7 +124,7 @@ func _ready() -> void:
 
 
 ## The pad is for the one device with no buttons of its own. A keyboard or a real controller has them, and
-## the hint line under the screen already names them.
+## the card down each side of the monitor already names every one, so the two never share the screen.
 func _on_input_type_changed(input_type: int) -> void:
 	controls.visible = input_type == TOUCH
 	set_process(controls.visible)

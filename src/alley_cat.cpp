@@ -8,7 +8,6 @@
 #include <godot_cpp/classes/input_event_joypad_button.hpp>
 #include <godot_cpp/classes/input_event_joypad_motion.hpp>
 #include <godot_cpp/classes/input_event_key.hpp>
-#include <godot_cpp/classes/viewport.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace godot;
@@ -255,7 +254,6 @@ void AlleyCat::handle_key(const Ref<InputEvent> &event) {
 	}
 
 	alleycat_key(scancode, pressed ? 1 : 0);
-	get_viewport()->set_input_as_handled();
 }
 
 // A face button means different things on the two screens the game has. During setup it wants a
@@ -269,11 +267,14 @@ void AlleyCat::press_pad_button(int button, bool pressed) {
 	const bool setting_up = alleycat_screen_painted() < 512;
 	switch (button) {
 		case JOY_BUTTON_A:
+			// The joystick button, on every screen. The last thing the setup asks is to press it,
+			// and that screen is still a text one, so gating this on playing leaves the player
+			// stuck reading "press the joystick button to start" with nothing that presses it.
+			pad_button_1 = pressed;
 			if (setting_up) {
 				alleycat_key(ALLEYCAT_KEY_Y, down);  // yes, a joystick
 				alleycat_key(0x25, down);            // K: Kitten
 			} else {
-				pad_button_1 = pressed;
 				alleycat_key(ALLEYCAT_KEY_ALT, down);
 			}
 			break;
@@ -282,7 +283,12 @@ void AlleyCat::press_pad_button(int button, bool pressed) {
 				alleycat_key(ALLEYCAT_KEY_N, down);  // no joystick
 				alleycat_key(0x23, down);            // H: House Cat
 			} else {
+				// The game reads joystick button 1 and never button 2, so the port gets the
+				// press for the sake of behaving like the hardware and the sound toggle is
+				// what the button actually does.
 				pad_button_2 = pressed;
+				alleycat_key(ALLEYCAT_KEY_CTRL, down);
+				alleycat_key(ALLEYCAT_KEY_S, down);
 			}
 			break;
 		case JOY_BUTTON_X:
@@ -318,7 +324,6 @@ void AlleyCat::handle_joypad(const Ref<InputEvent> &event) {
 			case JOY_BUTTON_DPAD_RIGHT: dpad_x = pressed ? 1 : 0; break;
 			default: press_pad_button(button->get_button_index(), pressed); break;
 		}
-		get_viewport()->set_input_as_handled();
 		return;
 	}
 

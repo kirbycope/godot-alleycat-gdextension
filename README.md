@@ -59,12 +59,14 @@ that, and the node drives it from the left stick and the d-pad.
 | Pad | While the questions are up | While playing |
 | --- | --- | --- |
 | Left stick, d-pad | | move the cat |
-| A | yes, and Kitten | act, and the joystick button the game asks you to press |
-| B | no, and House Cat | the second joystick button |
+| A | yes, and Kitten | jump, and the joystick button the game asks you to press |
+| B | no, and House Cat | sound on and off (Ctrl-S) |
 | X | Tomcat | |
 | Y | Alley Cat | |
 | Back | | Esc, paws mode |
 | Start | | Ctrl-M, back to the menu |
+
+The game reads joystick button 1 and never button 2, so B is free and carries the sound toggle.
 
 The face buttons read two ways because the game asks its setup questions as text and a pad has no
 letters. Each one sends both of the letters it could mean at once; the game ignores whichever is
@@ -73,6 +75,14 @@ not an answer to the question in front of it, so nothing has to keep track of wh
 The stick also goes out as arrow keys, and Alt counts as the joystick button, so the pad and the
 keyboard both work whichever way the joystick question was answered. Set `joystick` to `false` to
 have the game report no adapter at all, which is the keyboard-only machine.
+
+## The controls card
+
+The demo shows Alley Cat's controls in two plain-text columns down each side of the monitor, worded
+for the device in hand and for which of the two screens the game is on. It is
+[alley_cat_controls_overlay.tscn](addons/godot_alleycat_gdextension/scenes/alley_cat_controls_overlay.tscn)
+reading `resources/controls.tres`, which is a resource rather than code: editing it changes what the
+card says and nothing else, so it can be reworded without touching the mapping it documents.
 
 ## The on-screen pad
 
@@ -123,6 +133,8 @@ on `PATH`.
 | `addons/.../thirdparty/PureAlleyCat.h` | the library, vendored |
 | `addons/.../scenes/demo/` | the demo scene |
 | `addons/.../scripts/alley_cat_virtual_pad.gd` | the touchscreen pad, built on godot-controls |
+| `addons/.../scenes/alley_cat_controls_overlay.tscn` | the controls card down each side |
+| `addons/.../resources/controls.tres` | what the card says, per device |
 | `addons/.../tests/` | GUT tests |
 | `tools/addons.json` | what `pull_addons.py` fetches into `addons/` |
 
