@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="PackedScene" path="res://addons/controls/controls.tscn" id="1_controls"]
 [ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_controls.gd" id="2_script"]
@@ -14,6 +14,14 @@
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_escape.svg" id="12_escape_pressed"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_m_outline.svg" id="13_m_normal"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_m.svg" id="14_m_pressed"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_up_outline.svg" id="15_arrow_up_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_up.svg" id="16_arrow_up"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_down_outline.svg" id="17_arrow_down_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_down.svg" id="18_arrow_down"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_left_outline.svg" id="19_arrow_left_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_left.svg" id="20_arrow_left"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_right_outline.svg" id="21_arrow_right_outline"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_arrow_right.svg" id="22_arrow_right"]
 
 [node name="AlleyCatControls" instance=ExtResource("1_controls")]
 script = ExtResource("2_script")
@@ -55,6 +63,23 @@ keyboard_mouse_button_4_normal = ExtResource("11_escape_normal")
 keyboard_mouse_button_4_pressed = ExtResource("12_escape_pressed")
 keyboard_mouse_button_6_normal = ExtResource("13_m_normal")
 keyboard_mouse_button_6_pressed = ExtResource("14_m_pressed")
+; The cat moves on the arrow keys, not WASD, on both halves of the keyboard set.
+keyboard_mouse_move_up_normal = ExtResource("15_arrow_up_outline")
+keyboard_mouse_move_up_pressed = ExtResource("16_arrow_up")
+keyboard_mouse_move_down_normal = ExtResource("17_arrow_down_outline")
+keyboard_mouse_move_down_pressed = ExtResource("18_arrow_down")
+keyboard_mouse_move_left_normal = ExtResource("19_arrow_left_outline")
+keyboard_mouse_move_left_pressed = ExtResource("20_arrow_left")
+keyboard_mouse_move_right_normal = ExtResource("21_arrow_right_outline")
+keyboard_mouse_move_right_pressed = ExtResource("22_arrow_right")
+keyboard_mouse_button_11_normal = ExtResource("15_arrow_up_outline")
+keyboard_mouse_button_11_pressed = ExtResource("16_arrow_up")
+keyboard_mouse_button_12_normal = ExtResource("17_arrow_down_outline")
+keyboard_mouse_button_12_pressed = ExtResource("18_arrow_down")
+keyboard_mouse_button_13_normal = ExtResource("19_arrow_left_outline")
+keyboard_mouse_button_13_pressed = ExtResource("20_arrow_left")
+keyboard_mouse_button_14_normal = ExtResource("21_arrow_right_outline")
+keyboard_mouse_button_14_pressed = ExtResource("22_arrow_right")
 
 [node name="Label" parent="BottomLeft/JoypadButton11" index="0"]
 text = "Up"

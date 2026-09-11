@@ -106,9 +106,9 @@ something different there. `set_setting_up` swaps the words with the addon's own
 python tools/pull_addons.py
 ```
 
-Known gap: the addon exports the key face for each **face** button, so those show Alt, S, Esc and M
-as they should, but the stick and d-pad are hard-wired to WASD and IJKL. Alley Cat moves on the
-arrow keys, so that half of the keyboard art is wrong until the addon exports those textures too.
+The keyboard art names Alley Cat's own keys throughout, not the addon's defaults: Alt, S, T and A
+on the face buttons, Esc and M above, and the arrow keys on both the stick and the d-pad. Every one
+of those is a `keyboard_mouse_*` texture set in the inherited scene.
 
 ## Tests
 
