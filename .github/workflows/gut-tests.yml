@@ -1,0 +1,95 @@
+name: GUT Unit Tests
+
+# The other addons here test inside the barichello/godot-ci:4.7 container, which cannot run this one:
+# the GDExtension declares compatibility_minimum 4.8, so on 4.7 the library refuses to load and every
+# test that touches the AlleyCat node fails. This downloads the same Godot the Pages workflow uses.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  GODOT_VERSION: 4.8-dev4
+
+jobs:
+  gut:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Fetch the addon dependencies
+        shell: bash
+        run: python tools/pull_addons.py
+
+
+      - name: Install Godot
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv "Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+
+      - name: Install Blender when the project has a .blend
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! find . -name '*.blend' -not -path './.git/*' | grep -q .; then
+            echo "No .blend in this repository; Godot will never reach for Blender."
+            exit 0
+          fi
+          echo "Found a .blend; installing Blender."
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends blender
+          # Godot must be told where Blender is. Without this it fails with "Cannot configure blender
+          # path in headless mode", and that error aborts the WHOLE import: no fonts, no textures, and
+          # an export a tenth of its proper size.
+          settings="$HOME/.config/godot/editor_settings-${GODOT_VERSION%%-*}.tres"
+          mkdir -p "$(dirname "$settings")"
+          {
+            echo '[gd_resource type="EditorSettings" format=3]'
+            echo
+            echo '[resource]'
+            echo 'filesystem/import/blender/blender_path = "/usr/bin/blender"'
+          } > "$settings"
+          blender --version | head -1
+
+      - name: Import project
+        shell: bash
+        run: |
+          set -euo pipefail
+          for _ in 1 2 3 4; do
+            godot --headless --path "$PWD" --import
+          done
+
+      - name: Run tests
+        shell: bash
+        env:
+          GODOT_DISABLE_LEAK_CHECKS: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p test-results
+          godot \
+            --headless \
+            --audio-driver Dummy \
+            --path "$PWD" \
+            -s addons/gut/gut_cmdln.gd \
+            -gdir=res://addons/godot_alleycat_gdextension/tests \
+            -gjunit_xml_file=test-results/gut-junit.xml \
+            -gcompact_mode \
+            -gexit
+
+      - name: Archive test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gut-test-reports
+          path: test-results/
+          if-no-files-found: warn

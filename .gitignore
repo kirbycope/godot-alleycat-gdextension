@@ -36,3 +36,6 @@ src/*.import
 .addon_cache/
 addons/controls/
 __pycache__/
+
+# The web export. Tens of megabytes, and git cannot delta a .wasm; CI builds it for Pages.
+build/

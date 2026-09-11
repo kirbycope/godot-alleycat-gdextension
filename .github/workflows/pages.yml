@@ -1,0 +1,106 @@
+name: Demo on Pages
+
+# The web export is built here and handed straight to Pages rather than committed: it is tens of
+# megabytes and git cannot delta a .wasm.
+#
+# The game itself is not in this repository and never should be. Alley Cat is still under copyright,
+# so CAT.EXE reaches this workflow through a repository secret, CAT_EXE_BASE64, rather than through
+# the tree. Without that secret the export still builds and still deploys; it just says on screen
+# that the game is missing, which is the same thing a fresh clone does.
+#
+#   base64 -w0 CAT.EXE   (macOS: base64 -i CAT.EXE)
+#
+# and paste the result into Settings > Secrets and variables > Actions.
+#
+# Worth knowing before turning this on: a GitHub Pages site is public even when the repository is
+# private, unless the account is on a plan with private Pages. Publishing the game this way puts a
+# copy of it on a public URL.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  GODOT_VERSION: 4.8-dev4
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Fetch the addon dependencies
+        shell: bash
+        run: python tools/pull_addons.py
+
+      - name: Put the game in place
+        shell: bash
+        env:
+          CAT_EXE_BASE64: ${{ secrets.CAT_EXE_BASE64 }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CAT_EXE_BASE64:-}" ]; then
+            echo "No CAT_EXE_BASE64 secret; the demo will show its 'bring your own copy' screen."
+            exit 0
+          fi
+          printf '%s' "$CAT_EXE_BASE64" | base64 -d > addons/godot_alleycat_gdextension/assets/CAT.EXE
+          echo "CAT.EXE: $(wc -c < addons/godot_alleycat_gdextension/assets/CAT.EXE) bytes"
+
+      - name: Install Godot and its export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          unzip -q godot.zip
+          mv Godot_v${GODOT_VERSION}_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+          unzip -q templates.tpz
+          # The .tpz unpacks to templates/; Godot looks for them under the version's own directory.
+          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION/-/.}"
+          mv templates/* "$HOME/.local/share/godot/export_templates/${GODOT_VERSION/-/.}/"
+
+      - name: Export the demo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          # Import repeatedly before exporting. One pass only registers the files; each further pass
+          # writes the resources whose dependencies the previous pass produced, and the controls
+          # addon brings hundreds of SVGs. Exporting early ships scenes whose textures were never
+          # written to .godot/imported, which the browser reports as a corrupt texture.
+          for _ in 1 2 3 4; do
+            godot --headless --path . --import
+          done
+          godot --headless --path . --export-release "Web" build/index.html
+
+      - name: Upload the export
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

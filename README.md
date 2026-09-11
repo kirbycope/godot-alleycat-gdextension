@@ -1,3 +1,5 @@
+![Preview](addons/godot_alleycat_gdextension/assets/godot-alleycat-gdextension.png)
+
 # godot-alleycat-gdextension
 
 Alley Cat (1984) running inside Godot 4.8 as a GDExtension, built on
@@ -114,14 +116,39 @@ git clone https://github.com/godotengine/godot-cpp.git      # not vendored
 godot --headless --dump-extension-api                        # see below
 scons platform=windows target=template_debug custom_api_file=extension_api.json
 scons platform=windows target=template_release custom_api_file=extension_api.json
+scons platform=macos   target=template_debug custom_api_file=extension_api.json
+scons platform=macos   target=template_release custom_api_file=extension_api.json
+scons platform=web threads=no target=template_release custom_api_file=extension_api.json
 ```
+
+The macOS builds are universal binaries and must be made on a Mac, against an API dumped from that
+machine's own Godot. The web build needs the Emscripten SDK on `PATH`, and `threads=no` because the
+export preset sets `variant/thread_support=false`; a library built with threads will not load into a
+single-threaded export, and vice versa.
 
 `custom_api_file` is needed because godot-cpp's master ships `extension_api` files only up to 4.7,
 and this targets 4.8. Dump the API from the engine build you actually run and the bindings match
 it; without that the extension loads against the wrong ABI.
 
-For the web export, `scons platform=web threads=no target=template_release` with the Emscripten SDK
-on `PATH`.
+## The web demo
+
+`.github/workflows/pages.yml` exports the demo and hands it to Pages on every push to `main`. To
+build it here instead:
+
+```bash
+godot --headless --path . --import      # a few times; the controls addon brings hundreds of SVGs
+godot --headless --path . --export-release "Web" build/index.html
+python -m http.server --directory build
+```
+
+The export is single-threaded, so a plain static server is enough; no cross-origin isolation headers
+are needed.
+
+Alley Cat itself is the one thing CI has no copy of. The workflow takes it from a repository secret,
+`CAT_EXE_BASE64`, and writes it into `assets/` before exporting, so the game never enters this
+repository's history. Without the secret the export still deploys and simply says the game is
+missing. Note that a GitHub Pages site is public even when the repository is private, so publishing
+this way puts a copy of the game on a public URL.
 
 ## Layout
 
