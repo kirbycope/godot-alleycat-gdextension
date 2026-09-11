@@ -59,6 +59,12 @@ public:
 	// Non-zero once the game has set a graphics mode, so a host can hold off drawing until then.
 	bool is_ready() const;
 	Ref<Image> get_frame() const;
+	// The BIOS text screen. The game prints its setup questions through teletype rather
+	// than drawing them, so a host that ignores this shows the player a blank screen.
+	String get_text() const;
+	// Non-zero framebuffer bytes. The game blanks the screen to ask a question and paints
+	// it while playing, so a host uses this to decide whether to overlay get_text().
+	int get_screen_painted() const;
 	int64_t get_instructions() const;
 	String get_status() const;
 
