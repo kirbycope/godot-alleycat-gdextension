@@ -25,6 +25,7 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_speaker_hz"), &AlleyCat::get_speaker_hz);
 	ClassDB::bind_method(D_METHOD("is_speaker_on"), &AlleyCat::is_speaker_on);
 	ClassDB::bind_method(D_METHOD("get_audio_available"), &AlleyCat::get_audio_available);
+	ClassDB::bind_method(D_METHOD("get_joystick_state"), &AlleyCat::get_joystick_state);
 	ClassDB::bind_method(D_METHOD("set_volume", "value"), &AlleyCat::set_volume);
 	ClassDB::bind_method(D_METHOD("get_volume"), &AlleyCat::get_volume);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "volume", PROPERTY_HINT_RANGE, "0.0,1.0,0.01"),
@@ -352,8 +353,9 @@ void AlleyCat::push_joystick() {
 			: (stick_y < -STICK_THRESHOLD ? -1 : (stick_y > STICK_THRESHOLD ? 1 : 0));
 
 	// The port gets the pad, or the arrow keys when the pad is idle.
-	alleycat_joystick(pad_x != 0 ? pad_x : key_x, pad_y != 0 ? pad_y : key_y,
-			(pad_button_1 || key_action) ? 1 : 0, pad_button_2 ? 1 : 0);
+	sent_x = pad_x != 0 ? pad_x : key_x;
+	sent_y = pad_y != 0 ? pad_y : key_y;
+	alleycat_joystick(sent_x, sent_y, (pad_button_1 || key_action) ? 1 : 0, pad_button_2 ? 1 : 0);
 
 	// And the pad's direction also goes out as arrow keys, for a player who answered no to the
 	// joystick question. Only the pad's own direction: a real arrow key is already on its way
@@ -397,6 +399,14 @@ int AlleyCat::get_screen_painted() const { return alleycat_screen_painted(); }
 int AlleyCat::get_speaker_hz() const { return alleycat_speaker_hz(); }
 bool AlleyCat::is_speaker_on() const { return alleycat_speaker_on() != 0; }
 int AlleyCat::get_audio_available() const { return alleycat_audio_available(); }
+Dictionary AlleyCat::get_joystick_state() const {
+	Dictionary state;
+	state["x"] = sent_x;
+	state["y"] = sent_y;
+	state["button_1"] = pad_button_1 || key_action;
+	state["button_2"] = pad_button_2;
+	return state;
+}
 void AlleyCat::set_volume(double value) { volume = value; }
 double AlleyCat::get_volume() const { return volume; }
 int64_t AlleyCat::get_instructions() const { return (int64_t)alleycat_instructions(); }

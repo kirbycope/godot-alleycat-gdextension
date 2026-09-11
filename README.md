@@ -43,6 +43,7 @@ your own copy; the node reports a missing file on screen rather than failing sil
 | `start()`, `stop()` | run or pause |
 | `is_running()`, `is_loaded()`, `is_ready()` | state; `is_ready` is true once a video mode is set |
 | `get_frame()` | the current frame as an `Image` |
+| `get_joystick_state()` | what the pad is telling the game port: `x`, `y`, `button_1`, `button_2` |
 | `get_instructions()`, `get_status()` | diagnostics |
 
 ## Controls
@@ -98,8 +99,17 @@ python tools/pull_addons.py
 ## Tests
 
 ```bash
-godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://addons/godot_alleycat_gdextension/tests -gexit
+godot --headless --audio-driver Dummy --path . -s addons/gut/gut_cmdln.gd -gdir=res://addons/godot_alleycat_gdextension/tests -gexit
 ```
+
+Four suites. Two cover the tables the card and the on-screen pad are built from, and two drive the
+real thing: `test_alley_cat.gd` sends actual joypad and key events and asks the node and the game
+what happened - the pad answering the setup questions and starting play is one test end to end -
+while `test_demo.gd` checks which of the card and the pad is on screen for the device in hand, and
+that both follow the game between its setup screen and play.
+
+`get_joystick_state()` is what makes the mapping assertable without reading pixels, which is the
+only other way to tell a stick pushed left from one that went nowhere.
 
 One machine exists per process, so only one `AlleyCat` node can run at a time. That is a property
 of the library, not of the node.

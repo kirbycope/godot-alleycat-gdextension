@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/input_event.hpp>
 #include <godot_cpp/classes/texture_rect.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 
 namespace godot {
@@ -76,6 +77,10 @@ class AlleyCat : public TextureRect {
 	// answered no to the joystick question, and the pad should work either way.
 	int sent_key_x = 0;
 	int sent_key_y = 0;
+	// The last position handed to the game port, kept so a host - and the tests - can see what the
+	// node is sending without having to read it back out of the game's pixels.
+	int sent_x = 0;
+	int sent_y = 0;
 
 	void present_frame();
 	void mix_audio();
@@ -117,6 +122,9 @@ public:
 	// Samples generated but not yet drained. Should hover near zero; a climbing figure
 	// means the host is not draining fast enough and audio will start dropping.
 	int get_audio_available() const;
+	// What the pad is telling the game port right now: "x" and "y" are -1, 0 or 1, and "button_1"
+	// and "button_2" are pressed or not.
+	Dictionary get_joystick_state() const;
 
 	void set_volume(double value);
 	double get_volume() const;
