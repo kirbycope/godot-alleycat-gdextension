@@ -30,6 +30,13 @@ class AlleyCat : public TextureRect {
 	String exe_path = "res://addons/godot_alleycat_gdextension/assets/CAT.EXE";
 	bool autostart = true;
 	double speed = 1.0;
+	// Whether to tell the game there is a game adapter, which is what its own check looks for
+	// before it will read the port at all. Turning it off is how a host says "keyboard only":
+	// the game then refuses the joystick question and there is nothing to explain.
+	bool joystick = true;
+	// How far a stick has to be pushed to count. The game resolves three positions out of an
+	// axis, so anything past this is simply "that way".
+	static constexpr float STICK_THRESHOLD = 0.5f;
 	// The PC speaker had no volume control, and a bare square wave at full scale is
 	// unpleasant, so the host picks an amplitude.
 	double volume = 0.12;
@@ -48,9 +55,36 @@ class AlleyCat : public TextureRect {
 	Ref<Image> image;
 	Ref<ImageTexture> texture;
 
+	// The emulated game port is a level, not a stream of events: the game samples it whenever it
+	// likes, and reads the stick's position rather than its changes. So the pad's state is held
+	// here and handed to the library every frame.
+	float stick_x = 0.0f;
+	float stick_y = 0.0f;
+	int dpad_x = 0;
+	int dpad_y = 0;
+	bool pad_button_1 = false;
+	bool pad_button_2 = false;
+	// The arrow keys and Alt drive the emulated port as well, so a player who answered yes to
+	// the joystick question with no pad in their hands is not stranded on "press the joystick
+	// button to start". The game reads either the port or the keyboard, never both, so feeding
+	// both costs nothing.
+	int key_x = 0;
+	int key_y = 0;
+	bool key_action = false;
+	// The last direction turned into arrow-key presses, so a held stick is one make code rather
+	// than one per frame. The game reads the keyboard instead of the port when the player
+	// answered no to the joystick question, and the pad should work either way.
+	int sent_key_x = 0;
+	int sent_key_y = 0;
+
 	void present_frame();
 	void mix_audio();
 	void handle_key(const Ref<InputEvent> &event);
+	void handle_joypad(const Ref<InputEvent> &event);
+	void push_joystick();
+	// Sends a face button as whatever it means on the screen that is up: the setup questions want
+	// letters, gameplay wants the game port and Alt.
+	void press_pad_button(int button, bool pressed);
 
 protected:
 	static void _bind_methods();
@@ -95,6 +129,8 @@ public:
 	bool get_autostart() const;
 	void set_speed(double value);
 	double get_speed() const;
+	void set_joystick(bool value);
+	bool get_joystick() const;
 };
 
 } // namespace godot

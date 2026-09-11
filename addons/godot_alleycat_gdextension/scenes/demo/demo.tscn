@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scenes/demo/demo.gd" id="1_demo"]
+[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_virtual_pad.gd" id="2_pad"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_missing"]
 font_size = 22
@@ -91,3 +92,6 @@ grow_vertical = 2
 text = ""
 label_settings = SubResource("LabelSettings_prompt")
 vertical_alignment = 1
+
+[node name="VirtualPad" type="Node" parent="."]
+script = ExtResource("2_pad")

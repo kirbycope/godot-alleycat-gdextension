@@ -1,0 +1,8 @@
+{
+  "dirs": [
+    "res://addons/godot_alleycat_gdextension/tests"
+  ],
+  "include_subdirs": false,
+  "prefix": "test_",
+  "suffix": ".gd"
+}

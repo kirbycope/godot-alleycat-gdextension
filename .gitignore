@@ -31,3 +31,8 @@ import.log
 ~*
 # Godot metadata for build intermediates; src/.gdignore stops these being made now.
 src/*.import
+
+# Fetched by tools/pull_addons.py, never committed here.
+.addon_cache/
+addons/controls/
+__pycache__/

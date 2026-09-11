@@ -1,0 +1,9 @@
+{
+  "controls": {
+    "commit": "004ca46df86b1e1ef1714377af04a7fa6841fa2c",
+    "pulled": "2026-09-11T16:55:43Z",
+    "ref": "main",
+    "repo": "https://github.com/kirbycope/godot-controls.git",
+    "subject": "Give every root README the same shape, preview included"
+  }
+}
