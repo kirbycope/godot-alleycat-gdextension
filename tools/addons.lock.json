@@ -1,9 +1,9 @@
 {
   "controls": {
-    "commit": "e817b36b20916cdc758aca20f6da998ff15692f9",
-    "pulled": "2026-09-11T20:30:05Z",
+    "commit": "b4ad573582c5c2181306981c9afc6f21ccd74ac8",
+    "pulled": "2026-09-11T22:22:53Z",
     "ref": "main",
     "repo": "https://github.com/kirbycope/godot-controls.git",
-    "subject": "Let a game publish the list of inputs its slots can pick from"
+    "subject": "Space the HUD and the world prompt from what is actually in them"
   }
 }
