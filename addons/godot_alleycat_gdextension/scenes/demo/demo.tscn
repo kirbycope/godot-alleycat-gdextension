@@ -1,0 +1,72 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scenes/demo/demo.gd" id="1_demo"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_missing"]
+font_size = 22
+
+[sub_resource type="LabelSettings" id="LabelSettings_hint"]
+font_size = 14
+font_color = Color(0.62, 0.62, 0.62, 1)
+
+[node name="Demo" type="Control"]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_demo")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Screen" type="AspectRatioContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 24.0
+offset_bottom = -32.0
+grow_horizontal = 2
+grow_vertical = 2
+ratio = 1.6
+
+[node name="Game" type="AlleyCat" parent="Screen"]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Missing" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Alley Cat is not included with this addon."
+label_settings = SubResource("LabelSettings_missing")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Hint" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Cursor keys move  ·  Alt acts  ·  Ctrl-S sound  ·  Ctrl-M menu  ·  Esc pauses"
+label_settings = SubResource("LabelSettings_hint")
+horizontal_alignment = 1
+vertical_alignment = 1
