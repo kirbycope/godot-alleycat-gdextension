@@ -187,6 +187,13 @@ unsigned int alleycat_watch_hits(void);
 int alleycat_watch_callers(unsigned int *into, int max);
 void alleycat_set_voice_volume(int voice, float volume);
 
+/* Where the machine is and whether it is in a state to take a key. A game that has stopped responding
+   looks the same from memory as one that is running normally, so this reports the things that are not in
+   memory: the instruction pointer as an image offset, so it lines up with a disassembly of CAT.EXE, whether
+   interrupts are enabled - a key is only handed to the game's INT 9 handler while they are - and how many
+   keys are waiting in the queue behind that. */
+void alleycat_where(unsigned int *image_offset, int *interrupts_enabled, int *keys_queued);
+
 /* Machine state, for rewinding. alleycat_state_size is how many bytes a snapshot takes and does not
    change while the program runs, so a host can size a ring once. Saving copies the whole machine -
    the megabyte of RAM, the registers, the video and text screens, the keyboard queue, the timers and
@@ -768,6 +775,40 @@ static int bios(int n)
             VIDEO_MODE = get8(rAX);
             text_clear();
             return 1;
+        case 0x06:                      /* scroll window up */
+        case 0x07: {                    /* scroll window down */
+            /* The ordinary way a DOS program clears its screen: scroll a window by zero lines, which blanks
+               it. Ignoring this is why the game's own menu came back with the last page still underneath it
+               - Ctrl-M reprints a shorter page and everything it does not overwrite was still there, so the
+               joystick question, the skill menu and the paws message were all on screen at once. */
+            uint8_t lines = get8(rAX);
+            int top = get8(5), left = get8(1), bottom = get8(6), right = get8(2);
+            int r, c, n;
+            if (top < 0) top = 0;
+            if (left < 0) left = 0;
+            if (bottom > TEXT_ROWS - 1) bottom = TEXT_ROWS - 1;
+            if (right > TEXT_COLS - 1) right = TEXT_COLS - 1;
+            if (top > bottom || left > right) {
+                return 1;
+            }
+            if (lines == 0 || lines > (uint8_t)(bottom - top)) {
+                for (r = top; r <= bottom; r++)
+                    for (c = left; c <= right; c++) TEXT[r][c] = ' ';
+                return 1;
+            }
+            for (n = 0; n < lines; n++) {
+                if (ah == 0x06) {
+                    for (r = top; r < bottom; r++)
+                        for (c = left; c <= right; c++) TEXT[r][c] = TEXT[r + 1][c];
+                    for (c = left; c <= right; c++) TEXT[bottom][c] = ' ';
+                } else {
+                    for (r = bottom; r > top; r--)
+                        for (c = left; c <= right; c++) TEXT[r][c] = TEXT[r - 1][c];
+                    for (c = left; c <= right; c++) TEXT[top][c] = ' ';
+                }
+            }
+            return 1;
+        }
         case 0x02:                      /* set cursor: DH row, DL column */
             CUR_ROW = get8(6);
             CUR_COL = get8(2);
@@ -1443,6 +1484,19 @@ unsigned int alleycat_effect_starts(void) { return EFFECT_STARTS; }
 unsigned int alleycat_video_writes(void) { return VIDEO_WRITES; }
 
 unsigned int alleycat_data_address(void) { return (unsigned int)S[sDS] << 4; }
+
+void alleycat_where(unsigned int *image_offset, int *interrupts_enabled, int *keys_queued)
+{
+    if (image_offset) {
+        unsigned int at = phys(S[sCS], IP);
+        *image_offset = at >= (ALLEYCAT_LOAD_SEG << 4) ? at - (ALLEYCAT_LOAD_SEG << 4) : at;
+    }
+    if (interrupts_enabled) *interrupts_enabled = getf(fIF) ? 1 : 0;
+    if (keys_queued) {
+        int n = KEYQ_TAIL - KEYQ_HEAD;
+        *keys_queued = n < 0 ? n + (int)sizeof KEYQ : n;
+    }
+}
 
 int alleycat_poke(unsigned int at, const unsigned char *from, unsigned int length)
 {

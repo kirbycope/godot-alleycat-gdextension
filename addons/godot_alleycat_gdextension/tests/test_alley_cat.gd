@@ -114,6 +114,73 @@ func test_the_setup_is_answerable_and_starts_the_game() -> void:
 	assert_gt(game.call(&"get_screen_painted"), PAINTED, "the alley should be on screen")
 
 
+## Ctrl-M is the game's own way back to its menu, and the menu is meant to be a fresh page. The program
+## blanks the screen for it by asking the BIOS to scroll a window by no lines, which is how a DOS program
+## clears a screen; a machine that ignores that leaves the page before it underneath, and because Ctrl-M
+## reprints something shorter than what was there the two read as one garbled page.
+func test_the_menu_comes_back_as_a_clean_page_and_still_works() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	# The keyboard path, which is the one a host without an adapter gets and the one the demo ships.
+	# Said before the machine boots, because the game reads the equipment word once at startup: telling
+	# it afterwards leaves it believing in an adapter it has been told is not there.
+	game.free()
+	game = ClassDB.instantiate(&"AlleyCat") as TextureRect
+	game.set(&"joystick", false)
+	game.set(&"exe_path", EXE)
+	game.set(&"speed", FAST)
+	add_child_autofree(game)
+	assert_true(await _wait_for_the_question(), "the game should ask about a joystick")
+	await _hold("alleycat_no")
+	await _hold("alleycat_kitten")
+	await _hold("alleycat_alt", 120)
+	await wait_process_frames(60)
+	assert_gt(game.call(&"get_screen_painted"), PAINTED, "and be playing before it is interrupted")
+
+	await _hold("alleycat_menu", 120)
+	await wait_process_frames(120)
+	var text: String = game.call(&"get_text")
+	assert_lt(game.call(&"get_screen_painted"), PAINTED, "Ctrl-M puts the setup back")
+	assert_string_contains(text, "skill level", "with the skill menu on it")
+	# Line by line rather than word by word, because the fault this guards against is not a missing page
+	# but two pages on top of each other: what Ctrl-M reprints is shorter than what was there, so whatever
+	# it does not happen to overwrite stays and the lines come back spliced into each other.
+	assert_string_contains(text, "   Ctrl-R  restarts the game.
+   Ctrl-M  returns you to this menu.
+",
+			"and every line of it as the game prints it, with nothing of the last page left underneath")
+	assert_eq(text.count("skill level"), 1, "printed once rather than over what was already there")
+
+	# And the menu is not just legible, it is answerable. Ctrl-M starts the setup over rather than dropping
+	# into the middle of it, so the joystick question comes round again ahead of the skill; the demo answers
+	# that one for the player, and a host driving the node bare answers it itself.
+	await _hold("alleycat_no")
+	await _hold("alleycat_house_cat")
+	await _hold("alleycat_up", 120)
+	var playing_again := false
+	for i in 1000:
+		await wait_process_frames(1)
+		if game.call(&"get_screen_painted") > PAINTED:
+			playing_again = true
+			break
+	assert_true(playing_again, "the alley should be back")
+
+
+## Why a game has stopped answering is not in its memory: a program spinning with interrupts off looks
+## exactly like one running normally, and a key only reaches the game while they are on.
+func test_the_machine_says_where_it_is_and_whether_it_will_take_a_key() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	await wait_process_frames(60)
+	var state: Dictionary = game.call(&"get_machine_state")
+	assert_true(state.has("image_offset"), "where it is, as an offset into CAT.EXE")
+	assert_lt(int(state["image_offset"]), 1 << 20, "which is an address inside the machine")
+	assert_true(state["interrupts_enabled"], "a running game takes keys")
+	assert_eq(int(state["keys_queued"]), 0, "and nothing is waiting behind them")
+
+
 func test_the_directions_reach_the_game_port() -> void:
 	if game == null:
 		pass_test("AlleyCat is not built for this platform")

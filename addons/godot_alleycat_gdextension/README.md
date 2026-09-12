@@ -44,7 +44,16 @@ your own copy; the node reports a missing file on screen rather than failing sil
 | `is_running()`, `is_loaded()`, `is_ready()` | state; `is_ready` is true once a video mode is set |
 | `get_frame()` | the current frame as an `Image` |
 | `get_joystick_state()` | what the pad is telling the game port: `x`, `y`, `button_1`, `button_2` |
-| `get_instructions()`, `get_status()` | diagnostics |
+| `get_instructions()`, `get_status()`, `get_machine_state()` | diagnostics |
+| `get_text()` | the BIOS text screen, which is where the game's setup and menu pages live |
+
+The interpreter under it is `thirdparty/PureAlleyCat.h`, an 8086 that implements only what this one
+program asks for. The BIOS video services it answers are set mode (`AH=00`), set cursor (`AH=02`),
+teletype (`AH=0E`) and **scroll window (`AH=06` and `AH=07`)**. That last pair is the one worth naming: a
+DOS program clears its screen by scrolling a window by zero lines, and ignoring it leaves the previous page
+sitting in the text buffer underneath. Alley Cat's own Ctrl-M menu is shorter than the page it replaces, so
+whatever the reprint failed to overwrite stayed on screen and the two pages came back spliced into one
+unreadable one.
 
 ## What the game answers to
 
@@ -125,6 +134,25 @@ addon hides a blank slot.
 The keyboard art names Alley Cat's own keys throughout rather than the addon's defaults, one
 `keyboard_mouse_*` texture per slot set in the inherited scene, so a key drawn on the HUD is a key
 the game answers to.
+
+### The HUD follows the game's screens
+
+Alley Cat asks its setup in text rather than drawing it, and the same buttons answer different things on
+each page, so `set_stage` dresses the HUD for whichever page is up and `Stage` names them:
+
+| Stage | The page | What the HUD shows |
+| --- | --- | --- |
+| `ASKING_JOYSTICK` | "Do you want to use a joystick (Y/N)?" | Yes and No |
+| `ASKING_SKILL` | "Please select your skill level" | the d-pad, labelled Kitten, House Cat, Tomcat, Alley Cat |
+| `READY_TO_START` | the instructions, ending "Press any key to start." | one button, labelled Start |
+| `PLAYING` | the alley | the scene's own words |
+
+`READY_TO_START` exists because of the Menu button. Ctrl-M brings the player back to the setup on purpose,
+and once a skill has been picked there the game reprints its instructions and waits to be told to go. That
+is a third page and not the skill menu again: the d-pad has stopped answering anything, and without a button
+that says Start the player is left reading "Press any key to start" with a HUD still offering four skills.
+On the way into a *first* game the demo presses that key itself, so the page is never seen and the HUD is
+left dressed for play.
 
 ## Tests
 
@@ -315,6 +343,18 @@ Those offsets are counted from `get_data_address()`, not from `get_load_address(
 is a page above where the image was loaded, so an offset taken straight off the disassembly and added to the
 load address reads rubbish. `peek` and `poke` work in physical addresses, and the sum of the two is one.
 
+### When the game stops answering
+
+`get_machine_state()` reports the three things about the machine that are not in its memory: `image_offset`,
+where the instruction pointer is as an offset into `CAT.EXE`, so it lines up with a disassembly;
+`interrupts_enabled`, because a queued key is only handed to the game's own INT 9 handler while they are on;
+and `keys_queued`, how many are still waiting behind it.
+
+It is for telling apart the two things that look identical from outside - a game spinning in a loop that is
+ignoring input, and one that is simply waiting at a prompt. A frozen `image_offset` across two reads with
+`keys_queued` at zero says the keys are arriving and the program is not acting on them, which points at the
+prompt rather than at the input path.
+
 ## Watching the game draw
 
 Hi-res artwork over a 1984 game needs to know what was drawn and where, and the game will say so. Set
@@ -357,12 +397,21 @@ one carries the game's own picture in `original`. That is what makes the thing u
 name, and nobody can draw a replacement for a sprite they cannot look at. Open the resource, scroll to a
 sprite, see what it is, drop a texture into its `texture` and that sprite is replaced and nothing else.
 
-Every slot ships empty except the example, which is the cat: `0x11D40` and the three walk frames at
-`0x11380`, `0x113F8` and `0x11470`. It takes four, and that is the first thing to know before replacing
-anything. A sprite that animates is several pieces of artwork, and covering one of them puts the replacement
-on screen only for the fraction of the time that frame is up - which reads as a flicker rather than as
-artwork. `0x11D40` is the mask the cat is drawn through, which goes down whatever pose it is in, so it is
-the one that keeps the replacement there.
+Every slot ships empty except the worked example, which covers the five frames at `0x10E5E`, `0x10EA0`,
+`0x10EE2`, `0x10F24` and `0x10FA8`. That it takes five and not one is the first thing to know before
+replacing anything. A sprite that animates is several pieces of artwork, and covering one of them puts the
+replacement on screen only for the fraction of the time that frame is up, which reads as a flicker rather
+than as artwork. Where a sprite is drawn through a mask, the mask goes down whatever pose the thing is in,
+so it is the slot that keeps a replacement on screen.
+
+### Which sprite is which
+
+An address is not a name, so the exported artwork is also laid out to be looked at.
+`assets/artwork/sprite_sheet_1.png`, `_2` and `_3` are contact sheets of all 134 sprites on a mid grey,
+each labelled with its source address and size, and `tools/sprite_sheet.py` rebuilds them from
+`assets/artwork/original/`. Find the thing you want to redraw on a sheet, read its address off the label,
+and that is the slot to drop a texture into. It beats guessing: three separate guesses at which sprite was
+the player's cat were all wrong before the sheets existed.
 
 Two things the catalogue records are worth reading before drawing anything. `draws` says how often the
 sprite was drawn, which separates the cat and the scenery from the rarities. And where `masked_draws` is
@@ -379,7 +428,11 @@ python tools/build_artwork_resource.py               # -> resources/artwork.tres
 
 `export_sprites.py` reads the artwork straight out of `CAT.EXE`: the image was loaded at `0x10000` and the
 file has a 512 byte header, so a sprite's bytes are at `(source - 0x10000) + 512`. CGA mode 4 packs four
-pixels to a byte, two bits each, and index 0 is the background, which is written out transparent.
+pixels to a byte, two bits each, and **all four indices are written out opaque, index 0 included**. That
+looks wrong and is not: index 0 in this palette is black, and Alley Cat draws its black sprites by ANDing a
+shape into the background rather than by leaving a hole. Exporting index 0 transparent renders every black
+sprite - the player's cat among them - as an empty picture, which is a good way to spend an afternoon
+replacing the wrong thing.
 
 What it buys is resolution, not position: the replacement is drawn where the original was and at the same
 size, so the game plays exactly as it did. The game's own sprite is eight pixels by five, or thirty-two by

@@ -184,6 +184,7 @@ public:
 	int peek_u16(int at) const;
 	int get_load_address() const;
 	int get_data_address() const;
+	Dictionary get_machine_state() const;
 	int poke(int at, const PackedByteArray &bytes);
 	void set_reports_sprites(bool value);
 	bool get_reports_sprites() const;

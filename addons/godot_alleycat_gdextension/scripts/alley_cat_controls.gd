@@ -63,6 +63,25 @@ const SETUP_LABELS: Dictionary = {
 	"left_joystick": "",
 }
 
+## The words for the last of the setup screens. Every question has been answered by then, so the buttons
+## that answered them say nothing and the one that starts the game is the only one named. Without this the
+## player comes back through Ctrl-M, picks a skill, and is left on a page that says "Press any key to
+## start" with a HUD still offering nothing but four skills.
+const START_LABELS: Dictionary = {
+	"button_0": "Start",
+	"button_1": "",
+	"button_2": "",
+	"button_3": "",
+	"button_4": "",
+	"button_6": "",
+	"axis_4_plus": "Rewind",
+	"button_11": "",
+	"button_12": "",
+	"button_13": "",
+	"button_14": "",
+	"left_joystick": "",
+}
+
 ## The label on the HUD for each slot named in [constant SETUP_LABELS].
 const LABEL_PROPERTIES: Dictionary = {
 	"button_0": "joypad_button_0_label",
@@ -85,6 +104,7 @@ enum Stage {
 	PLAYING, ## The game is drawing and the player is moving the cat.
 	ASKING_JOYSTICK, ## "Do you want to use a joystick (Y/N)?"
 	ASKING_SKILL, ## "Please select your skill level", answered on the d-pad.
+	READY_TO_START, ## The skill is picked and the game is only waiting to be told to go.
 }
 
 ## What each screen actually uses, as the [Controls] nodes themselves. A node named here is shown on that
@@ -102,6 +122,7 @@ const STAGE_NODES: Dictionary = {
 		"key_i", "key_j", "key_k", "key_l",
 	],
 	Stage.PLAYING: [],
+	Stage.READY_TO_START: [],
 }
 
 ## The d-pad nodes the addon only ever shows for a pad, and the keyboard faces it only ever shows for a
@@ -183,7 +204,8 @@ func _apply_labels() -> void:
 	if _stage == Stage.PLAYING:
 		reset_labels()
 		return
+	var words: Dictionary = START_LABELS if _stage == Stage.READY_TO_START else SETUP_LABELS
 	var texts: Dictionary = {}
-	for slot: String in SETUP_LABELS:
-		texts[get(LABEL_PROPERTIES[slot])] = SETUP_LABELS[slot]
+	for slot: String in words:
+		texts[get(LABEL_PROPERTIES[slot])] = words[slot]
 	set_labels(texts)

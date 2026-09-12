@@ -20,9 +20,16 @@ ROOT = pathlib.Path("addons/godot_alleycat_gdextension")
 # The cat as it walks: three frames at 32x15, which is what the exported artwork shows. Replacing one of
 # them only puts the cat there for the third of the time that frame is up, which reads as a flicker - a
 # replacement has to cover a whole animation, not a picture.
-# 0x11D40 is the mask the cat is drawn through, and it goes down every time the cat is drawn whatever pose
-# it is in, so it is the one that keeps the replacement on screen. The three image frames follow it.
-EXAMPLES = {0x11D40: "cat_1.png", 0x11380: "cat_1.png", 0x113F8: "cat_2.png", 0x11470: "cat_3.png"}
+# The player's cat: black, 24x11, and five frames of walk. Found by holding left and then right and seeing
+# which artwork moved with the player - and then by looking at it, because two families move with the player
+# and the other one is the dog chasing the cat. The cat is the black one.
+EXAMPLES = {
+    0x10E5E: "cat_1.png",
+    0x10EA0: "cat_2.png",
+    0x10EE2: "cat_3.png",
+    0x10F24: "cat_4.png",
+    0x10FA8: "cat_5.png",
+}
 
 TEXTURE = '[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/%s" id="%s"]'
 

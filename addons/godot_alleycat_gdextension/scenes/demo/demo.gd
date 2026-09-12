@@ -209,20 +209,19 @@ func _live_question(text: String) -> String:
 ## everything printed since the last mode set, so both questions are still in it once the second is up;
 ## the skill menu is always the later of the two, which is what makes it the answer when both are there.
 func _stage_for(text: String) -> AlleyCatControls.Stage:
-	# The skill menu is what the d-pad answers, so a page carrying it is the skill menu whatever else
-	# was printed after. Ctrl-M puts the whole page up at once - the skill list and the instructions
-	# together - and the player is there to pick a skill, not to read the last line of it.
-	if text.contains("skill level") and not _has_played_past(text):
-		return AlleyCatControls.Stage.ASKING_SKILL
-	if text.rfind("(Y/N)") >= 0 and not text.contains("skill level"):
+	if text.contains("skill level"):
+		# The d-pad answers the skill menu, so the menu is up for as long as the game has not printed
+		# anything past it.
+		if _start_prompt_at(text) < text.rfind("skill level"):
+			return AlleyCatControls.Stage.ASKING_SKILL
+		# The skill is picked and the game has reprinted its instructions to wait to be told to go.
+		# On the way into a first game the demo presses that key itself, so the screen is never seen
+		# and the HUD stays dressed for play; coming back through Ctrl-M the player is here on
+		# purpose, and needs a button that says Start rather than four that still say skills.
+		return AlleyCatControls.Stage.READY_TO_START if _has_played else AlleyCatControls.Stage.PLAYING
+	if text.rfind("(Y/N)") >= 0:
 		return AlleyCatControls.Stage.ASKING_JOYSTICK
 	return AlleyCatControls.Stage.PLAYING
-
-
-## Whether the skill menu in [param text] is one the game has already been taken past, which is the
-## case on the way into a first game and not when Ctrl-M has brought the player back to it.
-func _has_played_past(text: String) -> bool:
-	return not _has_played and _start_prompt_at(text) > text.rfind("skill level")
 
 
 ## Answers the joystick question for the player, holding the answer down for as long as the question is up.

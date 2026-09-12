@@ -150,6 +150,38 @@ func test_the_labels_swap_for_the_setup_questions_and_back() -> void:
 	assert_eq(demo.controls.joypad_button_1_label.text, "Sound")
 
 
+## Ctrl-M brings the player back to the menu, and picking a skill there leaves the game printing its
+## instructions and waiting to be told to go. That is a third setup screen rather than the skill menu
+## again: the d-pad has stopped answering anything, and the button that starts the game has to say so or
+## the player is left reading "Press any key to start" with nothing on the HUD offering to.
+func test_the_menu_ends_on_a_button_that_starts_the_game() -> void:
+	var menu: String = "Please select your skill level:
+   (K)itten
+   (H)ouse Cat
+"
+	var chosen: String = menu + "During play:
+   Ctrl-M  returns you to this menu.
+Press any key to start.
+"
+
+	demo._has_played = true
+	assert_eq(demo._stage_for(menu), AlleyCatControls.Stage.ASKING_SKILL, "the skill menu on its own")
+	assert_eq(demo._stage_for(chosen), AlleyCatControls.Stage.READY_TO_START, "and once a skill is picked")
+
+	# On the way into a first game the demo presses that key itself, so the screen is never seen and the
+	# HUD stays dressed for play rather than flashing a Start button nobody has to press.
+	demo._has_played = false
+	assert_eq(demo._stage_for(chosen), AlleyCatControls.Stage.PLAYING, "except on the way into a first game")
+	demo._has_played = true
+
+	demo.controls.set_stage(AlleyCatControls.Stage.READY_TO_START)
+	assert_eq(demo.controls.joypad_button_0_label.text, "Start", "the one button the screen has a use for")
+	assert_eq(demo.controls.joypad_button_12_label.text, "", "the skills have been answered")
+	assert_false(demo.controls.joypad_button_12.visible, "so their buttons come off the screen")
+	demo.controls.set_stage(AlleyCatControls.Stage.PLAYING)
+	assert_eq(demo.controls.joypad_button_0_label.text, "Jump", "and play puts the scene's own words back")
+
+
 ## The game blanks the graphics screen to ask a question and paints it to play, and the HUD has to
 ## follow it, because the same buttons mean different things on the two screens.
 func test_the_hud_follows_the_game_onto_its_setup_screen() -> void:
@@ -340,10 +372,11 @@ func test_every_sprite_has_a_slot_and_the_game_s_own_picture_in_it() -> void:
 
 	# One sprite is filled in, as a worked example. The rest are empty, so the game looks as it shipped
 	# until someone puts a picture in a slot.
-	# The cat is four entries, not one: a mask that goes down wherever it is, and three walk frames. A
-	# replacement has to cover a whole animation or it is only on screen for the fraction of the time its
-	# one frame is up, which reads as a flicker rather than as artwork.
-	assert_eq(overridden.size(), 4, "The cat's mask and its three walk frames, and the rest left alone")
+	# The example is several entries and not one: a replacement has to cover a whole animation, or it is
+	# on screen only for the fraction of the time its one frame is up, which reads as a flicker rather
+	# than as artwork. Which entries those are is a choice about the artwork and is not pinned here.
+	assert_gt(overridden.size(), 1, "The example covers a whole animation rather than one frame of it")
+	assert_lt(overridden.size(), artwork.sprites.size(), "and every other sprite is left as it shipped")
 	for example: int in overridden:
 		assert_eq(artwork.texture_for(example), overridden[example], "0x%05X is found by address" % example)
 	assert_null(artwork.texture_for(0), "An address with no replacement gives nothing rather than erroring")

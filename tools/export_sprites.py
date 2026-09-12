@@ -13,8 +13,8 @@ game copied from while it was running. The image was loaded at 0x10000 and the f
 so the bytes are at (source - 0x10000) + 512 in CAT.EXE.
 
 CGA mode 4 packs four pixels to a byte, two bits each, most significant first, and the game uses palette 1
-at high intensity: 0 is the background, then cyan, magenta and white. Index 0 is written out transparent,
-because that is what it means in a sprite - the background showing through.
+at high intensity: black, cyan, magenta and white. All four are written out opaque, black included: the game
+draws its black sprites by ANDing a shape into the background, so index 0 is the sprite rather than a hole.
 
 A row is `width / 8` words and rows follow each other, which is how the blitters walk their source; the
 screen's own two-bank interleave is a property of where the pixels go, not of the artwork itself.
@@ -29,8 +29,13 @@ import sys
 
 LOAD_ADDRESS = 0x10000
 HEADER_BYTES = 512
-# Black, light cyan, light magenta, white; index 0 is the background and comes out transparent.
-PALETTE = [(0, 0, 0, 0), (85, 255, 255, 255), (255, 85, 255, 255), (255, 255, 255, 255)]
+# Black, light cyan, light magenta, white - all four opaque, index 0 included.
+#
+# Index 0 is not "nothing". Alley Cat draws its black sprites by ANDing a shape into the background, so the
+# zeros are the sprite: the cat is black, and black is index 0. Writing that transparent renders every black
+# sprite in the game as an empty image, which is exactly what happened the first time - the cat came out
+# blank and the dog, which is magenta and white, got mistaken for it.
+PALETTE = [(0, 0, 0, 255), (85, 255, 255, 255), (255, 85, 255, 255), (255, 255, 255, 255)]
 
 
 def decode(data: bytes, width: int, height: int):

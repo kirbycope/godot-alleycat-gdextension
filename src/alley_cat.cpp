@@ -70,6 +70,7 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("peek_u16", "at"), &AlleyCat::peek_u16);
 	ClassDB::bind_method(D_METHOD("get_load_address"), &AlleyCat::get_load_address);
 	ClassDB::bind_method(D_METHOD("get_data_address"), &AlleyCat::get_data_address);
+	ClassDB::bind_method(D_METHOD("get_machine_state"), &AlleyCat::get_machine_state);
 	ClassDB::bind_method(D_METHOD("poke", "at", "bytes"), &AlleyCat::poke);
 	ClassDB::bind_method(D_METHOD("set_reports_sprites", "value"), &AlleyCat::set_reports_sprites);
 	ClassDB::bind_method(D_METHOD("get_reports_sprites"), &AlleyCat::get_reports_sprites);
@@ -476,6 +477,21 @@ int AlleyCat::get_load_address() const { return (int)(ALLEYCAT_LOAD_SEG << 4); }
 // Where the machine is reading its variables from right now. A disassembly gives a variable as a bare offset
 // like 0x1f82; this is what that offset is counted from, so the two together are an address peek can read.
 int AlleyCat::get_data_address() const { return (int)alleycat_data_address(); }
+
+// What the machine is doing, for working out why it has stopped answering. Memory alone cannot say: a game
+// spinning with interrupts disabled and one running normally look identical from the outside, and a key is
+// only handed to the game's INT 9 handler while interrupts are on.
+Dictionary AlleyCat::get_machine_state() const {
+	unsigned int at = 0;
+	int interrupts = 0;
+	int queued = 0;
+	alleycat_where(&at, &interrupts, &queued);
+	Dictionary out;
+	out["image_offset"] = (int)at;
+	out["interrupts_enabled"] = interrupts != 0;
+	out["keys_queued"] = queued;
+	return out;
+}
 
 // Writes into the machine's memory, and answers how many bytes went in. The other half of what carrying a
 // high score across runs needs: one read out at the end of a game has to be put back at the start of the
