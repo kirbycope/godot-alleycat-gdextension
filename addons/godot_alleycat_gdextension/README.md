@@ -257,6 +257,37 @@ screen change costs the whole 16K at once. Pixels cannot answer this. Alley Cat'
 background colour, so two completely different places agree on most of their pixels, and a new screen
 arrives over several frames rather than in one, so a frame-to-frame difference never spikes either.
 
+## Reading the machine
+
+Alley Cat is one hand-written 1984 assembly program, so its variables sit at fixed addresses and what it
+knows about itself is in memory at a place that does not move between runs. `peek(at, length)`, `peek_u8`
+and `peek_u16` read it, and `get_load_address()` says where the image was put, so an offset into `CAT.EXE`
+becomes an address here.
+
+Finding *which* address is the harder half, and a plain differential scan is not enough on its own: taking a
+snapshot before and after a life is lost turns up hundreds of bytes that happened to fall by one, almost all
+of them animation timers. What works is asking the game where its code is.
+
+`watch(from, to)` remembers the routines that write into a range of memory, and `get_watch_writers()` gives
+them back as offsets into `CAT.EXE`, which line up with a disassembly of the file. Point it at the few bytes
+of screen something is drawn in, let the game draw, and the drawing code names itself. Pointed at the band
+the score is drawn across while a game starts, it comes back with five addresses inside 200 bytes of each
+other; pointed at the middle of the picture while the cat walks, it comes back with three of the same ones.
+Those are the game's sprite blitters:
+
+| Routine | What it does |
+| --- | --- |
+| `sub_09FCD` | `rep movsw` straight into the screen: the plain blit |
+| `sub_09F65` | reads the background first, saves it at `[bp]`, then ANDs the sprite over it |
+| `sub_09FA0` | a blit that walks its source by a stride, for a taller strip |
+
+They write the CGA window the way the hardware wants it - 80 bytes a row, even rows at `0xB8000` and odd
+rows `0x2000` further on, `xor di, 0x2000` to change bank - which is why the picture cannot simply be
+scaled: the artwork is 2 bits a pixel, interleaved by parity.
+
+That is the hook hi-res art needs, and the same technique is how the score and the lives will be found: they
+are whatever the code that draws those digits reads from.
+
 ## The remaster layer
 
 `scenes/alley_cat_remaster.tscn` is one node to drop into a scene. Point its `game` at the [AlleyCat]

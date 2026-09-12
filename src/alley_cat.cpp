@@ -65,6 +65,13 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_voice"), &AlleyCat::get_voice);
 	ClassDB::bind_method(D_METHOD("get_effect_starts"), &AlleyCat::get_effect_starts);
 	ClassDB::bind_method(D_METHOD("get_video_writes"), &AlleyCat::get_video_writes);
+	ClassDB::bind_method(D_METHOD("peek", "at", "length"), &AlleyCat::peek);
+	ClassDB::bind_method(D_METHOD("peek_u8", "at"), &AlleyCat::peek_u8);
+	ClassDB::bind_method(D_METHOD("peek_u16", "at"), &AlleyCat::peek_u16);
+	ClassDB::bind_method(D_METHOD("get_load_address"), &AlleyCat::get_load_address);
+	ClassDB::bind_method(D_METHOD("watch", "from", "to"), &AlleyCat::watch);
+	ClassDB::bind_method(D_METHOD("get_watch_writers"), &AlleyCat::get_watch_writers);
+	ClassDB::bind_method(D_METHOD("get_watch_hits"), &AlleyCat::get_watch_hits);
 
 	ClassDB::bind_method(D_METHOD("set_rewind_seconds", "value"), &AlleyCat::set_rewind_seconds);
 	ClassDB::bind_method(D_METHOD("get_rewind_seconds"), &AlleyCat::get_rewind_seconds);
@@ -421,6 +428,55 @@ int AlleyCat::get_effect_starts() const { return (int)alleycat_effect_starts(); 
 // Bytes drawn into the CGA window since boot. The jump between two frames says how much of the screen the
 // game just drew, which is how a whole new place is told from a sprite moving.
 int AlleyCat::get_video_writes() const { return (int)alleycat_video_writes(); }
+
+// The machine's memory. Alley Cat is one 1984 assembly program whose variables live at fixed addresses, so
+// what it is thinking is in here, at a place that does not move between runs. Finding which place is a
+// matter of watching what changes when something happens; these are the window to watch through.
+PackedByteArray AlleyCat::peek(int at, int length) const {
+	PackedByteArray out;
+	if (at < 0 || length <= 0) {
+		return out;
+	}
+	out.resize(length);
+	int copied = alleycat_peek((unsigned int)at, out.ptrw(), (unsigned int)length);
+	out.resize(copied < 0 ? 0 : copied);
+	return out;
+}
+
+int AlleyCat::peek_u8(int at) const {
+	unsigned char byte = 0;
+	return alleycat_peek((unsigned int)at, &byte, 1) == 1 ? (int)byte : -1;
+}
+
+// Little-endian, the way the 8086 stores a word, so a counter reads as the number the game means.
+int AlleyCat::peek_u16(int at) const {
+	unsigned char bytes[2] = { 0, 0 };
+	return alleycat_peek((unsigned int)at, bytes, 2) == 2 ? (int)(bytes[0] | (bytes[1] << 8)) : -1;
+}
+
+// Where the image was loaded, so an offset into CAT.EXE's own data becomes an address here.
+int AlleyCat::get_load_address() const { return (int)(ALLEYCAT_LOAD_SEG << 4); }
+
+// Watches a range of memory and remembers where the code that wrote to it was. This is how anything in the
+// game gets found: a score, a life count or a sprite is a place in memory, and the way to that place is the
+// routine that touches it. Point it at the few bytes of screen a number is drawn in, let the game draw, and
+// what comes back are offsets into CAT.EXE that a disassembly explains.
+void AlleyCat::watch(int from, int to) {
+	alleycat_watch((unsigned int)(from < 0 ? 0 : from), (unsigned int)(to < 0 ? 0 : to));
+}
+
+PackedInt32Array AlleyCat::get_watch_writers() const {
+	unsigned int found[ALLEYCAT_WATCH_MAX];
+	int n = alleycat_watch_writers(found, ALLEYCAT_WATCH_MAX);
+	PackedInt32Array out;
+	out.resize(n);
+	for (int i = 0; i < n; i++) {
+		out.set(i, (int)found[i]);
+	}
+	return out;
+}
+
+int AlleyCat::get_watch_hits() const { return (int)alleycat_watch_hits(); }
 
 // ---- rewind ---------------------------------------------------------------------------------
 

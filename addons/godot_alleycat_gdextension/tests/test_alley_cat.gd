@@ -328,3 +328,58 @@ func test_the_game_says_how_much_of_the_screen_it_drew() -> void:
 	assert_gt(biggest, 12000, "Changing screen draws the whole 16K CGA window at once")
 	assert_lt(busiest_quiet_frame, 4000,
 		"and a frame that only moves sprites costs far less, so the two are told apart by size alone")
+
+
+## The machine's memory, which is where everything the game knows about itself lives. Alley Cat is one 1984
+## assembly program whose variables sit at fixed addresses, so a host that can read them can follow the score
+## and the lives rather than guessing at them from pixels.
+func test_the_machine_s_memory_can_be_read() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not game.has_method(&"peek"):
+		fail_test("This library predates peek; rebuild it")
+		return
+	var load: int = int(game.call(&"get_load_address"))
+	assert_eq(load, 0x10000, "The image is loaded at segment 0x1000, as the header has it")
+	# Wide enough to be past the zero fill the image starts with, which is 82 bytes of it.
+	var bytes: PackedByteArray = game.call(&"peek", load, 4096)
+	assert_eq(bytes.size(), 4096, "A read inside memory gives back what was asked for")
+	var nonzero: int = 0
+	for byte: int in bytes:
+		if byte != 0:
+			nonzero += 1
+	assert_gt(nonzero, 1000, "and CAT.EXE's own code is there rather than a blank megabyte")
+
+	assert_eq(int(game.call(&"peek_u8", load)), bytes[0], "A single byte agrees with the block read")
+	# The 8086 stores a word low byte first, so a counter read as a word is the number the game means.
+	assert_eq(int(game.call(&"peek_u16", load)), bytes[0] | (bytes[1] << 8))
+	assert_eq((game.call(&"peek", 1 << 20, 16) as PackedByteArray).size(), 0, "Past the top there is nothing")
+	assert_eq(int(game.call(&"peek_u8", 1 << 20)), -1, "and a byte there reports itself missing")
+
+
+## How anything in the game gets found. A score, a life count or a sprite is a place in memory, and the way
+## to that place is the routine that touches it: watch the few bytes of screen something is drawn in, let the
+## game draw, and what comes back are offsets into CAT.EXE that a disassembly explains.
+func test_watching_memory_reports_the_code_that_wrote_to_it() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not game.has_method(&"watch"):
+		fail_test("This library predates watch; rebuild it")
+		return
+	# A band across the middle of the picture, which the game draws over constantly.
+	var base: int = 0xB8000
+	game.call(&"watch", base + 30 * 80, base + 45 * 80)
+	await wait_process_frames(600)
+	var writers: PackedInt32Array = game.call(&"get_watch_writers")
+	assert_gt(int(game.call(&"get_watch_hits")), 0, "The game draws into the middle of the screen")
+	assert_gt(writers.size(), 0, "so the code that drew there should be named")
+	for writer: int in writers:
+		assert_lt(writer, 55067, "Writers are offsets into CAT.EXE, which is 55,067 bytes long")
+
+	# An empty range is the watch turned off, and it forgets what the last one found.
+	game.call(&"watch", 0, 0)
+	await wait_process_frames(60)
+	assert_eq(int(game.call(&"get_watch_hits")), 0, "Nothing is watched, so nothing is counted")
+	assert_eq((game.call(&"get_watch_writers") as PackedInt32Array).size(), 0)

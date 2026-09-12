@@ -126,6 +126,28 @@ unsigned int alleycat_effect_starts(void);
 /* Bytes written into the CGA window since boot. The jump between two host frames says how much of the screen
    the game just drew, which is how a whole new place is told from a sprite moving. */
 unsigned int alleycat_video_writes(void);
+
+/* Reads the machine's memory. The game is one 1984 assembly program with its variables at fixed addresses,
+   so what it is thinking - the score, the lives, which screen it is on - is in here at an address that does
+   not move between runs. Finding which address is a matter of watching what changes when something happens,
+   and this is the window to watch through. Reads outside the megabyte give nothing rather than reading off
+   the end. LOAD_SEG is where the image was placed, so a physical address is (LOAD_SEG << 4) + offset. */
+#define ALLEYCAT_LOAD_SEG 0x1000u
+#define ALLEYCAT_MEM_SIZE (1u << 20)
+int alleycat_peek(unsigned int at, unsigned char *into, unsigned int length);
+
+/* Watches a range of memory and remembers where the code that wrote to it was. This is how anything in the
+   game is found: a score, a life count or a sprite is a place in memory, and the way to that place is the
+   routine that touches it. Point the watch at the few bytes of screen a number is drawn in, let the game
+   draw it, and the addresses that come back are the drawing code, which the disassembly then explains.
+
+   Writers are kept as image offsets - the address the code sits at inside CAT.EXE - so they line up with a
+   disassembly of the file rather than with wherever the image happened to be loaded. At most
+   ALLEYCAT_WATCH_MAX distinct ones are kept, which is far more than any one routine needs. */
+#define ALLEYCAT_WATCH_MAX 32
+void alleycat_watch(unsigned int from, unsigned int to);
+int alleycat_watch_writers(unsigned int *into, int max);
+unsigned int alleycat_watch_hits(void);
 void alleycat_set_voice_volume(int voice, float volume);
 
 /* Machine state, for rewinding. alleycat_state_size is how many bytes a snapshot takes and does not
@@ -305,11 +327,21 @@ static uint8_t  rd8(uint16_t seg, uint16_t off)  { return MEM[phys(seg, off)]; }
    agree on most of their pixels, and a room arrives over several frames rather than in one, so a
    frame-to-frame difference never spikes either. The machine knows what it drew; the picture does not. */
 static unsigned int VIDEO_WRITES = 0;
+
+/* The watch: a range of memory, the code that has written into it, and how often. See alleycat_watch. */
+static uint32_t WATCH_FROM = 0;
+static uint32_t WATCH_TO = 0;
+static uint32_t WATCH_WRITERS[ALLEYCAT_WATCH_MAX];
+static int      WATCH_WRITER_COUNT = 0;
+static unsigned int WATCH_HITS = 0;
 #define IN_VIDEO(at) ((at) >= ((uint32_t)VIDEO_SEG << 4) && (at) < (((uint32_t)VIDEO_SEG << 4) + 0x4000u))
+
+static void note_watch(uint32_t at);
 
 static void     wr8(uint16_t seg, uint16_t off, uint8_t v) {
     uint32_t at = phys(seg, off);
     if (IN_VIDEO(at)) { VIDEO_WRITES++; }
+    if (WATCH_TO > WATCH_FROM && at >= WATCH_FROM && at < WATCH_TO) { note_watch(at); }
     MEM[at] = v;
 }
 
@@ -338,6 +370,27 @@ static void set8(int i, uint8_t v)
 }
 
 /* ---- fetch ----------------------------------------------------------------------------------- */
+
+/* Remembers where the code that just wrote to the watched range lives, as an offset into CAT.EXE so it
+   lines up with a disassembly of the file. IP has already moved past the instruction by the time a write
+   happens, so what comes back points just after the store rather than at it - near enough to find the
+   routine, and the disassembly settles the rest. A writer already seen is not recorded twice: one routine
+   filling a row of pixels would otherwise use the whole table on its own. */
+static void note_watch(uint32_t at)
+{
+    uint32_t where = (((uint32_t)S[sCS] << 4) + IP) - ((uint32_t)LOAD_SEG << 4);
+    int i;
+    (void)at;
+    WATCH_HITS++;
+    for (i = 0; i < WATCH_WRITER_COUNT; i++) {
+        if (WATCH_WRITERS[i] == where) {
+            return;
+        }
+    }
+    if (WATCH_WRITER_COUNT < ALLEYCAT_WATCH_MAX) {
+        WATCH_WRITERS[WATCH_WRITER_COUNT++] = where;
+    }
+}
 
 static uint8_t fetch8(void)   { uint8_t v = rd8(S[sCS], IP); IP++; return v; }
 static uint16_t fetch16(void) { uint16_t v = rd16(S[sCS], IP); IP = (uint16_t)(IP + 2); return v; }
@@ -1291,6 +1344,43 @@ unsigned int alleycat_effect_starts(void) { return EFFECT_STARTS; }
    own frames: a few hundred is the cat moving, the whole 16K is a different place. Left out of the snapshot
    for the same reason as the effect count - it is the host's reading of history, not the machine's state. */
 unsigned int alleycat_video_writes(void) { return VIDEO_WRITES; }
+
+/* Watches [from] up to but not including [to]. An empty range turns the watch off, and setting one clears
+   what the last watch found, so each hunt starts from nothing. */
+void alleycat_watch(unsigned int from, unsigned int to)
+{
+    WATCH_FROM = from;
+    WATCH_TO = to;
+    WATCH_WRITER_COUNT = 0;
+    WATCH_HITS = 0;
+}
+
+/* Copies the distinct writers found so far into [into], newest last, and answers how many there were. */
+int alleycat_watch_writers(unsigned int *into, int max)
+{
+    int n = WATCH_WRITER_COUNT < max ? WATCH_WRITER_COUNT : max;
+    int i;
+    for (i = 0; i < n; i++) {
+        into[i] = WATCH_WRITERS[i];
+    }
+    return n;
+}
+
+unsigned int alleycat_watch_hits(void) { return WATCH_HITS; }
+
+/* Copies [length] bytes of the machine's memory from [at] into [into]. Answers how many bytes it actually
+   copied, which is fewer than asked for at the very top of memory and zero for an address past it. */
+int alleycat_peek(unsigned int at, unsigned char *into, unsigned int length)
+{
+    if (at >= MEM_SIZE || into == 0) {
+        return 0;
+    }
+    if (length > MEM_SIZE - at) {
+        length = MEM_SIZE - at;
+    }
+    memcpy(into, MEM + at, length);
+    return (int)length;
+}
 
 void alleycat_set_voice_volume(int voice, float volume)
 {
