@@ -342,6 +342,30 @@ attract screen draws one, the cat walking the fence.
 The report is cleared at the start of every frame, so a quiet frame says nothing and a host should read it
 every frame rather than whenever it happens to look.
 
+## Putting your own artwork in
+
+`AlleyCatArt` draws replacement pictures over the game's own sprites, sprite for sprite. It listens to
+`get_sprites()` rather than trying to recognise anything in the picture: each frame it asks what was drawn
+and, for anything it has a replacement for, paints over the top in the same place and at the same size.
+
+The artwork is a resource - `AlleyCatArtwork`, a list of `AlleyCatSprite`, each pairing a source address
+with a texture - so a set is a file that can be swapped whole, and anything not named in it is left exactly
+as the game drew it. A set can be finished one sprite at a time.
+
+`resources/artwork.tres` is a sample with two: the cat and the mice. The addresses came from
+`get_sprites()` itself, which is the only way to get them - the game has no names for its own artwork, only
+the place it copies each piece from.
+
+What it buys is resolution, not position: the replacement is drawn where the original was and at the same
+size, so the game plays exactly as it did. The game's own sprite is eight pixels by five, or thirty-two by
+fifteen, scaled up to whatever the window is; the replacement is drawn at the screen's resolution instead.
+
+One thing worth knowing if you write something else against `get_sprites()`. The report is cleared on the
+game's own tick, about eighteen times a second, not on the host's frame. A tick is tens of thousands of
+instructions and the host asks for a few hundred at a time, so one tick's drawing is spread across dozens of
+frames - clearing per frame hands back a fragment of a tick, and anything drawing from it flickers on for
+one frame in twenty-odd, which reads as not working at all.
+
 ## Keeping a high score
 
 The remaster node carries the high score across runs, which the game cannot do for itself: it was written
@@ -401,6 +425,11 @@ attributable. Giving it a `music` stream silences the game's own tune; clearing 
 ## Licence
 
 The code here is MIT and is original work: the node, the HUD mapping and the build. `assets/CAT.EXE` is not covered by it and is not ours to license - see **The game** above.
+
+| Asset | What it is | From | Licence |
+| --- | --- | --- | --- |
+| `assets/artwork/cat.png`, `assets/artwork/mouse.png` | sample replacement sprites, drawn for this addon | original work | MIT, with the rest of the code |
+| `assets/cat_meow.ogg` | the sound the cat makes on being caught | Gravity Sound, Animal SFX | see the pack's own terms |
 
 See [PureAlleyCat](https://github.com/kirbycope/PureAlleyCat) for what the library is and how it was
 verified, and `alley-decomp` for the reverse engineering that established the graphics format.

@@ -58,6 +58,7 @@ class AlleyCat : public TextureRect {
 	Ref<AudioStreamGeneratorPlayback> playback;
 	double phase = 0.0; // carried between frames so the square wave stays continuous
 
+	bool tick_completed = true; // Whether the game finished a tick, so the sprite report starts afresh.
 	bool reports_sprites = false; // Whether every sprite the game draws is reported; see set_reports_sprites.
 	PackedByteArray pixels; // RGBA8, FRAME_WIDTH * FRAME_HEIGHT * 4
 	Ref<Image> image;

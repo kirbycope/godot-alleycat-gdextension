@@ -203,9 +203,13 @@ void AlleyCat::_process(double delta) {
 	int budget = (int)pending_instructions;
 	if (budget > 0) {
 		pending_instructions -= budget;
-		// A fresh frame's worth of sprites, so what is read back afterwards is what this frame drew.
-		if (reports_sprites) {
+		// A fresh tick's worth of sprites, cleared on the game's own clock rather than the host's. A tick is
+		// tens of thousands of instructions and the host asks for a few hundred at a time, so one tick's
+		// drawing is spread across dozens of frames; clearing every frame would hand back a fragment of it
+		// and leave anything drawing from the report flickering.
+		if (reports_sprites && tick_completed) {
 			alleycat_sprites_begin();
+			tick_completed = false;
 		}
 		alleycat_run(budget);
 		// Snapshot on the game's own clock rather than the host's, so how much history a second of
@@ -213,6 +217,7 @@ void AlleyCat::_process(double delta) {
 		instructions_since_snapshot += budget;
 		while (instructions_since_snapshot >= INSTRUCTIONS_PER_TICK) {
 			instructions_since_snapshot -= INSTRUCTIONS_PER_TICK;
+			tick_completed = true;
 			take_snapshot();
 		}
 	}

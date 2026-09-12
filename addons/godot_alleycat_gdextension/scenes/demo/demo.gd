@@ -29,6 +29,7 @@ const LOOKS: Array[String] = [
 const SCREEN_SHADER: Shader = preload("res://addons/godot_alleycat_gdextension/shaders/screen.gdshader")
 
 @onready var screen: AspectRatioContainer = $Screen
+@onready var art: AlleyCatArt = $Screen/Art
 @onready var missing: Label = $Missing
 @onready var prompt: Label = $Prompt
 @onready var look_name: Label = $LookName
@@ -74,6 +75,8 @@ func _ready() -> void:
 	# The menu is told what it is a menu for here rather than in the scene, because the game node is
 	# built in code: a scene naming a GDExtension type cannot be opened where the library is missing.
 	remaster.game = game.get_path()
+	# The artwork draws over the game's own sprites, so it needs to know which node is doing the drawing.
+	art.game = game.get_path()
 	remaster.screen = game.get_path()
 	remaster.looks = PackedStringArray(LOOKS)
 	remaster.look_changed.connect(_on_look_changed)

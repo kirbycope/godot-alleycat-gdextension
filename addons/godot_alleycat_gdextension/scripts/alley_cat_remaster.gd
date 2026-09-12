@@ -138,6 +138,7 @@ var _look: int = 0
 var _game: Node = null
 var _screen: CanvasItem = null
 var _music_player: AudioStreamPlayer = null
+var _effect_player: AudioStreamPlayer = null
 var _lives: int = -1 ## The last count believed. -1 until one has settled.
 var _lives_candidate: int = -1 ## The count being read now, which is not believed until it holds.
 var _lives_steady: float = 0.0 ## How long it has held.
@@ -153,6 +154,10 @@ func _ready() -> void:
 	_music_player.name = "RemasterMusic"
 	add_child(_music_player)
 	_music_player.finished.connect(_on_music_finished)
+	# Kept apart from the music so one can be replaced without cutting the other off mid-note.
+	_effect_player = AudioStreamPlayer.new()
+	_effect_player.name = "RemasterEffects"
+	add_child(_effect_player)
 
 	_music_slider.value = get_music_volume()
 	_effects_slider.value = get_effects_volume()
@@ -588,9 +593,13 @@ func _watch_the_lives() -> void:
 	_lives_steady += get_process_delta_time()
 	if _lives_steady < LIVES_STEADY_TIME:
 		return
-	if _lives >= 0 and now < _lives and _wipe <= 0.0:
-		_wipe = 0.001
-		_stage_hue = fposmod(_stage_hue + REDRAW_HUE_STEP, 1.0)
+	if _lives >= 0 and now < _lives:
+		if _wipe <= 0.0:
+			_wipe = 0.001
+			_stage_hue = fposmod(_stage_hue + REDRAW_HUE_STEP, 1.0)
+		# The cat being caught is the one event the game names plainly enough to put a sound on: its own
+		# count of lives went down. No guessing at which beep meant what.
+		_play_effect(sounds.caught if sounds != null else null)
 	_lives = now
 
 
@@ -604,3 +613,13 @@ func get_lives() -> int:
 	var value: int = int(_game.call(&"peek_u8", int(_game.call(&"get_data_address")) + LIVES_AT))
 	# Between screens the game leaves rubbish here; a cat never has more than nine lives, whatever the saying.
 	return value if value >= 0 and value <= 9 else -1
+
+
+## Plays one of the replacement sounds, if there is one for what just happened. The game's own sound is left
+## alone: it is a 1984 PC speaker and silencing it to layer over it is the host's choice, not this one's.
+func _play_effect(stream: AudioStream) -> void:
+	if stream == null or not is_instance_valid(_effect_player):
+		return
+	_effect_player.stream = stream
+	_effect_player.volume_db = linear_to_db(maxf(get_effects_volume(), 0.0001))
+	_effect_player.play()

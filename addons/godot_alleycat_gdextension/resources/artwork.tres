@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AlleyCatArtwork" format=3]
+
+[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_artwork.gd" id="1_artwork"]
+[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_sprite.gd" id="2_sprite"]
+[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/mouse.png" id="3_mouse"]
+[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat.png" id="4_cat"]
+
+[sub_resource type="Resource" id="Resource_gejea"]
+script = ExtResource("2_sprite")
+source = 73024
+texture = ExtResource("4_cat")
+note = "The cat. 32x15 in the game, and the most drawn thing on screen."
+
+[sub_resource type="Resource" id="Resource_3rdwi"]
+script = ExtResource("2_sprite")
+source = 76356
+texture = ExtResource("3_mouse")
+note = "The mice in the alley. One piece of artwork, drawn wherever a mouse is."
+
+[resource]
+script = ExtResource("1_artwork")
+sprites = Array[ExtResource("2_sprite")]([SubResource("Resource_gejea"), SubResource("Resource_3rdwi")])
