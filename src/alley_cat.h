@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture_rect.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/typed_array.hpp>
 #include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 
@@ -57,6 +58,7 @@ class AlleyCat : public TextureRect {
 	Ref<AudioStreamGeneratorPlayback> playback;
 	double phase = 0.0; // carried between frames so the square wave stays continuous
 
+	bool reports_sprites = false; // Whether every sprite the game draws is reported; see set_reports_sprites.
 	PackedByteArray pixels; // RGBA8, FRAME_WIDTH * FRAME_HEIGHT * 4
 	Ref<Image> image;
 	Ref<ImageTexture> texture;
@@ -182,6 +184,9 @@ public:
 	int get_load_address() const;
 	int get_data_address() const;
 	int poke(int at, const PackedByteArray &bytes);
+	void set_reports_sprites(bool value);
+	bool get_reports_sprites() const;
+	TypedArray<Dictionary> get_sprites() const;
 	void watch(int from, int to);
 	PackedInt32Array get_watch_writers() const;
 	int get_watch_hits() const;

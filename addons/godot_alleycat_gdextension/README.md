@@ -315,6 +315,33 @@ Those offsets are counted from `get_data_address()`, not from `get_load_address(
 is a page above where the image was loaded, so an offset taken straight off the disassembly and added to the
 load address reads rubbish. `peek` and `poke` work in physical addresses, and the sum of the two is one.
 
+## Watching the game draw
+
+Hi-res artwork over a 1984 game needs to know what was drawn and where, and the game will say so. Set
+`reports_sprites` and `get_sprites()` gives back everything drawn in the last frame, in the order it was
+drawn:
+
+| | |
+| --- | --- |
+| `source` | the address the artwork was copied from, which `peek` can read |
+| `x`, `y` | where it went, in the 320x200 picture |
+| `width`, `height` | how big, in pixels |
+| `masked` | whether it was ANDed over the background or painted straight on |
+
+It costs nothing while it is off, and very little while it is on: the check is on the call instruction, which
+is rare next to the millions of ordinary instructions a second the interpreter runs.
+
+`at` is also there, as the raw offset into the CGA window, but `x` and `y` are what a host wants. That window
+is not a bitmap: rows alternate between two banks `0x2000` apart and each byte is four pixels, because that
+is what the hardware wanted rather than anything anyone would choose.
+
+Measured in play, a busy frame draws four sprites, all from one address, which is the mice running along the
+ground - one piece of artwork used four times, which is exactly what a host replacing it needs to know. The
+attract screen draws one, the cat walking the fence.
+
+The report is cleared at the start of every frame, so a quiet frame says nothing and a host should read it
+every frame rather than whenever it happens to look.
+
 ## Keeping a high score
 
 The remaster node carries the high score across runs, which the game cannot do for itself: it was written

@@ -443,3 +443,43 @@ func test_the_score_and_high_score_are_seven_decimal_digits_where_the_disassembl
 	var wanted: PackedByteArray = PackedByteArray([0, 0, 4, 2, 0, 6, 9])
 	game.call(&"poke", data + 0x1f89, wanted)
 	assert_eq(game.call(&"peek", data + 0x1f89, 7), wanted, "A high score put in is a high score read back")
+
+
+## Every sprite the game draws, as it draws it, which is what hi-res artwork over a 1984 game needs: a host
+## cannot put its own picture in the right place without being told what went where. The game says so
+## itself - every sprite in it goes through one of three blitters, so watching the calls is watching it draw.
+func test_the_game_reports_every_sprite_it_draws() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not game.has_method(&"get_sprites"):
+		fail_test("This library predates get_sprites; rebuild it")
+		return
+	assert_false(game.get(&"reports_sprites"), "Reporting is off until a host asks for it")
+	await wait_process_frames(120)
+	assert_eq((game.call(&"get_sprites") as Array).size(), 0, "and nothing is collected while it is off")
+
+	game.set(&"reports_sprites", true)
+	# The busiest frame of a run, rather than whichever frame this happens to land in: the report is cleared
+	# at the start of every frame, so a quiet one says nothing.
+	var busiest: Array = []
+	for i: int in 600:
+		await wait_process_frames(1)
+		var drawn: Array = game.call(&"get_sprites")
+		if drawn.size() > busiest.size():
+			busiest = drawn
+	assert_gt(busiest.size(), 0, "The attract screen alone animates, so something should have been drawn")
+
+	for sprite: Dictionary in busiest:
+		assert_between(int(sprite["x"]), 0, 319, "A sprite is somewhere on a 320 wide screen")
+		assert_between(int(sprite["y"]), 0, 199, "and somewhere on a 200 tall one")
+		assert_gt(int(sprite["width"]), 0, "with a width")
+		assert_gt(int(sprite["height"]), 0, "and a height")
+		assert_true(sprite.has("masked"), "and it says whether it was drawn over the background or onto it")
+		# The source is an address rather than an offset, so the artwork itself can be read.
+		var artwork: PackedByteArray = game.call(&"peek", int(sprite["source"]), 16)
+		assert_eq(artwork.size(), 16, "and the artwork it was copied from can be read back")
+
+	game.set(&"reports_sprites", false)
+	await wait_process_frames(60)
+	assert_eq((game.call(&"get_sprites") as Array).size(), 0, "Turning it off stops the collecting")

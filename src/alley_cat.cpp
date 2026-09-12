@@ -71,6 +71,10 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_load_address"), &AlleyCat::get_load_address);
 	ClassDB::bind_method(D_METHOD("get_data_address"), &AlleyCat::get_data_address);
 	ClassDB::bind_method(D_METHOD("poke", "at", "bytes"), &AlleyCat::poke);
+	ClassDB::bind_method(D_METHOD("set_reports_sprites", "value"), &AlleyCat::set_reports_sprites);
+	ClassDB::bind_method(D_METHOD("get_reports_sprites"), &AlleyCat::get_reports_sprites);
+	ClassDB::bind_method(D_METHOD("get_sprites"), &AlleyCat::get_sprites);
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "reports_sprites"), "set_reports_sprites", "get_reports_sprites");
 	ClassDB::bind_method(D_METHOD("watch", "from", "to"), &AlleyCat::watch);
 	ClassDB::bind_method(D_METHOD("get_watch_writers"), &AlleyCat::get_watch_writers);
 	ClassDB::bind_method(D_METHOD("get_watch_hits"), &AlleyCat::get_watch_hits);
@@ -199,6 +203,10 @@ void AlleyCat::_process(double delta) {
 	int budget = (int)pending_instructions;
 	if (budget > 0) {
 		pending_instructions -= budget;
+		// A fresh frame's worth of sprites, so what is read back afterwards is what this frame drew.
+		if (reports_sprites) {
+			alleycat_sprites_begin();
+		}
 		alleycat_run(budget);
 		// Snapshot on the game's own clock rather than the host's, so how much history a second of
 		// rewind buys does not depend on the frame rate of the machine it happens to run on.
@@ -467,6 +475,45 @@ int AlleyCat::get_data_address() const { return (int)alleycat_data_address(); }
 // Writes into the machine's memory, and answers how many bytes went in. The other half of what carrying a
 // high score across runs needs: one read out at the end of a game has to be put back at the start of the
 // next. It writes where the game itself would, so it can corrupt the program as easily as set a score.
+// Whether to report every sprite the game draws. Off by default and free when off: the check is on the call
+// instruction, which is rare beside the millions of ordinary instructions a second the interpreter runs.
+void AlleyCat::set_reports_sprites(bool value) {
+	reports_sprites = value;
+	alleycat_report_sprites(value ? 1 : 0);
+}
+
+bool AlleyCat::get_reports_sprites() const { return reports_sprites; }
+
+// What the game drew this frame, in the order it drew it. Each entry says which artwork was copied, where it
+// went, and how big it is - enough for a host to put its own picture in the same place instead.
+//
+// "at" is an offset into the CGA window, which is not a position: rows alternate between two banks 0x2000
+// apart, and each byte is four pixels. The x and y here are worked back out of it, so a host does not have
+// to know what a 1981 display adapter was thinking.
+TypedArray<Dictionary> AlleyCat::get_sprites() const {
+	TypedArray<Dictionary> out;
+	int n = alleycat_sprite_count();
+	for (int i = 0; i < n; i++) {
+		unsigned int source = 0, at = 0, size = 0, kind = 0;
+		if (!alleycat_sprite(i, &source, &at, &size, &kind)) {
+			continue;
+		}
+		unsigned int bank = (at & 0x2000u) ? 1u : 0u;
+		unsigned int offset = at & 0x1FFFu;
+		Dictionary sprite;
+		sprite["source"] = (int)source;
+		sprite["at"] = (int)at;
+		sprite["x"] = (int)((offset % 80u) * 4u);
+		sprite["y"] = (int)((offset / 80u) * 2u + bank);
+		// CL is how many words across, and a word is eight pixels; CH is how many rows down.
+		sprite["width"] = (int)((size & 0xFFu) * 8u);
+		sprite["height"] = (int)((size >> 8) & 0xFFu);
+		sprite["masked"] = kind == ALLEYCAT_BLIT_MASKED;
+		out.push_back(sprite);
+	}
+	return out;
+}
+
 int AlleyCat::poke(int at, const PackedByteArray &bytes) {
 	if (at < 0 || bytes.is_empty()) {
 		return 0;

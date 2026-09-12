@@ -148,6 +148,28 @@ unsigned int alleycat_data_address(void);
    drawing, so it does not count towards the video writes a host reads to notice screen changes. */
 int alleycat_poke(unsigned int at, const unsigned char *from, unsigned int length);
 
+/* Every sprite the game draws, as it draws it. Hi-res artwork over a 1984 game needs to know what was drawn
+   and where, and the game will say so: every sprite in it goes through one of three blitters, so watching
+   the calls to those is watching the game draw.
+
+   Reporting is off by default and costs nothing when off - it is a comparison on the call instruction, which
+   is rare next to the millions of ordinary instructions a second the interpreter runs.
+
+   A report is the source the artwork was copied from, as an address alleycat_peek can read; where it went in
+   the CGA window; and the size as the game gave it, CL words across by CH rows. A word is eight pixels at
+   two bits each, and rows alternate banks, which is the shape the hardware wanted rather than anything a
+   host would choose. */
+#define ALLEYCAT_SPRITES_MAX 512
+/* The blitters, as offsets into CAT.EXE. sub_09FCD copies straight into the screen, sub_09F65 saves the
+   background and ANDs the sprite over it, sub_09FA0 walks its source by a stride for a taller strip. */
+#define ALLEYCAT_BLIT_PLAIN   0x9FCDu
+#define ALLEYCAT_BLIT_MASKED  0x9F65u
+#define ALLEYCAT_BLIT_STRIDED 0x9FA0u
+void alleycat_report_sprites(int on);
+void alleycat_sprites_begin(void);
+int alleycat_sprite_count(void);
+int alleycat_sprite(int index, unsigned int *source, unsigned int *at, unsigned int *size, unsigned int *kind);
+
 /* Watches a range of memory and remembers where the code that wrote to it was. This is how anything in the
    game is found: a score, a life count or a sprite is a place in memory, and the way to that place is the
    routine that touches it. Point the watch at the few bytes of screen a number is drawn in, let the game
@@ -351,10 +373,20 @@ static uint32_t WATCH_CALLERS[ALLEYCAT_WATCH_MAX];
 static int      WATCH_WRITER_COUNT = 0;
 static int      WATCH_CALLER_COUNT = 0;
 static unsigned int WATCH_HITS = 0;
+
+/* Sprites drawn this frame. See alleycat_report_sprites. */
+static int      SPRITES_REPORTED = 0;
+static uint32_t SPRITE_SOURCE[ALLEYCAT_SPRITES_MAX];
+static uint16_t SPRITE_AT[ALLEYCAT_SPRITES_MAX];
+static uint16_t SPRITE_SIZE[ALLEYCAT_SPRITES_MAX];
+static uint16_t SPRITE_KIND[ALLEYCAT_SPRITES_MAX];
+static int      SPRITE_COUNT = 0;
+static int      SPRITE_MISSED = 0;
 #define IN_VIDEO(at) ((at) >= ((uint32_t)VIDEO_SEG << 4) && (at) < (((uint32_t)VIDEO_SEG << 4) + 0x4000u))
 
 static void note_watch(uint32_t at);
 static void note_caller(void);
+static void note_sprite(void);
 
 static void     wr8(uint16_t seg, uint16_t off, uint8_t v) {
     uint32_t at = phys(seg, off);
@@ -431,6 +463,30 @@ static void note_caller(void)
     if (WATCH_CALLER_COUNT < ALLEYCAT_WATCH_MAX) {
         WATCH_CALLERS[WATCH_CALLER_COUNT++] = where;
     }
+}
+
+/* Called on every near call, which is where a blit begins. The registers are still the ones the caller set
+   up - SI the artwork, DI the place on screen, CX the size - because nothing has run yet. */
+static void note_sprite(void)
+{
+    uint32_t where;
+    if (!SPRITES_REPORTED) {
+        return;
+    }
+    where = (((uint32_t)S[sCS] << 4) + IP) - ((uint32_t)LOAD_SEG << 4);
+    if (where != ALLEYCAT_BLIT_PLAIN && where != ALLEYCAT_BLIT_MASKED && where != ALLEYCAT_BLIT_STRIDED) {
+        return;
+    }
+    if (SPRITE_COUNT >= ALLEYCAT_SPRITES_MAX) {
+        SPRITE_MISSED++;
+        return;
+    }
+    /* The source as an address rather than an offset, so a host can read the artwork with alleycat_peek. */
+    SPRITE_SOURCE[SPRITE_COUNT] = ((uint32_t)S[sDS] << 4) + R[rSI];
+    SPRITE_AT[SPRITE_COUNT] = R[rDI];
+    SPRITE_SIZE[SPRITE_COUNT] = R[rCX];
+    SPRITE_KIND[SPRITE_COUNT] = (uint16_t)where;
+    SPRITE_COUNT++;
 }
 
 static uint8_t fetch8(void)   { uint8_t v = rd8(S[sCS], IP); IP++; return v; }
@@ -1049,7 +1105,7 @@ static void execute(uint8_t op, int seg_override, int rep)
         return;
     }
 
-    case 0xE8: { int16_t d = (int16_t)fetch16(); push(IP); IP = (uint16_t)(IP + d); return; }
+    case 0xE8: { int16_t d = (int16_t)fetch16(); push(IP); IP = (uint16_t)(IP + d); note_sprite(); return; }
     case 0xE9: { int16_t d = (int16_t)fetch16(); IP = (uint16_t)(IP + d); return; }
     case 0xEA: { uint16_t off = fetch16(), seg = fetch16(); S[sCS] = seg; IP = off; return; }
     case 0xEB: { int8_t d = fetchs8(); IP = (uint16_t)(IP + d); return; }
@@ -1423,6 +1479,26 @@ int alleycat_watch_writers(unsigned int *into, int max)
 }
 
 unsigned int alleycat_watch_hits(void) { return WATCH_HITS; }
+
+void alleycat_report_sprites(int on) { SPRITES_REPORTED = on; alleycat_sprites_begin(); }
+
+/* Starts a fresh frame's worth. A host calls this before letting the machine run, so what it reads back
+   afterwards is what was drawn in that frame and nothing older. */
+void alleycat_sprites_begin(void) { SPRITE_COUNT = 0; SPRITE_MISSED = 0; }
+
+int alleycat_sprite_count(void) { return SPRITE_COUNT; }
+
+int alleycat_sprite(int index, unsigned int *source, unsigned int *at, unsigned int *size, unsigned int *kind)
+{
+    if (index < 0 || index >= SPRITE_COUNT) {
+        return 0;
+    }
+    if (source) { *source = SPRITE_SOURCE[index]; }
+    if (at)     { *at = SPRITE_AT[index]; }
+    if (size)   { *size = SPRITE_SIZE[index]; }
+    if (kind)   { *kind = SPRITE_KIND[index]; }
+    return 1;
+}
 
 /* The routines that called the writers, which is what says what was being drawn rather than how. */
 int alleycat_watch_callers(unsigned int *into, int max)
