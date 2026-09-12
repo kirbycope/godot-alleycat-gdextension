@@ -150,11 +150,11 @@ func test_the_labels_swap_for_the_setup_questions_and_back() -> void:
 	assert_eq(demo.controls.joypad_button_1_label.text, "Sound")
 
 
-## Ctrl-M brings the player back to the menu, and picking a skill there leaves the game printing its
-## instructions and waiting to be told to go. That is a third setup screen rather than the skill menu
-## again: the d-pad has stopped answering anything, and the button that starts the game has to say so or
-## the player is left reading "Press any key to start" with nothing on the HUD offering to.
-func test_the_menu_ends_on_a_button_that_starts_the_game() -> void:
+## Ctrl-M brings the player back to the setup, and the one thing there worth putting to the player is the
+## skill. The game then reprints its instructions and waits for any key, which is not a question and has no
+## button on the HUD that says so; leaving the player to find it is the dead end that made the Menu button
+## useless. The demo presses it, so picking a skill puts them straight back in the alley.
+func test_picking_a_skill_from_the_menu_goes_straight_back_into_play() -> void:
 	var menu: String = "Please select your skill level:
    (K)itten
    (H)ouse Cat
@@ -164,22 +164,18 @@ func test_the_menu_ends_on_a_button_that_starts_the_game() -> void:
 Press any key to start.
 "
 
-	demo._has_played = true
-	assert_eq(demo._stage_for(menu), AlleyCatControls.Stage.ASKING_SKILL, "the skill menu on its own")
-	assert_eq(demo._stage_for(chosen), AlleyCatControls.Stage.READY_TO_START, "and once a skill is picked")
+	assert_eq(demo._stage_for(menu), AlleyCatControls.Stage.ASKING_SKILL, "the skill menu is the player's")
+	assert_eq(demo._stage_for(chosen), AlleyCatControls.Stage.READY_TO_START, "what follows it is not")
+	assert_eq(demo._stage_for("Do you want to use a joystick (Y/N)?
+"),
+			AlleyCatControls.Stage.ASKING_JOYSTICK, "and neither is the question before it")
 
-	# On the way into a first game the demo presses that key itself, so the screen is never seen and the
-	# HUD stays dressed for play rather than flashing a Start button nobody has to press.
-	demo._has_played = false
-	assert_eq(demo._stage_for(chosen), AlleyCatControls.Stage.PLAYING, "except on the way into a first game")
-	demo._has_played = true
-
-	demo.controls.set_stage(AlleyCatControls.Stage.READY_TO_START)
-	assert_eq(demo.controls.joypad_button_0_label.text, "Start", "the one button the screen has a use for")
-	assert_eq(demo.controls.joypad_button_12_label.text, "", "the skills have been answered")
-	assert_false(demo.controls.joypad_button_12.visible, "so their buttons come off the screen")
-	demo.controls.set_stage(AlleyCatControls.Stage.PLAYING)
-	assert_eq(demo.controls.joypad_button_0_label.text, "Jump", "and play puts the scene's own words back")
+	# The demo holds the action key for exactly the screen that is only waiting to be told to go, and lets
+	# go of it again, so the press does not carry into the game that follows.
+	demo._press_on(true)
+	assert_true(demo._pressing_on and Input.is_action_pressed(&"alleycat_alt"))
+	demo._press_on(false)
+	assert_false(demo._pressing_on or Input.is_action_pressed(&"alleycat_alt"))
 
 
 ## The game blanks the graphics screen to ask a question and paints it to play, and the HUD has to

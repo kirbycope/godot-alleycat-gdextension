@@ -43,7 +43,6 @@ var _stage: AlleyCatControls.Stage = AlleyCatControls.Stage.PLAYING ## Which scr
 var _look_shown_until: float = 0.0 ## When to take the name of the look back off the screen.
 var _answering: bool = false ## Whether the demo is holding the answer to the joystick question down.
 var _pressing_on: bool = false ## Whether the demo is holding the action key to get past a wait.
-var _has_played: bool = false ## Whether the game has reached play once. Its menu means something else after that.
 var _can_rewind: bool = false ## Whether the library on this platform has been built with rewind in it.
 
 
@@ -159,23 +158,6 @@ func _process(_delta: float) -> void:
 
 	var asking: bool = game.call(&"get_screen_painted") < PAINTED
 	var text: String = game.call(&"get_text")
-	if not asking:
-		_has_played = true
-
-	# Two of the game's screens are not questions, the first time through: the title, and the page of
-	# instructions that ends in "press any key to start". Both only want the action key, so the demo
-	# presses it and the player never sees either.
-	#
-	# Only the first time, though. Ctrl-M reprints that same page to bring the player back to the
-	# menu, and skipping it then is how the game ends up sitting at a menu nobody can see: the whole
-	# point of going there is to read it and pick a skill again.
-	var at_a_wait: bool = not asking or _start_prompt_at(text) > text.rfind("skill level")
-	_press_on(at_a_wait and not _has_played and _stage == AlleyCatControls.Stage.PLAYING)
-	var waiting_to_go_on: bool = at_a_wait and not _has_played
-
-	var showing: bool = asking and not waiting_to_go_on
-	prompt.text = _live_question(text) if showing else ""
-	prompt.visible = showing
 
 	# The same buttons mean different things on each of the game's screens, and most of them mean
 	# nothing at all on two of the three, so the HUD is told which screen is up rather than just
@@ -185,7 +167,21 @@ func _process(_delta: float) -> void:
 		_stage = stage
 		controls.set_stage(stage)
 
+	# Only one of the three setup screens is the player's to answer. The joystick question is about
+	# hardware Godot has already dealt with, and the page after a skill is picked is not a question at
+	# all - the game has printed its instructions and is waiting to be told to go - so the demo answers
+	# both and the player is left with the skill menu, which is a real choice.
+	#
+	# That last one is what makes the Menu button work. Alley Cat's own Ctrl-M goes back to the setup,
+	# and leaving the player to find the key that gets them out of it again is a dead end: the page says
+	# "Press any key to start" and the d-pad in front of them still says four skills. Pressing it here
+	# means picking a skill puts them straight back into the alley.
 	_answer_the_joystick_question(stage == AlleyCatControls.Stage.ASKING_JOYSTICK)
+	_press_on(stage == AlleyCatControls.Stage.READY_TO_START)
+
+	var showing: bool = stage == AlleyCatControls.Stage.ASKING_SKILL
+	prompt.text = _live_question(text) if showing else ""
+	prompt.visible = showing
 
 
 
@@ -211,14 +207,11 @@ func _live_question(text: String) -> String:
 func _stage_for(text: String) -> AlleyCatControls.Stage:
 	if text.contains("skill level"):
 		# The d-pad answers the skill menu, so the menu is up for as long as the game has not printed
-		# anything past it.
+		# anything past it. Once a skill is picked it prints the instructions, ending in the line that
+		# waits to be told to go, and that is a different screen with a different answer.
 		if _start_prompt_at(text) < text.rfind("skill level"):
 			return AlleyCatControls.Stage.ASKING_SKILL
-		# The skill is picked and the game has reprinted its instructions to wait to be told to go.
-		# On the way into a first game the demo presses that key itself, so the screen is never seen
-		# and the HUD stays dressed for play; coming back through Ctrl-M the player is here on
-		# purpose, and needs a button that says Start rather than four that still say skills.
-		return AlleyCatControls.Stage.READY_TO_START if _has_played else AlleyCatControls.Stage.PLAYING
+		return AlleyCatControls.Stage.READY_TO_START
 	if text.rfind("(Y/N)") >= 0:
 		return AlleyCatControls.Stage.ASKING_JOYSTICK
 	return AlleyCatControls.Stage.PLAYING
@@ -243,9 +236,9 @@ func _answer_the_joystick_question(asking: bool) -> void:
 		_answering = false
 
 
-## Holds the action key while the game is only waiting to be told to carry on. Alley Cat pauses on its
-## title and again after its instructions, and both want the same key; a player who has already chosen
-## to run the thing has nothing to decide at either, so the demo decides for them.
+## Holds the action key while the game is only waiting to be told to carry on. Alley Cat prints its
+## instructions after a skill is picked and sits there until any key arrives; the player has already made
+## every choice the setup offers by then, so the demo makes that last press for them.
 func _press_on(waiting: bool) -> void:
 	if not InputMap.has_action(&"alleycat_alt"):
 		return

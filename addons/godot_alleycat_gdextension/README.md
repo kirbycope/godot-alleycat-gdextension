@@ -147,12 +147,18 @@ each page, so `set_stage` dresses the HUD for whichever page is up and `Stage` n
 | `READY_TO_START` | the instructions, ending "Press any key to start." | one button, labelled Start |
 | `PLAYING` | the alley | the scene's own words |
 
-`READY_TO_START` exists because of the Menu button. Ctrl-M brings the player back to the setup on purpose,
-and once a skill has been picked there the game reprints its instructions and waits to be told to go. That
-is a third page and not the skill menu again: the d-pad has stopped answering anything, and without a button
-that says Start the player is left reading "Press any key to start" with a HUD still offering four skills.
-On the way into a *first* game the demo presses that key itself, so the page is never seen and the HUD is
-left dressed for play.
+`READY_TO_START` exists because of the Menu button. Ctrl-M brings the player back to the setup, and once a
+skill has been picked there the game reprints its instructions and waits to be told to go. That is a third
+page and not the skill menu again: the d-pad has stopped answering anything, so a player left to find the
+key themselves is reading "Press any key to start" with a HUD still offering four skills, which is how the
+Menu button ended up being a way in and not a way out.
+
+The demo presses that key for them. Of the three setup screens only the skill menu is a real choice - the
+joystick question is about hardware Godot has already dealt with, and this page is not a question at all -
+so `_answer_the_joystick_question` takes the first and `_press_on` takes the third, and pressing Menu then
+a skill puts the player straight back in the alley. The page is on screen for about one frame, which is why
+`READY_TO_START` still has a Start label: if the press ever fails to land, the HUD names the button that
+works rather than showing a dead end.
 
 ## Tests
 
