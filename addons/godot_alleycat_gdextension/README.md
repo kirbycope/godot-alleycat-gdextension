@@ -209,7 +209,7 @@ as - which is what makes a recolour exact instead of a hue rotation guessing at 
 
 | | | | |
 | --- | --- | --- | --- |
-| CGA (as it loads) | Amber CRT | Green CRT | Trinitron CRT |
+| CGA | Amber CRT | Green CRT | Trinitron CRT |
 | Comic | Cel | Game Boy | Paper |
 | VHS | Pen and Ink | Dither | Negative |
 | Deep Fried | Double Vision | Nausea | Holofoil |
@@ -236,6 +236,26 @@ Edition redrew a 1980 maze as tubes of light on black, and Alley Cat suits the s
 its artwork is black line work - outlines, the writing on the fence, the sprites - over two flat
 fills. So the ink lights up, the fills go almost out, and the light spills, which is the half of that
 look people leave out.
+
+It also answers to the game rather than to a clock, which needs three things the shader cannot know,
+because a shader is handed one frame with no memory of the last.
+
+A lit region follows whatever is moving. The host samples every fourth pixel each way, diffs against
+the previous frame and splits what changed into two centroids, so the light finds the cat and
+whatever is chasing it without being told which is which.
+
+The stage colour drifts with how busy the alley is. `get_effect_starts()` counts the sounds the game
+has begun that were not the music, and each one nudges the hue a little. It has to be a count: the
+voice that is sounding is a level, and a level that is already EFFECTS says nothing when the next
+effect starts. That is why the colour used to change once and then never again.
+
+And the colour jumps, with a wipe down the screen, whenever the game draws a different picture -
+through a window into a room, back out into the alley, a life lost, a level begun.
+`get_video_writes()` counts bytes drawn into the CGA window, and the size alone tells those apart:
+measured in play, moving the cat and the mice costs about 120 bytes in a busy frame, while every
+screen change costs the whole 16K at once. Pixels cannot answer this. Alley Cat's screens share a
+background colour, so two completely different places agree on most of their pixels, and a new screen
+arrives over several frames rather than in one, so a frame-to-frame difference never spikes either.
 
 ## The remaster layer
 

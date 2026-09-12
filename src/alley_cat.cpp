@@ -63,6 +63,8 @@ void AlleyCat::_bind_methods() {
 			"set_effects_volume", "get_effects_volume");
 
 	ClassDB::bind_method(D_METHOD("get_voice"), &AlleyCat::get_voice);
+	ClassDB::bind_method(D_METHOD("get_effect_starts"), &AlleyCat::get_effect_starts);
+	ClassDB::bind_method(D_METHOD("get_video_writes"), &AlleyCat::get_video_writes);
 
 	ClassDB::bind_method(D_METHOD("set_rewind_seconds", "value"), &AlleyCat::set_rewind_seconds);
 	ClassDB::bind_method(D_METHOD("get_rewind_seconds"), &AlleyCat::get_rewind_seconds);
@@ -411,6 +413,14 @@ void AlleyCat::set_effects_volume(double value) {
 double AlleyCat::get_effects_volume() const { return effects_volume; }
 
 int AlleyCat::get_voice() const { return alleycat_voice(); }
+
+// Sounds other than the music the game has begun since it booted. It only rises, so a host reads a change
+// as "something just happened" without needing to know what happened.
+int AlleyCat::get_effect_starts() const { return (int)alleycat_effect_starts(); }
+
+// Bytes drawn into the CGA window since boot. The jump between two frames says how much of the screen the
+// game just drew, which is how a whole new place is told from a sprite moving.
+int AlleyCat::get_video_writes() const { return (int)alleycat_video_writes(); }
 
 // ---- rewind ---------------------------------------------------------------------------------
 

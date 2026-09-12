@@ -174,6 +174,8 @@ public:
 
 	// Which of the two is sounding right now: 0 none, 1 music, 2 effects.
 	int get_voice() const;
+	int get_effect_starts() const;
+	int get_video_writes() const;
 
 	// How many seconds of rewind to keep. Zero turns it off and frees the ring, which is what a web
 	// export wants; the memory is one megabyte per snapshot at 18.2 of them a second.

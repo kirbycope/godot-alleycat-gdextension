@@ -120,6 +120,12 @@ int alleycat_audio_available(void);
 #define ALLEYCAT_VOICE_MUSIC   1
 #define ALLEYCAT_VOICE_EFFECTS 2
 int alleycat_voice(void);
+/* Sounds other than the music the game has begun since it booted. Only ever rises, so a change is an event:
+   this is "something just happened" without having to know what. */
+unsigned int alleycat_effect_starts(void);
+/* Bytes written into the CGA window since boot. The jump between two host frames says how much of the screen
+   the game just drew, which is how a whole new place is told from a sprite moving. */
+unsigned int alleycat_video_writes(void);
 void alleycat_set_voice_volume(int voice, float volume);
 
 /* Machine state, for rewinding. alleycat_state_size is how many bytes a snapshot takes and does not
@@ -219,9 +225,29 @@ static int      SQUARE_LEVEL;
    cursor at 0x5320 and looks each note's divisor up at 0x5324. */
 #define MUSIC_OUT_LOW  0xC619u
 #define MUSIC_OUT_HIGH 0xC61Du
-static int   VOICE = ALLEYCAT_VOICE_NONE;
+static int   VOICE = ALLEYCAT_VOICE_NONE;        /* Who is sounding right now, NONE while the speaker is quiet. */
+static int   VOICE_WRITER = ALLEYCAT_VOICE_NONE; /* Who last set a frequency; who VOICE becomes when the gate opens. */
+static int   SPEAKER_WAS_ON = 0;
+static unsigned int EFFECT_STARTS = 0;           /* Sounds the game has begun that were not the music. */
 static float VOICE_VOLUME[3] = { 1.0f, 1.0f, 1.0f };
 static uint16_t PIT2_DIVISOR = 0;
+
+/* Follows the speaker gate after anything that could have moved it. The game silences a sound either by
+   closing the gate at port 0x61 or by zeroing the divisor at 0x42, so both count as quiet.
+
+   This is what makes "a sound just started" answerable. VOICE on its own is a level, not an event: it used
+   to be set on every frequency write and never cleared, so after the first effect it simply stayed at
+   EFFECTS for good and a host watching for the change saw exactly one, at the beginning. Now it falls back
+   to NONE with the speaker, and every fresh effect is a rising edge that EFFECT_STARTS counts. */
+static void note_speaker(void) {
+    int on = (PORT61 & 0x03) == 0x03 && PIT2_DIVISOR > 0;
+    if (on && !SPEAKER_WAS_ON && VOICE_WRITER == ALLEYCAT_VOICE_EFFECTS) {
+        EFFECT_STARTS++;
+    }
+    VOICE = on ? VOICE_WRITER : ALLEYCAT_VOICE_NONE;
+    SPEAKER_WAS_ON = on;
+}
+
 static int      PIT2_HIGH_BYTE_NEXT = 0;
 /* PIT channel 0 is the game's stopwatch. It free-runs at PIT_HZ and counts down through 65536
    every BIOS tick, which is TICK_STEPS instructions here, and the game latches it with
@@ -270,7 +296,22 @@ static void parity_init(void)
 
 static uint32_t phys(uint16_t seg, uint16_t off) { return (uint32_t)(((seg << 4) + off) & 0xFFFFF); }
 static uint8_t  rd8(uint16_t seg, uint16_t off)  { return MEM[phys(seg, off)]; }
-static void     wr8(uint16_t seg, uint16_t off, uint8_t v) { MEM[phys(seg, off)] = v; }
+
+/* How much of the screen the game has drawn, counted in bytes written into the CGA window. This is the one
+   honest way to tell "the picture is being replaced" from "a sprite moved": moving the cat writes a few
+   hundred bytes, while going through a window and landing in a room writes the whole 16K.
+
+   Pixels cannot answer it. Alley Cat's screens share a background colour, so two completely different places
+   agree on most of their pixels, and a room arrives over several frames rather than in one, so a
+   frame-to-frame difference never spikes either. The machine knows what it drew; the picture does not. */
+static unsigned int VIDEO_WRITES = 0;
+#define IN_VIDEO(at) ((at) >= ((uint32_t)VIDEO_SEG << 4) && (at) < (((uint32_t)VIDEO_SEG << 4) + 0x4000u))
+
+static void     wr8(uint16_t seg, uint16_t off, uint8_t v) {
+    uint32_t at = phys(seg, off);
+    if (IN_VIDEO(at)) { VIDEO_WRITES++; }
+    MEM[at] = v;
+}
 
 static uint16_t rd16(uint16_t seg, uint16_t off)
 {
@@ -279,8 +320,8 @@ static uint16_t rd16(uint16_t seg, uint16_t off)
 
 static void wr16(uint16_t seg, uint16_t off, uint16_t v)
 {
-    MEM[phys(seg, off)] = (uint8_t)v;
-    MEM[phys(seg, (uint16_t)(off + 1))] = (uint8_t)(v >> 8);
+    wr8(seg, off, (uint8_t)v);
+    wr8(seg, (uint16_t)(off + 1), (uint8_t)(v >> 8));
 }
 
 /* 8-bit register halves: index 0-3 are AL CL DL BL, 4-7 are AH CH DH BH. */
@@ -510,6 +551,7 @@ static void port_out(uint16_t port, uint8_t value)
     switch (port) {
     case 0x61:
         PORT61 = value;
+        note_speaker();
         break;
     case 0x43:
         /* Only a channel 2 control word concerns the speaker. The game also latches channel 0
@@ -525,7 +567,7 @@ static void port_out(uint16_t port, uint8_t value)
         /* Who is making this sound. IP has already moved past the OUT by the time this runs, and the
            instruction is two bytes, so the music player's own writes are known by where it returns
            to. Only an interpreter can answer this: a square wave carries no sign of what asked for it. */
-        VOICE = (IP == MUSIC_OUT_LOW + 2u || IP == MUSIC_OUT_HIGH + 2u)
+        VOICE_WRITER = (IP == MUSIC_OUT_LOW + 2u || IP == MUSIC_OUT_HIGH + 2u)
                 ? ALLEYCAT_VOICE_MUSIC : ALLEYCAT_VOICE_EFFECTS;
         /* Access mode lo/hi: the low byte arrives first, then the high. */
         if (PIT2_HIGH_BYTE_NEXT) {
@@ -535,6 +577,7 @@ static void port_out(uint16_t port, uint8_t value)
             PIT2_DIVISOR = (uint16_t)((PIT2_DIVISOR & 0xFF00) | value);
             PIT2_HIGH_BYTE_NEXT = 1;
         }
+        note_speaker();
         break;
     case 0x201:
         /* Any write fires the axis one-shots; the value written is ignored by the hardware. */
@@ -1080,6 +1123,7 @@ int alleycat_init(const void *exe_bytes, int exe_size)
     memset(S, 0, sizeof S);
     FLAGS = 0x0002; IP = 0; ICOUNT = 0; VIDEO_MODE = -1; STOPPED = 0;
     SCANCODE = 0; PORT61 = 0; RETRACE = 0; KEYQ_HEAD = KEYQ_TAIL = 0;
+    VOICE = VOICE_WRITER = ALLEYCAT_VOICE_NONE; SPEAKER_WAS_ON = 0;
     PIT2_DIVISOR = 0; PIT2_HIGH_BYTE_NEXT = 0;
     PIT0_LATCH = 0; PIT0_HIGH_BYTE_NEXT = 0;
     JOY_X = JOY_Y = 0; JOY_BUTTON1 = JOY_BUTTON2 = 0; JOY_FIRED = 0; JOY_TIMING = 0;
@@ -1237,6 +1281,17 @@ int alleycat_audio_read(int16_t *out, int max_samples)
 int alleycat_ready(void) { return VIDEO_MODE >= 0; }
 int alleycat_voice(void) { return VOICE; }
 
+/* How many sounds other than the music the game has begun since it booted. A host watches this for "something
+   just happened" without knowing what: it only ever goes up, so a change is an event. Deliberately left out
+   of the snapshot fields below, because an event count is the host's history rather than the machine's state
+   and rewinding it would un-happen things the host has already reacted to. */
+unsigned int alleycat_effect_starts(void) { return EFFECT_STARTS; }
+
+/* Bytes the game has written into the CGA window since it booted. A host reads the jump between two of its
+   own frames: a few hundred is the cat moving, the whole 16K is a different place. Left out of the snapshot
+   for the same reason as the effect count - it is the host's reading of history, not the machine's state. */
+unsigned int alleycat_video_writes(void) { return VIDEO_WRITES; }
+
 void alleycat_set_voice_volume(int voice, float volume)
 {
     if (voice < 0 || voice > 2) {
@@ -1253,7 +1308,7 @@ void alleycat_set_voice_volume(int voice, float volume)
    PARITY is not here because it is a lookup table built from nothing, identical every run. The
    audio ring is not here because it belongs to the host, not the machine: rewinding should not
    push samples back at a host that has already played them. */
-#define ALLEYCAT_STATE_FIELDS(X) 	X(MEM) X(R) X(S) X(IP) X(FLAGS) X(ICOUNT) 	X(VIDEO_MODE) X(STATUS) X(FRAME) 	X(TEXT) X(CUR_ROW) X(CUR_COL) 	X(SCANCODE) X(PORT61) X(KEYQ) X(KEYQ_HEAD) X(KEYQ_TAIL) 	X(AUDIO_ACC) X(SQUARE_PHASE) X(SQUARE_LEVEL) 	X(PIT2_DIVISOR) X(PIT2_HIGH_BYTE_NEXT) X(VOICE) 	X(PIT0_LATCH) X(PIT0_HIGH_BYTE_NEXT) X(RETRACE) 	X(JOY_PRESENT) X(JOY_X) X(JOY_Y) X(JOY_BUTTON1) X(JOY_BUTTON2) 	X(JOY_FIRED) X(JOY_TIMING) 	X(STOPPED) X(BAD_OP) X(BAD_CS) X(BAD_IP)
+#define ALLEYCAT_STATE_FIELDS(X) 	X(MEM) X(R) X(S) X(IP) X(FLAGS) X(ICOUNT) 	X(VIDEO_MODE) X(STATUS) X(FRAME) 	X(TEXT) X(CUR_ROW) X(CUR_COL) 	X(SCANCODE) X(PORT61) X(KEYQ) X(KEYQ_HEAD) X(KEYQ_TAIL) 	X(AUDIO_ACC) X(SQUARE_PHASE) X(SQUARE_LEVEL) 	X(PIT2_DIVISOR) X(PIT2_HIGH_BYTE_NEXT) X(VOICE) X(VOICE_WRITER) X(SPEAKER_WAS_ON) 	X(PIT0_LATCH) X(PIT0_HIGH_BYTE_NEXT) X(RETRACE) 	X(JOY_PRESENT) X(JOY_X) X(JOY_Y) X(JOY_BUTTON1) X(JOY_BUTTON2) 	X(JOY_FIRED) X(JOY_TIMING) 	X(STOPPED) X(BAD_OP) X(BAD_CS) X(BAD_IP)
 
 size_t alleycat_state_size(void)
 {

@@ -281,3 +281,50 @@ func test_no_rewind_seconds_means_no_ring() -> void:
 	assert_eq(game.call(&"get_rewind_depth"), 0, "nothing is kept")
 	assert_eq(game.call(&"get_rewind_available"), 0.0)
 
+
+
+## An effect count, not a voice. The voice says who is sounding, which is a level, and a level that is
+## already EFFECTS says nothing at all when the next effect begins: it used to be set on every frequency
+## write and never cleared, so a host watching it for "something happened" saw exactly one event, at the
+## beginning, and then silence for the rest of the game.
+func test_a_sound_starting_is_countable_rather_than_a_level_that_never_falls() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not game.has_method(&"get_effect_starts"):
+		fail_test("This library predates get_effect_starts; rebuild it")
+		return
+	var voices: Dictionary = {}
+	var starts: Array[int] = []
+	for i in 2000:
+		await wait_process_frames(1)
+		voices[int(game.call(&"get_voice"))] = true
+		starts.append(int(game.call(&"get_effect_starts")))
+	assert_gt(starts[-1], starts[0], "The attract screen makes sounds, so the count should have risen")
+	assert_true(voices.has(0), "and the voice should fall back to none between them rather than latching")
+
+
+## What tells a room from a sprite. Pixels cannot: Alley Cat's screens share a background colour, so two
+## different places agree on most of their pixels, and a screen arrives over several frames rather than in
+## one. The machine knows what it drew.
+func test_the_game_says_how_much_of_the_screen_it_drew() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not game.has_method(&"get_video_writes"):
+		fail_test("This library predates get_video_writes; rebuild it")
+		return
+	var biggest: int = 0
+	var busiest_quiet_frame: int = 0
+	var last: int = int(game.call(&"get_video_writes"))
+	for i in 3000:
+		await wait_process_frames(1)
+		var now: int = int(game.call(&"get_video_writes"))
+		var drawn: int = now - last
+		last = now
+		biggest = maxi(biggest, drawn)
+		if drawn < 4000:
+			busiest_quiet_frame = maxi(busiest_quiet_frame, drawn)
+	assert_gt(biggest, 12000, "Changing screen draws the whole 16K CGA window at once")
+	assert_lt(busiest_quiet_frame, 4000,
+		"and a frame that only moves sprites costs far less, so the two are told apart by size alone")

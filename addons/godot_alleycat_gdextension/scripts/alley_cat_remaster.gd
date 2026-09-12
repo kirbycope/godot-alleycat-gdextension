@@ -72,9 +72,32 @@ var _changing_difficulty: bool = false
 ## frame, which is enough to find where the action is and cheap enough not to be felt.
 const WATCH_STEP: int = 4
 
-## How much of the screen has to change at once to count as the game announcing something rather than
-## the cat walking. Losing a life redraws far more than any amount of running about does.
+## How much of the picture has to change between two frames before it stops being movement worth following
+## and becomes the screen being rewritten. The light is let go of rather than dragged into the middle; what
+## the upheaval actually means is [constant REDRAW_BYTES]' question, not this one's.
 const UPHEAVAL: float = 0.22
+
+## How many bytes of screen the game has to draw in one frame for the picture to be a different picture
+## rather than the same one with the cat moved along it. Measured against the running game: the cat, the
+## mice and the dog together cost about 120 bytes in a busy frame, and every screen change measured cost
+## the whole 16K CGA window at once.
+const REDRAW_BYTES: int = 4000
+
+## ...and the whole window, which is what going through a window, losing a life and starting a level all
+## cost. Below this the game has redrawn a part of the screen; at it, the screen is simply somewhere else.
+const FULL_REDRAW_BYTES: int = 12000
+
+## How far the stage colour moves for one sound the game makes, and how close together two of those are
+## allowed to be. Small and spaced, because Alley Cat is never quiet: measured in play it starts about three
+## and a half sounds a second, and a jump per sound turns the screen into a strobe. This is the ambient half
+## of the effect - the colour drifting with how busy the alley is - while what a player reads as "something
+## happened to me" is losing a life, and that redraws the screen and takes the jump below.
+const EFFECT_HUE_STEP: float = 0.04
+const EFFECT_HUE_GAP: float = 0.2
+
+## How far it moves when the game draws a different picture: a room entered or left, a life lost, a level
+## begun. Far enough to be unmistakably a new place rather than the drift.
+const REDRAW_HUE_STEP: float = 0.29
 
 var _open: bool = false
 var _previous_frame: PackedByteArray = PackedByteArray()
@@ -83,7 +106,9 @@ var _focus_b: Vector2 = Vector2(0.5, 0.5)
 var _focus_amount: float = 0.0
 var _stage_hue: float = 0.0
 var _wipe: float = 0.0
-var _was_effects: bool = false
+var _effect_starts: int = -1 ## The game's count of sounds begun, to notice it going up. -1 until first read.
+var _video_writes: int = -1 ## Bytes the game has drawn, to notice how much it drew this frame. -1 until first read.
+var _since_effect: float = 0.0 ## Seconds since the colour last moved for a sound, so a burst of them is one move.
 
 var _look: int = 0
 var _game: Node = null
@@ -324,13 +349,33 @@ func _watch_the_game() -> void:
 		if _wipe >= 1.0:
 			_wipe = 0.0
 
-	# An effect firing is the game saying something happened, and it is the only such signal that
-	# needs no new instrumentation: the library already reports which voice is sounding.
-	if is_instance_valid(_game) and _game.has_method(&"get_voice"):
-		var effects_now: bool = int(_game.call(&"get_voice")) == 2
-		if effects_now and not _was_effects:
-			_stage_hue = fposmod(_stage_hue + 0.13, 1.0)
-		_was_effects = effects_now
+	# A sound starting is the game saying something happened - the cat caught, something eaten, a jump
+	# landed - and it needs no new instrumentation beyond a count of them. It has to be a count and not
+	# the voice that is sounding: the voice is a level, and a level that is already EFFECTS says nothing
+	# when the next effect begins.
+	if is_instance_valid(_game) and _game.has_method(&"get_effect_starts"):
+		var starts: int = int(_game.call(&"get_effect_starts"))
+		_since_effect += get_process_delta_time()
+		if _effect_starts >= 0 and starts != _effect_starts and _since_effect >= EFFECT_HUE_GAP:
+			_stage_hue = fposmod(_stage_hue + EFFECT_HUE_STEP, 1.0)
+			_since_effect = 0.0
+		_effect_starts = starts
+
+	# How much of the screen the game just drew is the one reliable way to know it is showing somewhere
+	# else. Pixels cannot answer it: Alley Cat's screens share a background colour, so two different places
+	# agree on most of their pixels, and a room arrives over several frames rather than in one.
+	if is_instance_valid(_game) and _game.has_method(&"get_video_writes"):
+		var writes: int = int(_game.call(&"get_video_writes"))
+		if _video_writes >= 0:
+			var drawn: int = writes - _video_writes
+			if drawn > REDRAW_BYTES:
+				_stage_hue = fposmod(_stage_hue + REDRAW_HUE_STEP, 1.0)
+				_focus_amount = 0.0
+				# The whole window at once is a place, not a panel: a room entered or left, a life lost,
+				# a level begun. That is what the wipe is for.
+				if drawn > FULL_REDRAW_BYTES and _wipe <= 0.0:
+					_wipe = 0.001
+		_video_writes = writes
 
 	_follow_the_movement()
 
@@ -359,7 +404,8 @@ func _follow_the_movement() -> void:
 		_previous_frame = pixels
 		return
 
-	# Two sums, split down the middle, so two points come out of one pass rather than two.
+	# Two sums, split down the middle, so two points come out of one pass rather than two, and a count of
+	# ink per block in the same pass, which is what says whether this is a different place altogether.
 	var left: Vector2 = Vector2.ZERO
 	var right: Vector2 = Vector2.ZERO
 	var left_count: int = 0
@@ -380,13 +426,10 @@ func _follow_the_movement() -> void:
 	_previous_frame = pixels
 
 	var changed: int = left_count + right_count
-	var upheaval: float = float(changed) / maxf(float(looked_at), 1.0)
-	# Everything moving at once is not movement to follow, it is the game redrawing: a life lost, a
-	# level starting. That is the wipe, and following it would only drag the light to the middle.
-	if upheaval > UPHEAVAL:
-		if _wipe <= 0.0:
-			_wipe = 0.001
-			_stage_hue = fposmod(_stage_hue + 0.37, 1.0)
+	# Everything moving at once is not movement to follow, so the light is let go of rather than dragged
+	# into the middle. What that upheaval means - a new room, a lost life - is not a question for pixels;
+	# the game says how much it drew, and _watch_the_game reads that.
+	if float(changed) / maxf(float(looked_at), 1.0) > UPHEAVAL:
 		_focus_amount = lerpf(_focus_amount, 0.0, 0.25)
 		return
 
@@ -396,3 +439,5 @@ func _follow_the_movement() -> void:
 	if right_count > 0:
 		_focus_b = _focus_b.lerp(right / float(right_count), ease)
 	_focus_amount = lerpf(_focus_amount, 1.0 if changed > 0 else 0.0, ease)
+
+
