@@ -19,6 +19,9 @@ config.log
 
 .godot/
 .mcp/
+# Injected into the project by the Godot MCP server while it drives it; not part of the addon.
+mcp_bridge.gd
+mcp_bridge.gd.uid
 
 # Build and import logs
 build.log
