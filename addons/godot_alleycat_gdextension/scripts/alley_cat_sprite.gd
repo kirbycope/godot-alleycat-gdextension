@@ -16,5 +16,18 @@ extends Resource
 ## 320x200 the game had.
 @export var texture: Texture2D
 
+## The game's own artwork for this sprite, exported out of CAT.EXE by [code]tools/export_sprites.py[/code].
+## Nothing draws it - the game draws its own - but it is what says which sprite this entry is, since the
+## game has no names for its artwork and an address on its own tells you nothing. Look at it in the
+## inspector, draw something the same shape, and drop that into [member texture].
+@export var original: Texture2D
+
+## How many times this was drawn while the catalogue was recorded, and how often through the masking
+## blitter. A sprite drawn thousands of times is scenery or the cat; one drawn twice is a rarity. Where
+## [member masked_draws] is most of [member draws], the artwork is a mask - a solid shape ANDed into the
+## background to punch a hole - rather than a picture, and replacing it paints over that hole.
+@export var draws: int = 0
+@export var masked_draws: int = 0
+
 ## What this is, for whoever reads the resource later. The game has no names for its own artwork.
 @export var note: String = ""

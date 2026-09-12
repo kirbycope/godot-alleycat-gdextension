@@ -352,9 +352,30 @@ The artwork is a resource - `AlleyCatArtwork`, a list of `AlleyCatSprite`, each 
 with a texture - so a set is a file that can be swapped whole, and anything not named in it is left exactly
 as the game drew it. A set can be finished one sprite at a time.
 
-`resources/artwork.tres` is a sample with two: the cat and the mice. The addresses came from
-`get_sprites()` itself, which is the only way to get them - the game has no names for its own artwork, only
-the place it copies each piece from.
+`resources/artwork.tres` has a slot for **every** sprite the game was seen to draw - 134 of them - and each
+one carries the game's own picture in `original`. That is what makes the thing usable: an address is not a
+name, and nobody can draw a replacement for a sprite they cannot look at. Open the resource, scroll to a
+sprite, see what it is, drop a texture into its `texture` and that sprite is replaced and nothing else.
+
+Every slot ships empty except one, so out of the box the game looks exactly as it shipped. The example is
+the cat at `0x11380`.
+
+Two things the catalogue records are worth reading before drawing anything. `draws` says how often the
+sprite was drawn, which separates the cat and the scenery from the rarities. And where `masked_draws` is
+most of `draws`, that artwork is a *mask* - a solid shape ANDed into the background to punch a hole for a
+sprite - rather than a picture, so replacing it paints over the hole rather than over a drawing.
+
+Rebuilding the catalogue, when a new screen turns up sprites nobody has seen:
+
+```bash
+# with the demo running and reports_sprites on, save the catalogue from the game, then
+python tools/export_sprites.py <catalogue.json>      # CAT.EXE -> assets/artwork/original/*.png
+python tools/build_artwork_resource.py               # -> resources/artwork.tres
+```
+
+`export_sprites.py` reads the artwork straight out of `CAT.EXE`: the image was loaded at `0x10000` and the
+file has a 512 byte header, so a sprite's bytes are at `(source - 0x10000) + 512`. CGA mode 4 packs four
+pixels to a byte, two bits each, and index 0 is the background, which is written out transparent.
 
 What it buys is resolution, not position: the replacement is drawn where the original was and at the same
 size, so the game plays exactly as it did. The game's own sprite is eight pixels by five, or thirty-two by

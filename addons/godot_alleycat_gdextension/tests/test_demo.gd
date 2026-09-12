@@ -317,3 +317,44 @@ func test_a_flickering_reading_does_not_count_as_a_death() -> void:
 	demo.game.call(&"poke", at, PackedByteArray([4]))
 	await wait_seconds(AlleyCatRemaster.LIVES_STEADY_TIME * 3.0)
 	assert_gt(demo.remaster._wipe, 0.0, "A count that stays down is a life lost, and that is the wipe")
+
+
+## The artwork resource is the whole catalogue, not a hand-picked few: every sprite the game was seen to draw
+## has a slot, carrying the game's own picture so it can be told apart from the others. An address is not a
+## name, and nobody can draw a replacement for a sprite they cannot look at.
+func test_every_sprite_has_a_slot_and_the_game_s_own_picture_in_it() -> void:
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	var artwork: AlleyCatArtwork = demo.art.artwork
+	assert_not_null(artwork, "The demo ships a set of artwork")
+	assert_gt(artwork.sprites.size(), 100, "which lists every sprite the game was seen to draw")
+	# By address, not by entry: the game blits some artwork at more than one size, and each size is its own
+	# entry while the replacement for it is the same picture.
+	var overridden: Dictionary = {}
+	for sprite: AlleyCatSprite in artwork.sprites:
+		assert_not_null(sprite.original, "0x%05X should carry the game's own picture" % sprite.source)
+		assert_gt(sprite.draws, 0, "and how often it was drawn, so the scenery is told from the rarities")
+		if sprite.texture != null:
+			overridden[sprite.source] = sprite.texture
+
+	# One sprite is filled in, as a worked example. The rest are empty, so the game looks as it shipped
+	# until someone puts a picture in a slot.
+	assert_eq(overridden.size(), 1, "One example, and the rest left alone")
+	var example: int = overridden.keys()[0]
+	assert_eq(artwork.texture_for(example), overridden[example], "and it is found by address")
+	assert_null(artwork.texture_for(0), "An address with no replacement gives nothing rather than erroring")
+
+
+## The override is what draws, and only where there is one. A set with one picture in it replaces one sprite.
+func test_only_the_sprites_with_a_replacement_are_drawn_over() -> void:
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	var artwork: AlleyCatArtwork = demo.art.artwork
+	var without: int = 0
+	for sprite: AlleyCatSprite in artwork.sprites:
+		if sprite.texture == null:
+			without += 1
+			assert_null(artwork.texture_for(sprite.source), "0x%05X is left as the game drew it" % sprite.source)
+	assert_gt(without, 100, "Almost all of them are the game's own")
