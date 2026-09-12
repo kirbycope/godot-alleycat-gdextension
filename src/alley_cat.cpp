@@ -52,6 +52,30 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_joystick"), &AlleyCat::get_joystick);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "joystick"), "set_joystick", "get_joystick");
 
+	ClassDB::bind_method(D_METHOD("set_music_volume", "value"), &AlleyCat::set_music_volume);
+	ClassDB::bind_method(D_METHOD("get_music_volume"), &AlleyCat::get_music_volume);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "music_volume", PROPERTY_HINT_RANGE, "0.0,1.0,0.01"),
+			"set_music_volume", "get_music_volume");
+
+	ClassDB::bind_method(D_METHOD("set_effects_volume", "value"), &AlleyCat::set_effects_volume);
+	ClassDB::bind_method(D_METHOD("get_effects_volume"), &AlleyCat::get_effects_volume);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "effects_volume", PROPERTY_HINT_RANGE, "0.0,1.0,0.01"),
+			"set_effects_volume", "get_effects_volume");
+
+	ClassDB::bind_method(D_METHOD("get_voice"), &AlleyCat::get_voice);
+
+	ClassDB::bind_method(D_METHOD("set_rewind_seconds", "value"), &AlleyCat::set_rewind_seconds);
+	ClassDB::bind_method(D_METHOD("get_rewind_seconds"), &AlleyCat::get_rewind_seconds);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "rewind_seconds", PROPERTY_HINT_RANGE, "0.0,60.0,0.5"),
+			"set_rewind_seconds", "get_rewind_seconds");
+
+	ClassDB::bind_method(D_METHOD("set_rewinding", "value"), &AlleyCat::set_rewinding);
+	ClassDB::bind_method(D_METHOD("get_rewinding"), &AlleyCat::get_rewinding);
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "rewinding"), "set_rewinding", "get_rewinding");
+
+	ClassDB::bind_method(D_METHOD("get_rewind_depth"), &AlleyCat::get_rewind_depth);
+	ClassDB::bind_method(D_METHOD("get_rewind_available"), &AlleyCat::get_rewind_available);
+
 	ADD_SIGNAL(MethodInfo("loaded"));
 	ADD_SIGNAL(MethodInfo("load_failed", PropertyInfo(Variant::STRING, "reason")));
 }
@@ -121,6 +145,9 @@ bool AlleyCat::load_game() {
 
 	loaded = true;
 	pending_instructions = 0.0;
+	// A fresh machine has no past, and the size of a snapshot is only known once the library is
+	// built, so the ring is laid out here rather than in the constructor.
+	size_the_ring();
 	emit_signal("loaded");
 	return true;
 }
@@ -143,6 +170,17 @@ void AlleyCat::_process(double delta) {
 	// the machine gets a chance to sample it.
 	read_inputs();
 	push_joystick();
+
+	// Going back is not running the machine slowly in reverse - nothing can do that - it is putting
+	// a whole earlier machine back. One snapshot a frame, which at 18.2 of them a second is about
+	// three times real speed, and that is what a rewind should feel like.
+	if (rewinding) {
+		if (step_back()) {
+			present_frame();
+		}
+		return;
+	}
+
 	// Run the number of instructions that much wall time is worth, keeping the fraction so a
 	// long frame does not quietly lose time.
 	pending_instructions += delta * TICKS_PER_SECOND * INSTRUCTIONS_PER_TICK * speed;
@@ -150,6 +188,13 @@ void AlleyCat::_process(double delta) {
 	if (budget > 0) {
 		pending_instructions -= budget;
 		alleycat_run(budget);
+		// Snapshot on the game's own clock rather than the host's, so how much history a second of
+		// rewind buys does not depend on the frame rate of the machine it happens to run on.
+		instructions_since_snapshot += budget;
+		while (instructions_since_snapshot >= INSTRUCTIONS_PER_TICK) {
+			instructions_since_snapshot -= INSTRUCTIONS_PER_TICK;
+			take_snapshot();
+		}
 	}
 	present_frame();
 	mix_audio();
@@ -350,6 +395,82 @@ void AlleyCat::set_volume(double value) { volume = value; }
 double AlleyCat::get_volume() const { return volume; }
 int64_t AlleyCat::get_instructions() const { return (int64_t)alleycat_instructions(); }
 String AlleyCat::get_status() const { return String(alleycat_status()); }
+
+void AlleyCat::set_music_volume(double value) {
+	music_volume = value < 0.0 ? 0.0 : value;
+	alleycat_set_voice_volume(ALLEYCAT_VOICE_MUSIC, (float)music_volume);
+}
+
+double AlleyCat::get_music_volume() const { return music_volume; }
+
+void AlleyCat::set_effects_volume(double value) {
+	effects_volume = value < 0.0 ? 0.0 : value;
+	alleycat_set_voice_volume(ALLEYCAT_VOICE_EFFECTS, (float)effects_volume);
+}
+
+double AlleyCat::get_effects_volume() const { return effects_volume; }
+
+int AlleyCat::get_voice() const { return alleycat_voice(); }
+
+// ---- rewind ---------------------------------------------------------------------------------
+
+// Sizes the ring for the seconds asked for. Snapshots are taken at the game's tick rate, so the
+// count is simply seconds times that. Resizing throws away what was stored: the alternative is
+// shuffling a megabyte per entry to preserve history the player has not asked to keep.
+void AlleyCat::size_the_ring() {
+	snapshot_size = (int64_t)alleycat_state_size();
+	snapshot_capacity = (int)(rewind_seconds * TICKS_PER_SECOND);
+	if (snapshot_capacity < 1 || rewind_seconds <= 0.0) {
+		snapshot_capacity = 0;
+	}
+	snapshots.resize(snapshot_capacity * snapshot_size);
+	snapshot_count = 0;
+	snapshot_next = 0;
+	instructions_since_snapshot = 0.0;
+}
+
+void AlleyCat::take_snapshot() {
+	if (snapshot_capacity == 0) {
+		return;
+	}
+	alleycat_save_state(snapshots.ptrw() + (int64_t)snapshot_next * snapshot_size);
+	snapshot_next = (snapshot_next + 1) % snapshot_capacity;
+	if (snapshot_count < snapshot_capacity) {
+		snapshot_count++;
+	}
+}
+
+// Puts the most recent snapshot back and drops it, so holding the trigger walks backwards through
+// them. Returns false once there is nothing older left, which is where a rewind stops.
+bool AlleyCat::step_back() {
+	if (snapshot_count == 0) {
+		return false;
+	}
+	snapshot_next = (snapshot_next + snapshot_capacity - 1) % snapshot_capacity;
+	snapshot_count--;
+	alleycat_load_state(snapshots.ptr() + (int64_t)snapshot_next * snapshot_size);
+	// The machine is now where it was, so the part-run instruction budget from the frame we are
+	// leaving does not belong to it.
+	pending_instructions = 0.0;
+	instructions_since_snapshot = 0.0;
+	return true;
+}
+
+void AlleyCat::set_rewind_seconds(double value) {
+	rewind_seconds = value < 0.0 ? 0.0 : value;
+	size_the_ring();
+}
+
+double AlleyCat::get_rewind_seconds() const { return rewind_seconds; }
+
+void AlleyCat::set_rewinding(bool value) { rewinding = value; }
+bool AlleyCat::get_rewinding() const { return rewinding; }
+
+int AlleyCat::get_rewind_depth() const { return snapshot_count; }
+
+double AlleyCat::get_rewind_available() const {
+	return (double)snapshot_count / TICKS_PER_SECOND;
+}
 
 void AlleyCat::set_exe_path(const String &path) { exe_path = path; }
 String AlleyCat::get_exe_path() const { return exe_path; }

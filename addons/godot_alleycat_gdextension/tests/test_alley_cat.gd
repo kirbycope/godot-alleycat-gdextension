@@ -219,3 +219,65 @@ func test_a_missing_exe_is_reported_rather_than_silent() -> void:
 	assert_false(game.call(&"load_game"), "a missing file is a failed load")
 	assert_eq(reasons.size(), 1, "and it says so")
 	assert_string_contains(reasons[0], "NOPE.EXE")
+
+
+## Rewinding is not the machine run backwards - nothing can do that - it is a whole earlier machine put
+## back, so what it has to prove is that the picture afterwards is the one that was there before, byte
+## for byte, and not merely something that looks earlier.
+func test_rewinding_puts_the_exact_earlier_frame_back() -> void:
+	if not ClassDB.class_exists(&"AlleyCat"):
+		pass_test("AlleyCat is not built for this platform")
+		return
+	var game = ClassDB.instantiate(&"AlleyCat")
+	add_child_autofree(game)
+	if not game.has_method(&"get_rewind_available"):
+		pass_test("this platform's library predates rewind")
+		return
+	if not game.call(&"is_loaded"):
+		pass_test("CAT.EXE is not here to run")
+		return
+
+	game.set(&"speed", 20.0)
+	for i in 120:
+		await wait_process_frames(1)
+	assert_gt(game.call(&"get_rewind_depth"), 0, "running fills the ring")
+
+	var seen := {}
+	for i in 60:
+		await wait_process_frames(1)
+		seen[game.call(&"get_instructions")] = hash(game.call(&"get_frame").get_data())
+
+	game.set(&"rewinding", true)
+	var checked := 0
+	var identical := 0
+	for i in 40:
+		await wait_process_frames(1)
+		var icount = game.call(&"get_instructions")
+		if seen.has(icount):
+			checked += 1
+			if seen[icount] == hash(game.call(&"get_frame").get_data()):
+				identical += 1
+	game.set(&"rewinding", false)
+
+	assert_gt(checked, 0, "the rewind should walk back through frames it has already shown")
+	assert_eq(identical, checked, "and every one of them comes back exactly as it was")
+
+
+## Turning rewind off frees the ring rather than merely stopping it being read, because the whole point
+## of the setting is the megabyte a snapshot it costs.
+func test_no_rewind_seconds_means_no_ring() -> void:
+	if not ClassDB.class_exists(&"AlleyCat"):
+		pass_test("AlleyCat is not built for this platform")
+		return
+	var game = ClassDB.instantiate(&"AlleyCat")
+	add_child_autofree(game)
+	if not game.has_method(&"get_rewind_available"):
+		pass_test("this platform's library predates rewind")
+		return
+
+	game.set(&"rewind_seconds", 0.0)
+	for i in 30:
+		await wait_process_frames(1)
+	assert_eq(game.call(&"get_rewind_depth"), 0, "nothing is kept")
+	assert_eq(game.call(&"get_rewind_available"), 0.0)
+

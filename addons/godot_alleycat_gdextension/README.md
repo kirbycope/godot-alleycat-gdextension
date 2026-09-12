@@ -201,6 +201,75 @@ private, so the deployed demo is a public copy of the game.
 | `addons/.../tests/` | GUT tests |
 | `tools/addons.json` | what `pull_addons.py` fetches into `addons/` |
 
+## Looks
+
+`F6` cycles twenty-one ways of showing the same four colours. They are one shader with a mode rather than
+twenty shaders, because all of them start from the CGA palette index rather than the RGB it arrives
+as - which is what makes a recolour exact instead of a hue rotation guessing at what was meant.
+
+| | | | |
+| --- | --- | --- | --- |
+| CGA (as it loads) | Amber CRT | Green CRT | Trinitron CRT |
+| Comic | Cel | Game Boy | Paper |
+| VHS | Pen and Ink | Dither | Negative |
+| Deep Fried | Double Vision | Nausea | Holofoil |
+| Film | Frost | Squiggle | Blueprint |
+| Championship | | | |
+
+`Left Trigger` (or `Backspace`) rewinds while held. Snapshots are whole copies of the machine taken
+at the game's own 18.2 Hz, kept in a ring sized by the node's `rewind_seconds`; set it to zero to
+turn rewind off and free the memory, which is what a web export wants.
+
+Four of the looks are reimplementations of techniques published on
+[godotshaders.com](https://godotshaders.com), all of them CC0, and none of the original code is
+copied here - the source is 320x200 in four colours and wanted its own treatment:
+
+| Look | After | Licence |
+| --- | --- | --- |
+| VHS | [VHS Tape Effect](https://godotshaders.com/shader/vhs-tape-effect/) by blblblblb | CC0 |
+| Pen and Ink | [Simplified Hand-drawn Hatch Lines](https://godotshaders.com/shader/simplified-hand-drawn-hatch-lines/) by misha.cilantro | CC0 |
+| Holofoil | [MemeHoloFoil](https://godotshaders.com/shader/memeholofoil-parody-holographic-card-foil/) | CC0 |
+| Dither | [Classic dithering shader](https://godotshaders.com/shader/classic-dithering-shader/) | CC0 |
+
+`Championship` is the odd one out: it is not after a shader but after a game. Pac-Man Championship
+Edition redrew a 1980 maze as tubes of light on black, and Alley Cat suits the same treatment because
+its artwork is black line work - outlines, the writing on the fence, the sprites - over two flat
+fills. So the ink lights up, the fills go almost out, and the light spills, which is the half of that
+look people leave out.
+
+## The remaster layer
+
+`scenes/alley_cat_remaster.tscn` is one node to drop into a scene. Point its `game` at the [AlleyCat]
+node, hand it a list of `looks`, and it takes `Esc` - Alley Cat's own paws key - before the game sees
+it and puts its own menu up instead.
+
+It does not try to detect the game's paws mode, and does not need to. A host that owns the key can
+simply stop running the machine, which is a truer pause than the game's own: Alley Cat has no idea it
+happened, so it has no opinions about what the player may do next. Rewind already works the same way.
+Everything the menu changes - the look, the two volumes, how much rewind to keep - belongs to the
+host, so a snapshot taken before the menu is still good after it.
+
+The key is polled rather than listened for, because the HUD's own pause button is a
+`TouchScreenButton` and those press their action straight into the input state without ever sending
+an event. Polling catches the key, the pad and the on-screen button through one path - the same
+reason the library polls its own inputs.
+
+### Sound
+
+The game drives one speaker from two places: a music player walking a note table, and the routines
+that make its effects. Because there is only one speaker they interrupt each other rather than
+mixing, so the node reports which of them last programmed the timer and scales that one on the way
+out. `music_volume` and `effects_volume` are therefore real and separate, and silencing the tune
+leaves the effects alone - which is what makes a swap possible.
+
+Nothing here reads the waveform. A square wave carries no sign of what asked for it; only an
+interpreter can know, and this one tags the write by the address that made it.
+
+`resources/sounds.tres` is an **example** `AlleyCatSounds` with every slot empty, which is exactly how
+the game sounds as it shipped. Copy it into your own project - examples in the addon never point at a
+project's files - fill in `music` to replace the tune, and the named effect slots as they become
+attributable. Giving it a `music` stream silences the game's own tune; clearing it gives it back.
+
 ## Licence
 
 The code here is MIT and is original work: the node, the HUD mapping and the build. `assets/CAT.EXE` is not covered by it and is not ours to license - see **The game** above.

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AlleyCatSounds" format=3]
+
+[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_sounds.gd" id="1_sounds"]
+
+[resource]
+script = ExtResource("1_sounds")
+music = null
+music_volume = 0.7
+music_loops = true
+jump = null
+caught = null
+eat = null
+enter_window = null
+replace_effects = false

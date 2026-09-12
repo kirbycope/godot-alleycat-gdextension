@@ -25,6 +25,7 @@
 #define ALLEYCAT_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -107,6 +108,34 @@ int alleycat_audio_read(int16_t *out, int max_samples);
 int alleycat_audio_rate(void);
 int alleycat_audio_available(void);
 
+/* Which of the game's two voices is sounding. Alley Cat drives one speaker from two places - a music
+   player that walks a note table, and the routines that make its effects - and because there is only
+   one speaker they interrupt each other rather than mixing. So the voice is whichever of them last
+   programmed the timer, and the library reports it rather than guessing from the waveform, which
+   cannot be done: a square wave carries no sign of what asked for it.
+
+   alleycat_set_voice_volume scales one of them on the way out. Zero silences that voice and leaves
+   the other alone, which is how a host swaps the music for its own. */
+#define ALLEYCAT_VOICE_NONE    0
+#define ALLEYCAT_VOICE_MUSIC   1
+#define ALLEYCAT_VOICE_EFFECTS 2
+int alleycat_voice(void);
+void alleycat_set_voice_volume(int voice, float volume);
+
+/* Machine state, for rewinding. alleycat_state_size is how many bytes a snapshot takes and does not
+   change while the program runs, so a host can size a ring once. Saving copies the whole machine -
+   the megabyte of RAM, the registers, the video and text screens, the keyboard queue, the timers and
+   the game port - and loading puts it all back, so a restore is indistinguishable from never having
+   gone forward.
+
+   Two things are deliberately left out. The parity table is a lookup built from nothing and is the
+   same every time, and the audio ring is the host's queue rather than the machine's: rewinding the
+   machine should not replay samples the host has already drained. Everything the speaker itself is
+   doing - the timer divisor, the gate, the square wave phase - is in there. */
+size_t alleycat_state_size(void);
+void alleycat_save_state(void *dst);
+void alleycat_load_state(const void *src);
+
 /* Total instructions retired, and the last stop reason, for diagnostics. */
 uint64_t alleycat_instructions(void);
 const char *alleycat_status(void);
@@ -184,6 +213,14 @@ static int      AUDIO_W, AUDIO_R;
 static uint32_t AUDIO_ACC;      /* instruction-to-sample fraction, scaled by AUDIO_RATE */
 static uint32_t SQUARE_PHASE;   /* square wave phase, scaled by AUDIO_RATE */
 static int      SQUARE_LEVEL;
+/* Which routine last programmed the tone, and how loud each is wanted. The music player's writes to
+   the timer are at these image offsets; everything else that makes a sound is an effect. Found by
+   reading the disassembly in alley-decomp: the player at 00C5F5 walks a note table at 0x538C with a
+   cursor at 0x5320 and looks each note's divisor up at 0x5324. */
+#define MUSIC_OUT_LOW  0xC619u
+#define MUSIC_OUT_HIGH 0xC61Du
+static int   VOICE = ALLEYCAT_VOICE_NONE;
+static float VOICE_VOLUME[3] = { 1.0f, 1.0f, 1.0f };
 static uint16_t PIT2_DIVISOR = 0;
 static int      PIT2_HIGH_BYTE_NEXT = 0;
 /* PIT channel 0 is the game's stopwatch. It free-runs at PIT_HZ and counts down through 65536
@@ -485,6 +522,11 @@ static void port_out(uint16_t port, uint8_t value)
         }
         break;
     case 0x42:
+        /* Who is making this sound. IP has already moved past the OUT by the time this runs, and the
+           instruction is two bytes, so the music player's own writes are known by where it returns
+           to. Only an interpreter can answer this: a square wave carries no sign of what asked for it. */
+        VOICE = (IP == MUSIC_OUT_LOW + 2u || IP == MUSIC_OUT_HIGH + 2u)
+                ? ALLEYCAT_VOICE_MUSIC : ALLEYCAT_VOICE_EFFECTS;
         /* Access mode lo/hi: the low byte arrives first, then the high. */
         if (PIT2_HIGH_BYTE_NEXT) {
             PIT2_DIVISOR = (uint16_t)((PIT2_DIVISOR & 0x00FF) | ((uint16_t)value << 8));
@@ -987,6 +1029,9 @@ static void audio_sample(void)
                 SQUARE_LEVEL = !SQUARE_LEVEL;
             }
             value = SQUARE_LEVEL ? 8000 : -8000;
+            /* Turned down per voice rather than overall, so a host can silence the game's music and
+               put its own on while the effects carry on as they were. */
+            value = (int16_t)((float)value * VOICE_VOLUME[VOICE]);
         }
     }
     if (next != AUDIO_R) {      /* drop rather than overwrite if the host stopped draining */
@@ -1190,6 +1235,51 @@ int alleycat_audio_read(int16_t *out, int max_samples)
 }
 
 int alleycat_ready(void) { return VIDEO_MODE >= 0; }
+int alleycat_voice(void) { return VOICE; }
+
+void alleycat_set_voice_volume(int voice, float volume)
+{
+    if (voice < 0 || voice > 2) {
+        return;
+    }
+    VOICE_VOLUME[voice] = volume < 0.0f ? 0.0f : volume;
+}
+
+/* ---- machine state, for rewinding ---------------------------------------------------------- */
+
+/* Every piece of the machine, named once. Save and load both walk this list, so neither can drift
+   out of step with the other and adding a register later means adding it here and nowhere else.
+
+   PARITY is not here because it is a lookup table built from nothing, identical every run. The
+   audio ring is not here because it belongs to the host, not the machine: rewinding should not
+   push samples back at a host that has already played them. */
+#define ALLEYCAT_STATE_FIELDS(X) 	X(MEM) X(R) X(S) X(IP) X(FLAGS) X(ICOUNT) 	X(VIDEO_MODE) X(STATUS) X(FRAME) 	X(TEXT) X(CUR_ROW) X(CUR_COL) 	X(SCANCODE) X(PORT61) X(KEYQ) X(KEYQ_HEAD) X(KEYQ_TAIL) 	X(AUDIO_ACC) X(SQUARE_PHASE) X(SQUARE_LEVEL) 	X(PIT2_DIVISOR) X(PIT2_HIGH_BYTE_NEXT) X(VOICE) 	X(PIT0_LATCH) X(PIT0_HIGH_BYTE_NEXT) X(RETRACE) 	X(JOY_PRESENT) X(JOY_X) X(JOY_Y) X(JOY_BUTTON1) X(JOY_BUTTON2) 	X(JOY_FIRED) X(JOY_TIMING) 	X(STOPPED) X(BAD_OP) X(BAD_CS) X(BAD_IP)
+
+size_t alleycat_state_size(void)
+{
+	size_t total = 0;
+#define ALLEYCAT_STATE_ADD(field) total += sizeof(field);
+	ALLEYCAT_STATE_FIELDS(ALLEYCAT_STATE_ADD)
+#undef ALLEYCAT_STATE_ADD
+	return total;
+}
+
+void alleycat_save_state(void *dst)
+{
+	unsigned char *at = (unsigned char *)dst;
+#define ALLEYCAT_STATE_SAVE(field) memcpy(at, &(field), sizeof(field)); at += sizeof(field);
+	ALLEYCAT_STATE_FIELDS(ALLEYCAT_STATE_SAVE)
+#undef ALLEYCAT_STATE_SAVE
+}
+
+void alleycat_load_state(const void *src)
+{
+	const unsigned char *at = (const unsigned char *)src;
+#define ALLEYCAT_STATE_LOAD(field) memcpy(&(field), at, sizeof(field)); at += sizeof(field);
+	ALLEYCAT_STATE_FIELDS(ALLEYCAT_STATE_LOAD)
+#undef ALLEYCAT_STATE_LOAD
+}
+
 uint64_t alleycat_instructions(void) { return ICOUNT; }
 const char *alleycat_status(void) { return STATUS; }
 int alleycat_fault_opcode(void) { return BAD_OP; }

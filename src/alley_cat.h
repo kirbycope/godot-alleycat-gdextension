@@ -85,6 +85,24 @@ class AlleyCat : public TextureRect {
 	int sent_x = 0;
 	int sent_y = 0;
 
+	// Rewind. Snapshots are whole copies of the machine taken at the game's own tick rate, kept in a
+	// ring; going back is loading one, which is why it is exact rather than approximate. A megabyte
+	// a snapshot sounds heavy and is nothing next to what the machine running it has.
+	double music_volume = 1.0;
+	double effects_volume = 1.0;
+	double rewind_seconds = 6.0;
+	bool rewinding = false;
+	PackedByteArray snapshots;        // capacity * snapshot_size, oldest to newest in ring order
+	int64_t snapshot_size = 0;
+	int snapshot_capacity = 0;
+	int snapshot_count = 0;           // how many of them are filled
+	int snapshot_next = 0;            // where the next one goes
+	double instructions_since_snapshot = 0.0;
+
+	void size_the_ring();
+	void take_snapshot();
+	bool step_back();
+
 	void present_frame();
 	void mix_audio();
 	void read_inputs();
@@ -144,6 +162,32 @@ public:
 	// The expected inputs no one has registered, so a host can say what is unbound rather than
 	// leaving the player with a game that does not answer.
 	PackedStringArray get_missing_inputs() const;
+
+	// The game drives one speaker from two places - a music player walking a note table, and the
+	// routines that make its effects - and because there is only one speaker they interrupt each
+	// other rather than mixing. These scale whichever is sounding, so a host can silence the music
+	// and put its own on while the effects carry on.
+	void set_music_volume(double value);
+	double get_music_volume() const;
+	void set_effects_volume(double value);
+	double get_effects_volume() const;
+
+	// Which of the two is sounding right now: 0 none, 1 music, 2 effects.
+	int get_voice() const;
+
+	// How many seconds of rewind to keep. Zero turns it off and frees the ring, which is what a web
+	// export wants; the memory is one megabyte per snapshot at 18.2 of them a second.
+	void set_rewind_seconds(double value);
+	double get_rewind_seconds() const;
+
+	// While this is on the machine runs backwards instead of forwards, one snapshot a frame, and
+	// stops at the oldest one it still has.
+	void set_rewinding(bool value);
+	bool get_rewinding() const;
+
+	// How much is actually stored, in snapshots and in seconds, so a host can show it.
+	int get_rewind_depth() const;
+	double get_rewind_available() const;
 };
 
 } // namespace godot
