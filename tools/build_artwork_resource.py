@@ -17,8 +17,12 @@ import json
 import pathlib
 
 ROOT = pathlib.Path("addons/godot_alleycat_gdextension")
-# The cat as it appears in play: 32x15, and plainly a cat when you look at the exported artwork.
-EXAMPLES = {0x11380: "cat.png"}
+# The cat as it walks: three frames at 32x15, which is what the exported artwork shows. Replacing one of
+# them only puts the cat there for the third of the time that frame is up, which reads as a flicker - a
+# replacement has to cover a whole animation, not a picture.
+# 0x11D40 is the mask the cat is drawn through, and it goes down every time the cat is drawn whatever pose
+# it is in, so it is the one that keeps the replacement on screen. The three image frames follow it.
+EXAMPLES = {0x11D40: "cat_1.png", 0x11380: "cat_1.png", 0x113F8: "cat_2.png", 0x11470: "cat_3.png"}
 
 TEXTURE = '[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/%s" id="%s"]'
 
@@ -33,7 +37,7 @@ def main() -> int:
     ]
     next_id = 3
     overrides = {}
-    for source, name in EXAMPLES.items():
+    for source, name in sorted(EXAMPLES.items()):
         overrides[source] = "%d_over" % next_id
         ext.append(TEXTURE % (name, overrides[source]))
         next_id += 1

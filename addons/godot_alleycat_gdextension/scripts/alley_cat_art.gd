@@ -26,11 +26,21 @@ extends Control
 const GAME_SIZE: Vector2 = Vector2(320.0, 200.0)
 
 var _game: Node = null
-## The last frame that actually drew anything. The game keeps its own clock - about eighteen ticks a second -
-## while the host redraws hundreds of times a second, so all but a few frames in every twenty report nothing
-## at all. Drawing only those would leave the replacement flickering on for one frame in twenty-odd, which
-## reads as not working. What the game last drew is still what is on the screen, so that is what is drawn.
-var _latest: Array = []
+
+## How much of the screen the game has to draw at once for what is up to be thrown away: the whole 16K CGA
+## window, near enough. Anything less is the same picture with things moving on it, and what was drawn on it
+## is still there. A lower bar than this throws the replacement away whenever several sprites move at once,
+## which is often, and the replacement blinks.
+const REDRAW_BYTES: int = 12000
+
+## The replacements that are up. Held until the game draws one of them somewhere else, or repaints the
+## screen - which is how long they are really there for.
+##
+## They cannot be dropped just because the game stopped mentioning them. It only redraws what moved, so a cat
+## standing still is absent from every report while being plainly on screen; timing them out blinks the
+## replacement off whenever the player stops, which is most of the time.
+var _showing: Array = []
+var _video_writes: int = -1
 
 
 func _ready() -> void:
@@ -44,11 +54,26 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if Engine.is_editor_hint() or not is_instance_valid(_game) or not _game.has_method(&"get_sprites"):
+	if Engine.is_editor_hint() or artwork == null:
 		return
-	var drawn: Array = _game.call(&"get_sprites")
-	if not drawn.is_empty():
-		_latest = drawn
+	if not is_instance_valid(_game) or not _game.has_method(&"get_sprites"):
+		return
+	# A screen the game has just repainted has none of what was on the old one still on it.
+	if _game.has_method(&"get_video_writes"):
+		var writes: int = int(_game.call(&"get_video_writes"))
+		if _video_writes >= 0 and writes - _video_writes > REDRAW_BYTES and not _showing.is_empty():
+			_showing = []
+			queue_redraw()
+		_video_writes = writes
+
+	var mine: Array = []
+	for sprite: Dictionary in _game.call(&"get_sprites"):
+		if artwork.texture_for(int(sprite["source"])) != null:
+			mine.append(sprite)
+	# A report with one of ours in it replaces what is up, wholesale. The game draws one frame of an
+	# animation at a time, so keeping the old one alongside would paint two cats a step apart.
+	if not mine.is_empty():
+		_showing = mine
 		queue_redraw()
 
 
@@ -59,7 +84,7 @@ func _draw() -> void:
 	if picture.size.x <= 0.0:
 		return
 	var scale: Vector2 = picture.size / GAME_SIZE
-	for sprite: Dictionary in _latest:
+	for sprite: Dictionary in _showing:
 		var texture: Texture2D = artwork.texture_for(int(sprite["source"]))
 		if texture == null:
 			continue

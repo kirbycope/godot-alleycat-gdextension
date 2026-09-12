@@ -340,9 +340,12 @@ func test_every_sprite_has_a_slot_and_the_game_s_own_picture_in_it() -> void:
 
 	# One sprite is filled in, as a worked example. The rest are empty, so the game looks as it shipped
 	# until someone puts a picture in a slot.
-	assert_eq(overridden.size(), 1, "One example, and the rest left alone")
-	var example: int = overridden.keys()[0]
-	assert_eq(artwork.texture_for(example), overridden[example], "and it is found by address")
+	# The cat is four entries, not one: a mask that goes down wherever it is, and three walk frames. A
+	# replacement has to cover a whole animation or it is only on screen for the fraction of the time its
+	# one frame is up, which reads as a flicker rather than as artwork.
+	assert_eq(overridden.size(), 4, "The cat's mask and its three walk frames, and the rest left alone")
+	for example: int in overridden:
+		assert_eq(artwork.texture_for(example), overridden[example], "0x%05X is found by address" % example)
 	assert_null(artwork.texture_for(0), "An address with no replacement gives nothing rather than erroring")
 
 
@@ -358,3 +361,18 @@ func test_only_the_sprites_with_a_replacement_are_drawn_over() -> void:
 			without += 1
 			assert_null(artwork.texture_for(sprite.source), "0x%05X is left as the game drew it" % sprite.source)
 	assert_gt(without, 100, "Almost all of them are the game's own")
+
+
+## What is drawn is held until the game draws it somewhere else or repaints the screen, not timed out. The
+## game only redraws what moved, so a cat standing still is absent from every report while plainly still on
+## screen; dropping it then blinks the replacement off whenever the player stops, which is most of the time.
+func test_a_replacement_is_held_while_the_game_leaves_the_sprite_alone() -> void:
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	var art: AlleyCatArt = demo.art
+	await wait_seconds(2.0)
+	# Stand something of ours on screen, then let many frames pass with no report of it at all.
+	art._showing = [{"source": 0, "x": 10, "y": 10, "width": 8, "height": 8, "at": 0, "masked": false}]
+	await wait_process_frames(240)
+	assert_false(art._showing.is_empty(), "Still on screen, because the game never took it off")

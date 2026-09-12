@@ -357,8 +357,12 @@ one carries the game's own picture in `original`. That is what makes the thing u
 name, and nobody can draw a replacement for a sprite they cannot look at. Open the resource, scroll to a
 sprite, see what it is, drop a texture into its `texture` and that sprite is replaced and nothing else.
 
-Every slot ships empty except one, so out of the box the game looks exactly as it shipped. The example is
-the cat at `0x11380`.
+Every slot ships empty except the example, which is the cat: `0x11D40` and the three walk frames at
+`0x11380`, `0x113F8` and `0x11470`. It takes four, and that is the first thing to know before replacing
+anything. A sprite that animates is several pieces of artwork, and covering one of them puts the replacement
+on screen only for the fraction of the time that frame is up - which reads as a flicker rather than as
+artwork. `0x11D40` is the mask the cat is drawn through, which goes down whatever pose it is in, so it is
+the one that keeps the replacement there.
 
 Two things the catalogue records are worth reading before drawing anything. `draws` says how often the
 sprite was drawn, which separates the cat and the scenery from the rarities. And where `masked_draws` is
@@ -381,11 +385,17 @@ What it buys is resolution, not position: the replacement is drawn where the ori
 size, so the game plays exactly as it did. The game's own sprite is eight pixels by five, or thirty-two by
 fifteen, scaled up to whatever the window is; the replacement is drawn at the screen's resolution instead.
 
-One thing worth knowing if you write something else against `get_sprites()`. The report is cleared on the
-game's own tick, about eighteen times a second, not on the host's frame. A tick is tens of thousands of
-instructions and the host asks for a few hundred at a time, so one tick's drawing is spread across dozens of
-frames - clearing per frame hands back a fragment of a tick, and anything drawing from it flickers on for
-one frame in twenty-odd, which reads as not working at all.
+Two things worth knowing if you write something else against `get_sprites()`.
+
+The report is cleared on the game's own tick, about eighteen times a second, not on the host's frame. A tick
+is tens of thousands of instructions and the host asks for a few hundred at a time, so one tick's drawing is
+spread across dozens of frames - clearing per frame hands back a fragment of a tick.
+
+And the report is what the game *just drew*, which is not what is on the screen. It only redraws what moved,
+so a cat standing still is absent from every report while plainly still there. Whatever you draw from it has
+to be held until the game draws that sprite somewhere else or repaints the screen - not timed out, or it
+blinks off whenever the player stops moving. Measured at 60 frames a second, holding it properly is the
+difference between the replacement being on screen 9% of the time and 88%.
 
 ## Keeping a high score
 
