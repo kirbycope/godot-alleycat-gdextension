@@ -135,6 +135,18 @@ unsigned int alleycat_video_writes(void);
 #define ALLEYCAT_LOAD_SEG 0x1000u
 #define ALLEYCAT_MEM_SIZE (1u << 20)
 int alleycat_peek(unsigned int at, unsigned char *into, unsigned int length);
+/* Where the machine is reading its variables from right now, as a physical address: the data segment shifted
+   into place. A disassembly gives a variable as a bare offset like 0x1f82, and this is what that offset is
+   counted from, so the two together are an address alleycat_peek can read. */
+unsigned int alleycat_data_address(void);
+/* Writes into the machine's memory. The counterpart of alleycat_peek, and the other half of what a host
+   needs to carry something across runs: a high score read out at the end of one game has to be put back at
+   the start of the next, and the game keeps it in memory like everything else.
+
+   This writes where the game itself would, so it can just as easily corrupt the program as set a score. It
+   is deliberately not routed through the interpreter's own write path: a host poking memory is not the game
+   drawing, so it does not count towards the video writes a host reads to notice screen changes. */
+int alleycat_poke(unsigned int at, const unsigned char *from, unsigned int length);
 
 /* Watches a range of memory and remembers where the code that wrote to it was. This is how anything in the
    game is found: a score, a life count or a sprite is a place in memory, and the way to that place is the
@@ -148,6 +160,9 @@ int alleycat_peek(unsigned int at, unsigned char *into, unsigned int length);
 void alleycat_watch(unsigned int from, unsigned int to);
 int alleycat_watch_writers(unsigned int *into, int max);
 unsigned int alleycat_watch_hits(void);
+/* The routines that called the writers. The writer is nearly always a shared blitter, so it is the caller
+   that says what was being drawn. */
+int alleycat_watch_callers(unsigned int *into, int max);
 void alleycat_set_voice_volume(int voice, float volume);
 
 /* Machine state, for rewinding. alleycat_state_size is how many bytes a snapshot takes and does not
@@ -332,16 +347,19 @@ static unsigned int VIDEO_WRITES = 0;
 static uint32_t WATCH_FROM = 0;
 static uint32_t WATCH_TO = 0;
 static uint32_t WATCH_WRITERS[ALLEYCAT_WATCH_MAX];
+static uint32_t WATCH_CALLERS[ALLEYCAT_WATCH_MAX];
 static int      WATCH_WRITER_COUNT = 0;
+static int      WATCH_CALLER_COUNT = 0;
 static unsigned int WATCH_HITS = 0;
 #define IN_VIDEO(at) ((at) >= ((uint32_t)VIDEO_SEG << 4) && (at) < (((uint32_t)VIDEO_SEG << 4) + 0x4000u))
 
 static void note_watch(uint32_t at);
+static void note_caller(void);
 
 static void     wr8(uint16_t seg, uint16_t off, uint8_t v) {
     uint32_t at = phys(seg, off);
     if (IN_VIDEO(at)) { VIDEO_WRITES++; }
-    if (WATCH_TO > WATCH_FROM && at >= WATCH_FROM && at < WATCH_TO) { note_watch(at); }
+    if (WATCH_TO > WATCH_FROM && at >= WATCH_FROM && at < WATCH_TO) { note_watch(at); note_caller(); }
     MEM[at] = v;
 }
 
@@ -389,6 +407,29 @@ static void note_watch(uint32_t at)
     }
     if (WATCH_WRITER_COUNT < ALLEYCAT_WATCH_MAX) {
         WATCH_WRITERS[WATCH_WRITER_COUNT++] = where;
+    }
+}
+
+/* Who called the routine that just wrote. The writer is almost always a shared blitter - the same three
+   routines draw every sprite in the game - so knowing the blitter says nothing about what was drawn. The
+   caller does.
+
+   Alley Cat's blitters are reached by a near call and push nothing, so the top of the stack is still the
+   return address when the store happens. That makes the caller readable without tracing calls: one word at
+   SS:SP, turned into an offset into CAT.EXE the same way. A blitter that pushed registers would need the
+   stack walking properly, and none of these do. */
+static void note_caller(void)
+{
+    uint16_t ret = rd16(S[sSS], R[rSP]);
+    uint32_t where = (((uint32_t)S[sCS] << 4) + ret) - ((uint32_t)LOAD_SEG << 4);
+    int i;
+    for (i = 0; i < WATCH_CALLER_COUNT; i++) {
+        if (WATCH_CALLERS[i] == where) {
+            return;
+        }
+    }
+    if (WATCH_CALLER_COUNT < ALLEYCAT_WATCH_MAX) {
+        WATCH_CALLERS[WATCH_CALLER_COUNT++] = where;
     }
 }
 
@@ -1345,6 +1386,20 @@ unsigned int alleycat_effect_starts(void) { return EFFECT_STARTS; }
    for the same reason as the effect count - it is the host's reading of history, not the machine's state. */
 unsigned int alleycat_video_writes(void) { return VIDEO_WRITES; }
 
+unsigned int alleycat_data_address(void) { return (unsigned int)S[sDS] << 4; }
+
+int alleycat_poke(unsigned int at, const unsigned char *from, unsigned int length)
+{
+    if (at >= MEM_SIZE || from == 0) {
+        return 0;
+    }
+    if (length > MEM_SIZE - at) {
+        length = MEM_SIZE - at;
+    }
+    memcpy(MEM + at, from, length);
+    return (int)length;
+}
+
 /* Watches [from] up to but not including [to]. An empty range turns the watch off, and setting one clears
    what the last watch found, so each hunt starts from nothing. */
 void alleycat_watch(unsigned int from, unsigned int to)
@@ -1352,6 +1407,7 @@ void alleycat_watch(unsigned int from, unsigned int to)
     WATCH_FROM = from;
     WATCH_TO = to;
     WATCH_WRITER_COUNT = 0;
+    WATCH_CALLER_COUNT = 0;
     WATCH_HITS = 0;
 }
 
@@ -1367,6 +1423,17 @@ int alleycat_watch_writers(unsigned int *into, int max)
 }
 
 unsigned int alleycat_watch_hits(void) { return WATCH_HITS; }
+
+/* The routines that called the writers, which is what says what was being drawn rather than how. */
+int alleycat_watch_callers(unsigned int *into, int max)
+{
+    int n = WATCH_CALLER_COUNT < max ? WATCH_CALLER_COUNT : max;
+    int i;
+    for (i = 0; i < n; i++) {
+        into[i] = WATCH_CALLERS[i];
+    }
+    return n;
+}
 
 /* Copies [length] bytes of the machine's memory from [at] into [into]. Answers how many bytes it actually
    copied, which is fewer than asked for at the very top of memory and zero for an address past it. */

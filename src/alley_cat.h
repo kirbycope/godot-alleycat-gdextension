@@ -180,9 +180,12 @@ public:
 	int peek_u8(int at) const;
 	int peek_u16(int at) const;
 	int get_load_address() const;
+	int get_data_address() const;
+	int poke(int at, const PackedByteArray &bytes);
 	void watch(int from, int to);
 	PackedInt32Array get_watch_writers() const;
 	int get_watch_hits() const;
+	PackedInt32Array get_watch_callers() const;
 
 	// How many seconds of rewind to keep. Zero turns it off and frees the ring, which is what a web
 	// export wants; the memory is one megabyte per snapshot at 18.2 of them a second.

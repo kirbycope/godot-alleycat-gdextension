@@ -99,6 +99,18 @@ const EFFECT_HUE_GAP: float = 0.2
 ## begun. Far enough to be unmistakably a new place rather than the drift.
 const REDRAW_HUE_STEP: float = 0.29
 
+## Where the game keeps its high score, as an offset from the address its data is counted from, and how many
+## digits it is. Found by reading the disassembly in alley-decomp rather than by scanning memory: sub_09922
+## hands sub_09969 a pointer to 0x1f89 and a screen position, and sub_09969 draws seven digits with a gap
+## after the third, which is the "000-0000" on the fence. One decimal digit a byte, most significant first.
+const HIGH_SCORE_AT: int = 0x1f89
+const SCORE_AT: int = 0x1f82
+const SCORE_DIGITS: int = 7
+
+## Where the high score is kept between runs. The game has no idea any of this is happening: it is read out
+## of its memory while it plays and put back the next time it starts.
+const HIGH_SCORE_FILE: String = "user://alley_cat_high_score.txt"
+
 var _open: bool = false
 var _previous_frame: PackedByteArray = PackedByteArray()
 var _focus_a: Vector2 = Vector2(0.5, 0.5)
@@ -114,6 +126,8 @@ var _look: int = 0
 var _game: Node = null
 var _screen: CanvasItem = null
 var _music_player: AudioStreamPlayer = null
+var _saved_high: PackedByteArray = PackedByteArray() ## The best score seen, as the game's own digits.
+var _restored: bool = false ## Whether the saved high score has been put into the machine yet.
 
 
 func _ready() -> void:
@@ -132,6 +146,7 @@ func _ready() -> void:
 	_refresh()
 	_apply_sounds()
 	_panel.hide()
+	_saved_high = _read_saved_high_score()
 
 
 ## The pause key is taken here rather than left to the game. Polled rather than listened for, for the
@@ -151,6 +166,7 @@ func _process(_delta: float) -> void:
 		set_open(not _open)
 	if not _open:
 		_watch_the_game()
+		_keep_the_high_score()
 
 
 ## Puts what the menu says back in step with what is actually set.
@@ -441,3 +457,102 @@ func _follow_the_movement() -> void:
 	_focus_amount = lerpf(_focus_amount, 1.0 if changed > 0 else 0.0, ease)
 
 
+
+
+## Carries the high score across runs, which the game cannot do for itself: it was written for a machine
+## that was switched off at the wall, and it keeps its best score in memory like everything else.
+##
+## The saved score is put in once, as soon as the machine is up. After that this only ever reads: whenever
+## the game's own high score is better than what is on disk, the file is rewritten. Nothing here writes to
+## the game except that one restore, so a game in progress is never reached into.
+func _keep_the_high_score() -> void:
+	if not is_instance_valid(_game) or not _game.has_method(&"peek"):
+		return
+	if not bool(_game.call(&"is_ready")):
+		return
+	var at: int = int(_game.call(&"get_data_address")) + HIGH_SCORE_AT
+	if not _restored:
+		_restored = true
+		if _saved_high.size() == SCORE_DIGITS:
+			_game.call(&"poke", at, _saved_high)
+			return
+	var live: PackedByteArray = _game.call(&"peek", at, SCORE_DIGITS)
+	if live.size() != SCORE_DIGITS or not _is_digits(live):
+		return
+	if _compare_scores(live, _saved_high) > 0:
+		_saved_high = live
+		_write_saved_high_score(live)
+
+
+## The game's high score as a number, for a host that wants to show it somewhere of its own.
+func get_high_score() -> int:
+	if not is_instance_valid(_game) or not _game.has_method(&"peek"):
+		return 0
+	var at: int = int(_game.call(&"get_data_address")) + HIGH_SCORE_AT
+	return _digits_to_number(_game.call(&"peek", at, SCORE_DIGITS))
+
+
+## The score of the game being played, the same way.
+func get_score() -> int:
+	if not is_instance_valid(_game) or not _game.has_method(&"peek"):
+		return 0
+	var at: int = int(_game.call(&"get_data_address")) + SCORE_AT
+	return _digits_to_number(_game.call(&"peek", at, SCORE_DIGITS))
+
+
+## Whether every byte is a decimal digit. Memory read at the wrong moment - before the game has set itself
+## up, say - is not, and a run of rubbish must never be saved over a real score.
+func _is_digits(digits: PackedByteArray) -> bool:
+	if digits.is_empty():
+		return false
+	for digit: int in digits:
+		if digit > 9:
+			return false
+	return true
+
+
+func _digits_to_number(digits: PackedByteArray) -> int:
+	if not _is_digits(digits):
+		return 0
+	var total: int = 0
+	for digit: int in digits:
+		total = total * 10 + digit
+	return total
+
+
+## Which of two scores is the better, most significant digit first, without turning either into a number.
+func _compare_scores(a: PackedByteArray, b: PackedByteArray) -> int:
+	if b.size() != a.size():
+		return 1
+	for i: int in a.size():
+		if a[i] != b[i]:
+			return 1 if a[i] > b[i] else -1
+	return 0
+
+
+func _read_saved_high_score() -> PackedByteArray:
+	if not FileAccess.file_exists(HIGH_SCORE_FILE):
+		return PackedByteArray()
+	var file: FileAccess = FileAccess.open(HIGH_SCORE_FILE, FileAccess.READ)
+	if file == null:
+		return PackedByteArray()
+	var text: String = file.get_line().strip_edges()
+	file.close()
+	# Stored as the digits themselves so the file can be read, and edited, by a person.
+	if text.length() != SCORE_DIGITS or not text.is_valid_int():
+		return PackedByteArray()
+	var digits: PackedByteArray = PackedByteArray()
+	for i: int in text.length():
+		digits.append(text.unicode_at(i) - 48)
+	return digits if _is_digits(digits) else PackedByteArray()
+
+
+func _write_saved_high_score(digits: PackedByteArray) -> void:
+	var file: FileAccess = FileAccess.open(HIGH_SCORE_FILE, FileAccess.WRITE)
+	if file == null:
+		return
+	var text: String = ""
+	for digit: int in digits:
+		text += str(digit)
+	file.store_line(text)
+	file.close()

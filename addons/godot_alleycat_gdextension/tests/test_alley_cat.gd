@@ -383,3 +383,63 @@ func test_watching_memory_reports_the_code_that_wrote_to_it() -> void:
 	await wait_process_frames(60)
 	assert_eq(int(game.call(&"get_watch_hits")), 0, "Nothing is watched, so nothing is counted")
 	assert_eq((game.call(&"get_watch_writers") as PackedInt32Array).size(), 0)
+
+
+## The other half of reading memory. Carrying a high score across runs means putting one back, and the game
+## keeps it in memory like everything else, so a host has to be able to write there.
+func test_memory_can_be_written_as_well_as_read() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not game.has_method(&"poke"):
+		fail_test("This library predates poke; rebuild it")
+		return
+	# Somewhere harmless and far from the program: the top of the megabyte.
+	var at: int = (1 << 20) - 32
+	var written: PackedByteArray = PackedByteArray([4, 2, 0, 6, 9])
+	assert_eq(int(game.call(&"poke", at, written)), 5, "Five bytes in")
+	assert_eq(game.call(&"peek", at, 5), written, "and the same five back out")
+	assert_eq(int(game.call(&"poke", 1 << 20, written)), 0, "Past the top nothing is written")
+
+
+## Where the game reads its variables from. A disassembly gives a variable as a bare offset, and this is what
+## that offset is counted from, so the two together make an address. Alley Cat's is not where the image was
+## loaded, which is why an offset read straight off the disassembly finds rubbish.
+func test_the_data_segment_is_reported_so_an_offset_becomes_an_address() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not game.has_method(&"get_data_address"):
+		fail_test("This library predates get_data_address; rebuild it")
+		return
+	await wait_process_frames(120)
+	var data: int = int(game.call(&"get_data_address"))
+	assert_gt(data, 0, "The game sets a data segment on its way in")
+	assert_eq(data % 16, 0, "A segment base is a paragraph, so it is a multiple of 16")
+	assert_lt(data, 1 << 20, "and it points inside the megabyte")
+
+
+## The score and the high score, found by reading the disassembly in alley-decomp rather than by scanning:
+## sub_09922 hands the digit printer a pointer to 0x1f89 and sub_0992C one to 0x1f82, and the printer draws
+## seven digits with a gap after the third, which is the "000-0000" the fence shows twice.
+func test_the_score_and_high_score_are_seven_decimal_digits_where_the_disassembly_says() -> void:
+	if game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not game.has_method(&"get_data_address"):
+		fail_test("This library predates get_data_address; rebuild it")
+		return
+	assert_true(await _wait_for_the_question(), "the game should reach its setup")
+	await wait_process_frames(120)
+	var data: int = int(game.call(&"get_data_address"))
+	for label: String in ["score", "high score"]:
+		var at: int = data + (0x1f82 if label == "score" else 0x1f89)
+		var digits: PackedByteArray = game.call(&"peek", at, 7)
+		assert_eq(digits.size(), 7, "The %s is seven bytes" % label)
+		for digit: int in digits:
+			assert_lt(digit, 10, "and every one of them is a decimal digit, not a byte of a number")
+
+	# Writing digits in and reading them back is what the restore at startup does.
+	var wanted: PackedByteArray = PackedByteArray([0, 0, 4, 2, 0, 6, 9])
+	game.call(&"poke", data + 0x1f89, wanted)
+	assert_eq(game.call(&"peek", data + 0x1f89, 7), wanted, "A high score put in is a high score read back")

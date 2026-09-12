@@ -69,9 +69,12 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("peek_u8", "at"), &AlleyCat::peek_u8);
 	ClassDB::bind_method(D_METHOD("peek_u16", "at"), &AlleyCat::peek_u16);
 	ClassDB::bind_method(D_METHOD("get_load_address"), &AlleyCat::get_load_address);
+	ClassDB::bind_method(D_METHOD("get_data_address"), &AlleyCat::get_data_address);
+	ClassDB::bind_method(D_METHOD("poke", "at", "bytes"), &AlleyCat::poke);
 	ClassDB::bind_method(D_METHOD("watch", "from", "to"), &AlleyCat::watch);
 	ClassDB::bind_method(D_METHOD("get_watch_writers"), &AlleyCat::get_watch_writers);
 	ClassDB::bind_method(D_METHOD("get_watch_hits"), &AlleyCat::get_watch_hits);
+	ClassDB::bind_method(D_METHOD("get_watch_callers"), &AlleyCat::get_watch_callers);
 
 	ClassDB::bind_method(D_METHOD("set_rewind_seconds", "value"), &AlleyCat::set_rewind_seconds);
 	ClassDB::bind_method(D_METHOD("get_rewind_seconds"), &AlleyCat::get_rewind_seconds);
@@ -457,6 +460,20 @@ int AlleyCat::peek_u16(int at) const {
 // Where the image was loaded, so an offset into CAT.EXE's own data becomes an address here.
 int AlleyCat::get_load_address() const { return (int)(ALLEYCAT_LOAD_SEG << 4); }
 
+// Where the machine is reading its variables from right now. A disassembly gives a variable as a bare offset
+// like 0x1f82; this is what that offset is counted from, so the two together are an address peek can read.
+int AlleyCat::get_data_address() const { return (int)alleycat_data_address(); }
+
+// Writes into the machine's memory, and answers how many bytes went in. The other half of what carrying a
+// high score across runs needs: one read out at the end of a game has to be put back at the start of the
+// next. It writes where the game itself would, so it can corrupt the program as easily as set a score.
+int AlleyCat::poke(int at, const PackedByteArray &bytes) {
+	if (at < 0 || bytes.is_empty()) {
+		return 0;
+	}
+	return alleycat_poke((unsigned int)at, bytes.ptr(), (unsigned int)bytes.size());
+}
+
 // Watches a range of memory and remembers where the code that wrote to it was. This is how anything in the
 // game gets found: a score, a life count or a sprite is a place in memory, and the way to that place is the
 // routine that touches it. Point it at the few bytes of screen a number is drawn in, let the game draw, and
@@ -477,6 +494,19 @@ PackedInt32Array AlleyCat::get_watch_writers() const {
 }
 
 int AlleyCat::get_watch_hits() const { return (int)alleycat_watch_hits(); }
+
+// The routines that called the writers. Every sprite in the game goes through the same few blitters, so the
+// writer says how something was drawn and only the caller says what.
+PackedInt32Array AlleyCat::get_watch_callers() const {
+	unsigned int found[ALLEYCAT_WATCH_MAX];
+	int n = alleycat_watch_callers(found, ALLEYCAT_WATCH_MAX);
+	PackedInt32Array out;
+	out.resize(n);
+	for (int i = 0; i < n; i++) {
+		out.set(i, (int)found[i]);
+	}
+	return out;
+}
 
 // ---- rewind ---------------------------------------------------------------------------------
 

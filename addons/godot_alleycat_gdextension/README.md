@@ -285,8 +285,37 @@ They write the CGA window the way the hardware wants it - 80 bytes a row, even r
 rows `0x2000` further on, `xor di, 0x2000` to change bank - which is why the picture cannot simply be
 scaled: the artwork is 2 bits a pixel, interleaved by parity.
 
-That is the hook hi-res art needs, and the same technique is how the score and the lives will be found: they
-are whatever the code that draws those digits reads from.
+That is the hook hi-res art needs. It is also how the score was found.
+
+`get_watch_callers()` answers the other half of the question. Every sprite in the game goes through those
+same few blitters, so the writer says *how* something was drawn and only the caller says *what*: Alley Cat's
+blitters are reached by a near call and push nothing, so the return address is still on top of the stack
+when the store happens, and one word at `SS:SP` is the caller. Watching the score's band while a game starts
+named `sub_09969`, and the disassembly explains it at once - it reads a digit through `BX`, shifts it by four
+to index a glyph table at `0x2720`, blits it, and does that seven times with an extra column skipped after
+the third. That is `000-0000`. Its two callers hand it the two numbers:
+
+| | Offset | Drawn at |
+| --- | --- | --- |
+| Score | `0x1f82` | screen `0x143c` |
+| High score | `0x1f89` | screen `0x12ca` |
+
+Seven bytes each, one decimal digit per byte, most significant first - which is why a scan for a number
+never found them, and why `sub_09936` adds to the score with `aaa`, the 8086's decimal adjust.
+
+Those offsets are counted from `get_data_address()`, not from `get_load_address()`. Alley Cat's data segment
+is a page above where the image was loaded, so an offset taken straight off the disassembly and added to the
+load address reads rubbish. `peek` and `poke` work in physical addresses, and the sum of the two is one.
+
+## Keeping a high score
+
+The remaster node carries the high score across runs, which the game cannot do for itself: it was written
+for a machine that was switched off at the wall. The saved digits are put into memory once, as soon as the
+machine is up, and from then on it only reads - whenever the game's own high score beats what is on disk,
+`user://alley_cat_high_score.txt` is rewritten. The file is the seven digits as text, so it can be read and
+edited by a person. `get_score()` and `get_high_score()` give either as an ordinary number.
+
+Nothing else writes to the game. A run in progress is never reached into.
 
 ## The remaster layer
 
