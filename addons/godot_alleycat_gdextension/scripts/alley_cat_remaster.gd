@@ -107,6 +107,18 @@ const HIGH_SCORE_AT: int = 0x1f89
 const SCORE_AT: int = 0x1f82
 const SCORE_DIGITS: int = 7
 
+## Where the game keeps the lives it has left, from the same reading: sub_098E3 compares 0x1f80 against
+## 0x1f81, and when they differ it draws the new digit and remembers it. 0x1f81 is only a note of what is
+## already on the fence, which is why setting 0x1f80 is enough to make the game repaint it.
+const LIVES_AT: int = 0x1f80
+
+## How long the lives count has to read the same before it is believed. Polled every frame it does not: the
+## true count and zero come back alternately while a game is on, and the game's own code writes only 3, 9 and
+## a decrement, so the zero is something this has not explained rather than something the game means. Waiting
+## for the reading to settle steps over it. In seconds rather than frames, because the demo runs at about 480
+## of them a second and a frame count would mean something different on every machine.
+const LIVES_STEADY_TIME: float = 0.2
+
 ## Where the high score is kept between runs. The game has no idea any of this is happening: it is read out
 ## of its memory while it plays and put back the next time it starts.
 const HIGH_SCORE_FILE: String = "user://alley_cat_high_score.txt"
@@ -126,6 +138,9 @@ var _look: int = 0
 var _game: Node = null
 var _screen: CanvasItem = null
 var _music_player: AudioStreamPlayer = null
+var _lives: int = -1 ## The last count believed. -1 until one has settled.
+var _lives_candidate: int = -1 ## The count being read now, which is not believed until it holds.
+var _lives_steady: float = 0.0 ## How long it has held.
 var _saved_high: PackedByteArray = PackedByteArray() ## The best score seen, as the game's own digits.
 var _restored: bool = false ## Whether the saved high score has been put into the machine yet.
 
@@ -387,11 +402,12 @@ func _watch_the_game() -> void:
 			if drawn > REDRAW_BYTES:
 				_stage_hue = fposmod(_stage_hue + REDRAW_HUE_STEP, 1.0)
 				_focus_amount = 0.0
-				# The whole window at once is a place, not a panel: a room entered or left, a life lost,
-				# a level begun. That is what the wipe is for.
-				if drawn > FULL_REDRAW_BYTES and _wipe <= 0.0:
-					_wipe = 0.001
 		_video_writes = writes
+
+	# Losing a life is the game's own count going down, which it will say if asked. This used to be guessed
+	# at from how much of the screen was redrawn, and the guess could not tell a death from a new level,
+	# because both replace the picture. The wipe belongs to the death.
+	_watch_the_lives()
 
 	_follow_the_movement()
 
@@ -556,3 +572,35 @@ func _write_saved_high_score(digits: PackedByteArray) -> void:
 		text += str(digit)
 	file.store_line(text)
 	file.close()
+
+
+## Sweeps the wipe down the screen when a life is lost. The game keeps the count itself, so this is the one
+## thing here that is not inferred: entering a room and losing a life both replace the picture, and only the
+## count tells them apart.
+func _watch_the_lives() -> void:
+	var now: int = get_lives()
+	if now < 0:
+		return
+	if now != _lives_candidate:
+		_lives_candidate = now
+		_lives_steady = 0.0
+		return
+	_lives_steady += get_process_delta_time()
+	if _lives_steady < LIVES_STEADY_TIME:
+		return
+	if _lives >= 0 and now < _lives and _wipe <= 0.0:
+		_wipe = 0.001
+		_stage_hue = fposmod(_stage_hue + REDRAW_HUE_STEP, 1.0)
+	_lives = now
+
+
+## How many lives the cat has left, or -1 where the library cannot say. Read out of the game rather than
+## counted here, so it is right across a rewind as well: rewinding puts the machine back, count and all.
+func get_lives() -> int:
+	if not is_instance_valid(_game) or not _game.has_method(&"peek_u8"):
+		return -1
+	if not bool(_game.call(&"is_ready")):
+		return -1
+	var value: int = int(_game.call(&"peek_u8", int(_game.call(&"get_data_address")) + LIVES_AT))
+	# Between screens the game leaves rubbish here; a cat never has more than nine lives, whatever the saying.
+	return value if value >= 0 and value <= 9 else -1

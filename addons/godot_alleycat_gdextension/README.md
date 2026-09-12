@@ -297,8 +297,16 @@ the third. That is `000-0000`. Its two callers hand it the two numbers:
 
 | | Offset | Drawn at |
 | --- | --- | --- |
+| Lives | `0x1f80` | screen `0x1260` |
+| Lives last drawn | `0x1f81` | - |
 | Score | `0x1f82` | screen `0x143c` |
 | High score | `0x1f89` | screen `0x12ca` |
+
+The lives came from the same reading. `sub_098E3` compares `0x1f80` against `0x1f81` and only draws when
+they differ, so the first is the count and the second is a note of what is already on the fence - which is
+why writing the count alone makes the game repaint it. `sub_098C0` confirms the two scores independently:
+it walks the seven digits at `0x1f82` against those at `0x1f89` and copies one over the other when the game
+has been won well enough.
 
 Seven bytes each, one decimal digit per byte, most significant first - which is why a scan for a number
 never found them, and why `sub_09936` adds to the score with `aaa`, the 8086's decimal adjust.
@@ -316,6 +324,19 @@ machine is up, and from then on it only reads - whenever the game's own high sco
 edited by a person. `get_score()` and `get_high_score()` give either as an ordinary number.
 
 Nothing else writes to the game. A run in progress is never reached into.
+
+## Losing a life
+
+The wipe down the screen belongs to a death, and now says so. It used to be inferred from how much of the
+screen was redrawn, which could not tell a life lost from a level begun because both replace the picture.
+The game keeps the count itself, so it is read instead.
+
+One honest wart. Polled every frame, `0x1f80` does not hold still: the true count and zero come back
+alternately, 122 times across three real deaths in one measured game. The game's own code writes only a 3, a
+9 and a decrement, so the zero is not something it means, and it is not the data segment moving either -
+that was checked and it does not. It is unexplained. Rather than build on a reading that is not understood,
+the count has to hold steady for `LIVES_STEADY_TIME` before it is believed, which steps over the flicker
+completely: the same measured game reported 9, 3, 2, 1, 9 and fired exactly three wipes for three deaths.
 
 ## The remaster layer
 

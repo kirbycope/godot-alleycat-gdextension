@@ -263,3 +263,57 @@ func test_a_replacement_tune_silences_the_game_s_own() -> void:
 	demo.remaster.sounds = null
 	assert_eq(demo.game.get(&"music_volume"), 1.0, "and the game's own comes back")
 
+
+
+## The lives the cat has left, read out of the game rather than guessed at. sub_098E3 compares 0x1f80 with
+## 0x1f81 and redraws the fence digit when they differ, so 0x1f80 is the count and 0x1f81 only a note of what
+## has already been painted - which is why writing the count alone is enough to make the game repaint it.
+func test_the_lives_are_read_from_the_game() -> void:
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not demo.game.has_method(&"peek_u8"):
+		fail_test("This library predates peek_u8; rebuild it")
+		return
+	await wait_seconds(2.0)
+	var data: int = int(demo.game.call(&"get_data_address"))
+	demo.game.call(&"poke", data + AlleyCatRemaster.LIVES_AT, PackedByteArray([7]))
+	# The reading has to settle before it is believed, so give it longer than the settle time.
+	await wait_seconds(AlleyCatRemaster.LIVES_STEADY_TIME * 3.0)
+	assert_eq(demo.remaster.get_lives(), 7, "What was written is what is read back")
+
+	# A cat has nine lives at most, whatever the saying, and rubbish between screens must not read as a count.
+	demo.game.call(&"poke", data + AlleyCatRemaster.LIVES_AT, PackedByteArray([200]))
+	assert_eq(demo.remaster.get_lives(), -1, "A byte that is not a count reports itself as no answer")
+
+
+## The count is polled, and polled every frame it does not hold still: the true value and zero come back
+## alternately while a game is on. Measured in play it changed 122 times across three actual deaths, so a
+## bare "it went down" test would have fired constantly. The reading has to settle before it is believed.
+func test_a_flickering_reading_does_not_count_as_a_death() -> void:
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	if not demo.game.has_method(&"peek_u8"):
+		fail_test("This library predates peek_u8; rebuild it")
+		return
+	await wait_seconds(2.0)
+	var data: int = int(demo.game.call(&"get_data_address"))
+	var at: int = data + AlleyCatRemaster.LIVES_AT
+	demo.game.call(&"poke", at, PackedByteArray([5]))
+	await wait_seconds(AlleyCatRemaster.LIVES_STEADY_TIME * 3.0)
+	assert_eq(demo.remaster.get_lives(), 5, "Five to start from")
+	demo.remaster._wipe = 0.0
+
+	# Flick it away and back faster than the settle time, the way the live reading does.
+	for i: int in 6:
+		demo.game.call(&"poke", at, PackedByteArray([0]))
+		await wait_process_frames(2)
+		demo.game.call(&"poke", at, PackedByteArray([5]))
+		await wait_process_frames(2)
+	assert_eq(demo.remaster._wipe, 0.0, "None of that was a death, so nothing was wiped")
+
+	# A drop that holds is one.
+	demo.game.call(&"poke", at, PackedByteArray([4]))
+	await wait_seconds(AlleyCatRemaster.LIVES_STEADY_TIME * 3.0)
+	assert_gt(demo.remaster._wipe, 0.0, "A count that stays down is a life lost, and that is the wipe")
