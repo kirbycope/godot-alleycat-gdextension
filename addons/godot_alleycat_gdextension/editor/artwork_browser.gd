@@ -11,9 +11,22 @@ extends HSplitContainer
 ## The catalogue this opens with. Anything else is typed into the bar.
 const DEFAULT_ARTWORK: String = "res://addons/godot_alleycat_gdextension/resources/artwork.tres"
 
-## How big a sprite is drawn on the sheet. The game's own are between 8x5 and 32x15, which is unreadable at
-## its own size on a modern screen, so they are blown up to a fixed cell and kept at their aspect.
+## How big a sprite is drawn on the sheet at a zoom of one. The game's own are between 8x5 and 32x15, which
+## is unreadable at its own size on a modern screen, so they are blown up to a cell and kept at their aspect.
 const CELL: Vector2 = Vector2(104.0, 88.0)
+
+## How far the sheet and the previews can be zoomed, and by how much a step moves. The floor still fits
+## twice as many across; the ceiling is for a small high-density screen where a cell of 104 is a thumbnail.
+const ZOOM_MIN: float = 0.5
+const ZOOM_MAX: float = 4.0
+const ZOOM_STEP: float = 0.25
+
+## How tall the two preview frames are at a zoom of one.
+const PREVIEW_HEIGHT: float = 110.0
+
+## Where the zoom is remembered between sessions: in the editor's own per-project metadata, so it is not a
+## setting of the game and does not end up committed.
+const SETTINGS_SECTION: String = "alley_cat_artwork"
 
 ## What the group dropdown calls "any of them", and what it calls the ones nobody has put in a group yet.
 ## Neither can be a real group name, so they are kept apart from the list rather than in it.
@@ -35,7 +48,13 @@ const REPLACED_COLOUR: Color = Color(0.55, 0.9, 0.55)
 @onready var _sort_by: OptionButton = $Browse/Bar/SortBy
 @onready var _group_filter: OptionButton = $Browse/Bar/GroupFilter
 @onready var _replaced_only: CheckButton = $Browse/Bar/ReplacedOnly
+@onready var _zoom_out: Button = $Browse/Bar/ZoomOut
+@onready var _zoom_slider: HSlider = $Browse/Bar/Zoom
+@onready var _zoom_in: Button = $Browse/Bar/ZoomIn
+@onready var _scroll: ScrollContainer = $Browse/Sheet/Scroll
 @onready var _grid: GridContainer = $Browse/Sheet/Scroll/Grid
+@onready var _original_frame: Control = $Details/Previews/OriginalBox/Frame
+@onready var _replacement_frame: Control = $Details/Previews/ReplacementBox/Frame
 @onready var _title: Label = $Details/Title
 @onready var _original: TextureRect = $Details/Previews/OriginalBox/Frame/Original
 @onready var _replacement: TextureRect = $Details/Previews/ReplacementBox/Frame/Replacement
@@ -48,6 +67,7 @@ const REPLACED_COLOUR: Color = Color(0.55, 0.9, 0.55)
 
 var _artwork: AlleyCatArtwork = null
 var _selected: AlleyCatSprite = null
+var _zoom: float = 1.0 ## How much bigger than [constant CELL] everything on the sheet is drawn.
 var _picker: Control = null ## An EditorResourcePicker, built here because it is an editor-only class.
 var _tiles: ButtonGroup = ButtonGroup.new()
 
@@ -68,9 +88,76 @@ func _ready() -> void:
 	_group_pick.item_selected.connect(_on_group_picked)
 	_label_edit.text_submitted.connect(func(_text: String) -> void: _write_the_label())
 	_label_edit.focus_exited.connect(_write_the_label)
+	_zoom_slider.min_value = ZOOM_MIN
+	_zoom_slider.max_value = ZOOM_MAX
+	_zoom_slider.step = ZOOM_STEP
+	_zoom_slider.value_changed.connect(set_zoom)
+	_zoom_out.pressed.connect(func() -> void: set_zoom(_zoom - ZOOM_STEP))
+	_zoom_in.pressed.connect(func() -> void: set_zoom(_zoom + ZOOM_STEP))
+	_scroll.gui_input.connect(_on_sheet_input)
+	set_zoom(_remembered_zoom())
 	_build_the_picker()
 	_show_the_details()
 	_on_open_pressed()
+
+
+## How much bigger than [constant CELL] the sheet is drawn.
+func get_zoom() -> float:
+	return _zoom
+
+
+## Zooms the sheet and the two previews to [param value], between [constant ZOOM_MIN] and
+## [constant ZOOM_MAX], and remembers it for next time. The sprites are eight to forty pixels wide, so how
+## big they need to be to read depends entirely on the screen: a 104 pixel cell is comfortable on a desktop
+## monitor and a thumbnail on a small high-density one.
+func set_zoom(value: float) -> void:
+	value = snappedf(clampf(value, ZOOM_MIN, ZOOM_MAX), ZOOM_STEP)
+	_zoom = value
+	if _zoom_slider.value != value:
+		_zoom_slider.set_value_no_signal(value)
+	_zoom_slider.tooltip_text = "Zoom %d%%  (Ctrl and the wheel over the sheet)" % int(round(value * 100.0))
+	_zoom_out.disabled = value <= ZOOM_MIN
+	_zoom_in.disabled = value >= ZOOM_MAX
+	_original_frame.custom_minimum_size = Vector2(0.0, PREVIEW_HEIGHT * value)
+	_replacement_frame.custom_minimum_size = Vector2(0.0, PREVIEW_HEIGHT * value)
+	_remember_zoom(value)
+	_fill_the_sheet()
+	_reselect()
+
+
+## Ctrl and the wheel over the sheet zooms it, the way the editor's own 2D view does. Plain wheel still
+## scrolls, so the two do not fight.
+func _on_sheet_input(event: InputEvent) -> void:
+	var wheel: InputEventMouseButton = event as InputEventMouseButton
+	if wheel == null or not wheel.pressed or not wheel.ctrl_pressed:
+		return
+	if wheel.button_index == MOUSE_BUTTON_WHEEL_UP:
+		set_zoom(_zoom + ZOOM_STEP)
+	elif wheel.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		set_zoom(_zoom - ZOOM_STEP)
+	else:
+		return
+	_scroll.accept_event()
+
+
+## The zoom this project was last left at, or one. Editor settings only exist in the editor; anywhere else
+## - the tests - it is simply one.
+func _remembered_zoom() -> float:
+	if not Engine.is_editor_hint():
+		return 1.0
+	var settings: Object = EditorInterface.get_editor_settings()
+	return float(settings.get_project_metadata(SETTINGS_SECTION, "zoom", 1.0))
+
+
+func _remember_zoom(value: float) -> void:
+	if not Engine.is_editor_hint():
+		return
+	EditorInterface.get_editor_settings().set_project_metadata(SETTINGS_SECTION, "zoom", value)
+
+
+## The cell a sprite is drawn in at the current zoom.
+func _cell() -> Vector2:
+	return CELL * _zoom
 
 
 ## The replacement slot. [EditorResourcePicker] is what the inspector itself uses, so a texture can be
@@ -212,7 +299,7 @@ func _make_tile(sprite: AlleyCatSprite) -> Button:
 	var tile: Button = Button.new()
 	tile.toggle_mode = true
 	tile.button_group = _tiles
-	tile.custom_minimum_size = CELL
+	tile.custom_minimum_size = _cell()
 	tile.tooltip_text = "0x%05X\n%s" % [sprite.source, sprite.note]
 	tile.toggled.connect(func(pressed: bool) -> void:
 		if pressed:
@@ -237,7 +324,8 @@ func _make_tile(sprite: AlleyCatSprite) -> Button:
 	name_label.text = sprite.label if not sprite.label.is_empty() else "0x%05X" % sprite.source
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name_label.add_theme_font_size_override(&"font_size", 10)
+	# The name grows with the sheet, but less than the picture: at four times it is a caption, not a headline.
+	name_label.add_theme_font_size_override(&"font_size", int(round(10.0 * clampf(_zoom, 1.0, 2.0))))
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if sprite.texture != null:
 		name_label.add_theme_color_override(&"font_color", REPLACED_COLOUR)
@@ -250,7 +338,7 @@ func _make_tile(sprite: AlleyCatSprite) -> Button:
 func _columns_for_the_width() -> void:
 	if not is_instance_valid(_grid):
 		return
-	var across: int = int(maxf(1.0, floorf(_grid.size.x / (CELL.x + 6.0))))
+	var across: int = int(maxf(1.0, floorf(_grid.size.x / (_cell().x + 6.0))))
 	if _grid.columns != across:
 		_grid.columns = across
 

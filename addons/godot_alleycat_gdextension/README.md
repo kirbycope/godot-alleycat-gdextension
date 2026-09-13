@@ -499,6 +499,11 @@ flat array, and the inspector draws an array of resources as a hundred rows with
 means opening a row, looking at the picture inside, and closing it again. The filter box takes a name or an
 address, and "Replaced only" says how much of a set is finished.
 
+**Zoom.** The sprites are eight to forty pixels wide, so how big they need to be drawn to read depends on
+the screen: a cell of 104 pixels is comfortable on a desktop monitor and a thumbnail on a small high-density
+one. The slider in the bar, the `-` and `+` beside it, or Ctrl and the wheel over the sheet zoom the sheet
+and the two previews together, from half size to four times, and the editor remembers it per project.
+
 **Groups.** Most of the game's artwork comes in families - a thing that walks is six frames each way, and a
 thing drawn at three sizes is three entries - so the useful unit when replacing artwork is the family rather
 than the sprite. Each sprite has a `group`, typed into the details panel or chosen from the dropdown beside
