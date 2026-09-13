@@ -146,13 +146,16 @@ func test_on_a_touchscreen_jump_and_drop_are_big_and_the_arrows_are_left_and_rig
 	assert_false(demo.controls.key_s.visible, "no Down arrow")
 	assert_true(demo.controls.key_a.visible, "Left stays")
 	assert_true(demo.controls.key_d.visible, "and Right")
-	assert_eq(demo.controls.joypad_button_0.scale, Vector2.ONE * AlleyCatControls.TOUCH_FACE_SCALE, "Jump is big")
-	assert_eq(demo.controls.joypad_button_2.scale, Vector2.ONE * AlleyCatControls.TOUCH_FACE_SCALE, "and so is Drop")
-	assert_eq(demo.controls.joypad_button_0.position, AlleyCatControls.TOUCH_JUMP_POSITION, "in the corner")
+	for node_name: String in AlleyCatControls.TOUCH_LAYOUT:
+		var button: Node2D = demo.controls.get(node_name)
+		assert_eq(button.scale, Vector2.ONE * AlleyCatControls.TOUCH_SCALE, "%s is big" % node_name)
+		assert_eq(button.position, AlleyCatControls.TOUCH_LAYOUT[node_name], "and in its corner")
 	demo.controls.current_input_type = Controls.InputType.KEYBOARD_MOUSE
 	assert_true(demo.controls.key_w.visible, "a keyboard has all four arrows")
-	assert_eq(demo.controls.joypad_button_0.scale, Vector2.ONE, "and the pad-sized buttons")
-	assert_ne(demo.controls.joypad_button_0.position, AlleyCatControls.TOUCH_JUMP_POSITION, "back where the scene put it")
+	for node_name: String in AlleyCatControls.TOUCH_LAYOUT:
+		var button: Node2D = demo.controls.get(node_name)
+		assert_eq(button.scale, Vector2.ONE, "%s is pad-sized again" % node_name)
+		assert_ne(button.position, AlleyCatControls.TOUCH_LAYOUT[node_name], "back where the scene put it")
 
 
 func _key(keycode: Key) -> InputEventKey:
@@ -538,18 +541,18 @@ func test_the_art_row_switches_the_replacements_while_the_game_runs() -> void:
 		return
 	var art: AlleyCatArt = demo.art
 	var remaster: AlleyCatRemaster = demo.remaster
-	assert_true(art.enabled, "the demo ships with the replacements on")
-	assert_true(remaster.is_remastered_art(), "and the menu agrees with the node rather than guessing")
+	assert_false(art.enabled, "the demo ships with the 1984 picture, the replacements off")
+	assert_false(remaster.is_remastered_art(), "and the menu agrees with the node rather than guessing")
 	assert_true(remaster._art_row.visible, "so the row is offered")
-	assert_eq(remaster._art_name.text, "Remastered")
+	assert_eq(remaster._art_name.text, "Original")
 
 	remaster._on_next_art_pressed()
-	assert_false(art.enabled, "the arrow turns the overlay off")
-	assert_eq(remaster._art_name.text, "Original")
+	assert_true(art.enabled, "the arrow turns the overlay on")
+	assert_eq(remaster._art_name.text, "Remastered")
 	# There are two answers, so either arrow lands on the other one.
 	remaster._on_previous_art_pressed()
-	assert_true(art.enabled)
-	assert_eq(remaster._art_name.text, "Remastered")
+	assert_false(art.enabled)
+	assert_eq(remaster._art_name.text, "Original")
 
 
 ## Turning it off has to give the game its own sprites back. They are hidden on their way to the
@@ -635,6 +638,7 @@ func test_a_draw_from_inside_a_sprite_draws_that_part_of_its_replacement() -> vo
 
 	var art: AlleyCatArt = demo.art
 	var was: AlleyCatArtwork = art.artwork
+	art.enabled = true # the demo ships with the overlay off; this is about what it hides once it is on
 	art.artwork = artwork
 	assert_eq(art._replacement_for({"source": 0x10EE2 + 4, "stride": 24}), frame.texture,
 			"so a clipped draw of frame 3 is one of ours")
@@ -645,6 +649,7 @@ func test_a_draw_from_inside_a_sprite_draws_that_part_of_its_replacement() -> vo
 	assert_eq(region, Rect2(0.0, 8.0, 48.0, 14.0), "the bottom seven of eleven rows is the bottom seven elevenths")
 	assert_eq(art.replaced_lengths(), PackedInt32Array([66]), "and the game is told how much to hide")
 	art.artwork = was
+	art.enabled = false
 
 
 ## The game draws some artwork a row taller each tick, and every one of those draws is the top so many

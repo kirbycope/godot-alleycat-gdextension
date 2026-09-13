@@ -150,19 +150,22 @@ const JOYPAD_ONLY_NODES: PackedStringArray = [
 ]
 const KEYBOARD_ONLY_NODES: PackedStringArray = ["key_i", "key_j", "key_k", "key_l"]
 
-## On a touchscreen the two face buttons the cat is played with, Jump and Drop, are drawn this much bigger
-## than the rest, because a thumb on a phone is not a finger on a pad. The other face buttons are the setup
-## answers and are not on screen while the cat is being played.
-const TOUCH_FACE_SCALE: float = 1.5
-## Where Jump and Drop sit in the bottom-right cluster while they are big: Jump in the corner and Drop up
-## and to the left of it, the way A and X sit on a pad, with a gap between them so a thumb aiming for one
-## does not slide onto the other.
-const TOUCH_JUMP_POSITION: Vector2 = Vector2(208, 192)
-const TOUCH_DROP_POSITION: Vector2 = Vector2(96, 112)
+## On a touchscreen the four buttons the cat is played with - Left and Right on one side, Drop and Jump on the
+## other - are drawn this much bigger than the rest, because a thumb on a phone is not a finger on a pad.
+## The other buttons are the setup answers and the host's, and are not what the game is played with.
+const TOUCH_SCALE: float = 1.5
+## Where each of the four sits in its corner cluster while it is big: Jump in the corner and Drop up and to
+## the left of it, the way A and X sit on a pad, and Left and Right side by side along the bottom of the
+## other corner, with a gap between each pair so a thumb aiming for one does not slide onto the other.
+const TOUCH_LAYOUT: Dictionary = {
+	"joypad_button_0": Vector2(208, 192),
+	"joypad_button_2": Vector2(96, 112),
+	"key_a": Vector2(32, 208),
+	"key_d": Vector2(144, 208),
+}
 
 var _stage: Stage = Stage.PLAYING ## Which screen the HUD is currently dressed for.
-var _jump_home: Vector2 ## Where the scene puts Jump for everything but a touchscreen.
-var _drop_home: Vector2 ## Where the scene puts Drop for everything but a touchscreen.
+var _homes: Dictionary = {} ## Where the scene puts each button in [constant TOUCH_LAYOUT] for everything but a touchscreen.
 
 
 func _ready() -> void:
@@ -176,8 +179,8 @@ func _ready() -> void:
 		# slot replacing the earlier and leaving the first button answering to nothing.
 		var key: String = String(action)
 		extra_actions[key] = merge_bindings(extra_actions.get(key, {}), BINDINGS[slot])
-	_jump_home = joypad_button_0.position
-	_drop_home = joypad_button_2.position
+	for node_name: String in TOUCH_LAYOUT:
+		_homes[node_name] = (get(node_name) as CanvasItem).position
 	super()
 	# Changing device redraws the HUD from the scene's own text, and so does a world prompt handing
 	# its label back, so the setup words have to go on again afterwards or they are lost the moment
@@ -231,16 +234,15 @@ func _apply_visibility() -> void:
 			node.visible = wanted
 	# Alley Cat reads four directions, but up is a jump and down is a drop, and on a touchscreen both are
 	# face buttons already, so the movement buttons keep only Left and Right: two ways to walk rather than
-	# four buttons for the same two things. Jump and Drop grow to fit a thumb and move into the corner.
+	# four buttons for the same two things. Those four grow to fit a thumb and move into their corners.
 	var is_touch: bool = current_input_type == InputType.TOUCH
 	if is_touch:
 		key_w.hide()
 		key_s.hide()
-	var face_scale: Vector2 = Vector2.ONE * (TOUCH_FACE_SCALE if is_touch else 1.0)
-	joypad_button_0.scale = face_scale
-	joypad_button_2.scale = face_scale
-	joypad_button_0.position = TOUCH_JUMP_POSITION if is_touch else _jump_home
-	joypad_button_2.position = TOUCH_DROP_POSITION if is_touch else _drop_home
+	for node_name: String in TOUCH_LAYOUT:
+		var button: Node2D = get(node_name) as Node2D
+		button.scale = Vector2.ONE * (TOUCH_SCALE if is_touch else 1.0)
+		button.position = TOUCH_LAYOUT[node_name] if is_touch else _homes[node_name]
 
 
 ## Puts the words for whichever screen the game is on back onto the buttons.

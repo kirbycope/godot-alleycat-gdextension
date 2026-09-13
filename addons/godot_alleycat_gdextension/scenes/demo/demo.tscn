@@ -50,6 +50,7 @@ z_index = 1
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("4_art")
+enabled = false
 artwork = ExtResource("5_artwork")
 
 [node name="Prompt" type="Label" parent="." unique_id=1388312918]

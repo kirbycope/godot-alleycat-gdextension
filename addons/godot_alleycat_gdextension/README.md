@@ -148,9 +148,10 @@ addon's `touch_movement` to `BUTTONS`. Alley Cat reads four directions and nothi
 analogue stick works against the player - a finger a fraction off the axis is a direction the game has no
 way to express, and it reads as the control being finicky. The buttons are the movement slots, which already
 carry the arrow art this scene gives them for its keyboard players. Only Left and Right of the four are
-drawn on a touchscreen: Up is Jump and Down is Drop, both face buttons already, and those two are drawn half
-again as big as the rest and moved into the corner (`TOUCH_FACE_SCALE`, `TOUCH_JUMP_POSITION` and
-`TOUCH_DROP_POSITION` in `alley_cat_controls.gd`), because a thumb on a phone is not a finger on a pad.
+drawn on a touchscreen: Up is Jump and Down is Drop, both face buttons already. Those four - Left and Right
+in one corner, Drop and Jump in the other - are drawn half again as big as the rest and moved into their
+corners (`TOUCH_SCALE` and `TOUCH_LAYOUT` in `alley_cat_controls.gd`), because a thumb on a phone is not a
+finger on a pad.
 
 ### The HUD follows the game's screens
 
@@ -456,7 +457,7 @@ The artwork is a resource - `AlleyCatArtwork`, a list of `AlleyCatSprite`, each 
 with a texture - so a set is a file that can be swapped whole, and anything not named in it is left exactly
 as the game drew it. A set can be finished one sprite at a time.
 
-`enabled` turns the whole overlay on and off, at any moment, mid-jump included. Nothing in the machine
+`enabled` turns the whole overlay on and off, at any moment, mid-jump included. The demo ships with it off, so what loads is the game's own 1984 picture, and the paws menu's Art row turns the replacements on. Nothing in the machine
 moves either way: the game draws its own artwork all along, and the only difference is whether those bytes
 reach the framebuffer and whether this node paints over the top of them. That is what the paws menu's
 **Art** row switches, and it is why it needs no restart. Set it to `false` in the inspector to ship with
