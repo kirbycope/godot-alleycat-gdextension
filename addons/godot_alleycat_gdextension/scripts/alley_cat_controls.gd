@@ -24,7 +24,9 @@ const BINDINGS: Dictionary = {
 	# Jump is the bottom face button and the space bar wherever Godot is concerned, and in Alley Cat
 	# jumping is pushing up, so the slot is on alleycat_up and the key over it is Space.
 	"button_0": {"keys": [KEY_SPACE]},
-	"button_2": {"keys": [KEY_N]},
+	# Drop is the left face button, and in Alley Cat dropping off a fence is pushing down, so the slot is on
+	# alleycat_down and the key over it is Down, the same key the movement slot already has.
+	"button_2": {"keys": [KEY_DOWN]},
 	"button_3": {"keys": [KEY_Y]},
 	"button_4": {"keys": [KEY_ESCAPE]},
 	"button_6": {"keys": [KEY_M]},
@@ -56,7 +58,7 @@ const BINDINGS: Dictionary = {
 const SETUP_LABELS: Dictionary = {
 	"button_0": "",
 	"button_1": "",
-	"button_2": "No",
+	"button_2": "",
 	"button_3": "Yes",
 	"button_4": "",
 	"button_6": "",
@@ -129,7 +131,9 @@ enum Stage {
 ## hiding the buttons without it leaves an empty cross on screen. Its keyboard faces go with them, because
 ## the skill menu is the same question whichever the player is holding.
 const STAGE_NODES: Dictionary = {
-	Stage.ASKING_JOYSTICK: ["joypad_button_2", "joypad_button_3"],
+	# No is not drawn: the demo answers the joystick question itself, and the button No used to sit on is
+	# Drop now, which the cat needs on every screen it is on.
+	Stage.ASKING_JOYSTICK: ["joypad_button_3"],
 	Stage.ASKING_SKILL: [
 		"dpad_base", "joypad_button_11", "joypad_button_12", "joypad_button_13", "joypad_button_14",
 		"key_i", "key_j", "key_k", "key_l",
@@ -146,7 +150,19 @@ const JOYPAD_ONLY_NODES: PackedStringArray = [
 ]
 const KEYBOARD_ONLY_NODES: PackedStringArray = ["key_i", "key_j", "key_k", "key_l"]
 
+## On a touchscreen the two face buttons the cat is played with, Jump and Drop, are drawn this much bigger
+## than the rest, because a thumb on a phone is not a finger on a pad. The other face buttons are the setup
+## answers and are not on screen while the cat is being played.
+const TOUCH_FACE_SCALE: float = 1.5
+## Where Jump and Drop sit in the bottom-right cluster while they are big: Jump in the corner and Drop up
+## and to the left of it, the way A and X sit on a pad, with a gap between them so a thumb aiming for one
+## does not slide onto the other.
+const TOUCH_JUMP_POSITION: Vector2 = Vector2(208, 192)
+const TOUCH_DROP_POSITION: Vector2 = Vector2(96, 112)
+
 var _stage: Stage = Stage.PLAYING ## Which screen the HUD is currently dressed for.
+var _jump_home: Vector2 ## Where the scene puts Jump for everything but a touchscreen.
+var _drop_home: Vector2 ## Where the scene puts Drop for everything but a touchscreen.
 
 
 func _ready() -> void:
@@ -160,11 +176,14 @@ func _ready() -> void:
 		# slot replacing the earlier and leaving the first button answering to nothing.
 		var key: String = String(action)
 		extra_actions[key] = merge_bindings(extra_actions.get(key, {}), BINDINGS[slot])
+	_jump_home = joypad_button_0.position
+	_drop_home = joypad_button_2.position
 	super()
 	# Changing device redraws the HUD from the scene's own text, and so does a world prompt handing
 	# its label back, so the setup words have to go on again afterwards or they are lost the moment
 	# the player picks up a pad mid-question.
 	contextual_labels_requested.connect(_apply_labels)
+	contextual_labels_requested.connect(_apply_visibility)
 	input_type_changed.connect(func(_input_type: InputType) -> void:
 		_apply_labels()
 		_apply_visibility())
@@ -210,6 +229,18 @@ func _apply_visibility() -> void:
 			elif JOYPAD_ONLY_NODES.has(node_name):
 				wanted = wanted and not is_keyboard
 			node.visible = wanted
+	# Alley Cat reads four directions, but up is a jump and down is a drop, and on a touchscreen both are
+	# face buttons already, so the movement buttons keep only Left and Right: two ways to walk rather than
+	# four buttons for the same two things. Jump and Drop grow to fit a thumb and move into the corner.
+	var is_touch: bool = current_input_type == InputType.TOUCH
+	if is_touch:
+		key_w.hide()
+		key_s.hide()
+	var face_scale: Vector2 = Vector2.ONE * (TOUCH_FACE_SCALE if is_touch else 1.0)
+	joypad_button_0.scale = face_scale
+	joypad_button_2.scale = face_scale
+	joypad_button_0.position = TOUCH_JUMP_POSITION if is_touch else _jump_home
+	joypad_button_2.position = TOUCH_DROP_POSITION if is_touch else _drop_home
 
 
 ## Puts the words for whichever screen the game is on back onto the buttons.

@@ -37,8 +37,6 @@
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_t.svg" id="30_skill_t"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_a_outline.svg" id="31_skill_a_outline"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_a.svg" id="32_skill_a"]
-[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_n_outline.svg" id="33_answer_n_outline"]
-[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_n.svg" id="34_answer_n"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_y_outline.svg" id="35_answer_y_outline"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_y.svg" id="36_answer_y"]
 
@@ -48,7 +46,7 @@ touch_movement = 1
 input_catalog = ExtResource("2_catalog")
 action_button_0 = &"alleycat_up"
 action_button_1 = &""
-action_button_2 = &"alleycat_no"
+action_button_2 = &"alleycat_down"
 action_button_3 = &"alleycat_yes"
 action_button_9 = &""
 action_button_10 = &"alleycat_fullscreen"
@@ -82,8 +80,8 @@ keyboard_mouse_button_10_normal = ExtResource("60_full_normal")
 keyboard_mouse_button_10_pressed = ExtResource("61_full_pressed")
 keyboard_mouse_button_9_normal = ExtResource("3_alt_normal")
 keyboard_mouse_button_9_pressed = ExtResource("4_alt_pressed")
-keyboard_mouse_button_2_normal = ExtResource("33_answer_n_outline")
-keyboard_mouse_button_2_pressed = ExtResource("34_answer_n")
+keyboard_mouse_button_2_normal = ExtResource("17_arrow_down_outline")
+keyboard_mouse_button_2_pressed = ExtResource("18_arrow_down")
 keyboard_mouse_button_3_normal = ExtResource("35_answer_y_outline")
 keyboard_mouse_button_3_pressed = ExtResource("36_answer_y")
 keyboard_mouse_button_4_normal = ExtResource("11_escape_normal")
@@ -145,7 +143,7 @@ text = "Jump"
 text = ""
 
 [node name="Label" parent="BottomRight/JoypadButton2" index="0"]
-text = "No"
+text = "Drop"
 
 [node name="Label" parent="BottomRight/JoypadButton3" index="0"]
 text = "Yes"

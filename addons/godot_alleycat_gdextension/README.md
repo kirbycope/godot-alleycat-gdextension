@@ -134,9 +134,10 @@ Every button on the HUD does exactly the one thing drawn on it, which took some 
 and the arrow keys move the cat. The d-pad and the K, H, T and A keys are the skill menu, because the
 game asks that in text and a pad has no letters, so those four answers need a home and the d-pad is
 the only cluster free to be one - it deliberately does not double as a second way to walk, or the
-player is shown two identical d-pads and one of them is lying. The face buttons are Alt, Sound, No
-and Yes; Esc and Ctrl-M sit above. The shoulders, the triggers and the right stick are blank, and the
-addon hides a blank slot.
+player is shown two identical d-pads and one of them is lying. The face buttons are Jump and Drop,
+which in Alley Cat are pushing up and pushing down, with Yes on the top one while the joystick question
+is up; No sits on no button, because the demo answers that question itself. Esc and Ctrl-M sit above.
+The shoulders, the triggers and the right stick are blank, and the addon hides a blank slot.
 
 The keyboard art names Alley Cat's own keys throughout rather than the addon's defaults, one
 `keyboard_mouse_*` texture per slot set in the inherited scene, so a key drawn on the HUD is a key
@@ -146,7 +147,10 @@ On a touchscreen the movement control is the four arrow buttons, not the virtual
 addon's `touch_movement` to `BUTTONS`. Alley Cat reads four directions and nothing in between, so an
 analogue stick works against the player - a finger a fraction off the axis is a direction the game has no
 way to express, and it reads as the control being finicky. The buttons are the movement slots, which already
-carry the arrow art this scene gives them for its keyboard players.
+carry the arrow art this scene gives them for its keyboard players. Only Left and Right of the four are
+drawn on a touchscreen: Up is Jump and Down is Drop, both face buttons already, and those two are drawn half
+again as big as the rest and moved into the corner (`TOUCH_FACE_SCALE`, `TOUCH_JUMP_POSITION` and
+`TOUCH_DROP_POSITION` in `alley_cat_controls.gd`), because a thumb on a phone is not a finger on a pad.
 
 ### The HUD follows the game's screens
 

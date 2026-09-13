@@ -99,6 +99,9 @@ func _ready() -> void:
 		# Fullscreen is the host's too: the game draws 320x200 whatever the window does. The right
 		# shoulder, across from where Alt sits, and F on the keyboard.
 		"alleycat_fullscreen": {"keys": [KEY_F], "buttons": [JOY_BUTTON_RIGHT_SHOULDER]},
+		# No is the demo's as well: the joystick question is about hardware Godot has already dealt with
+		# and the demo answers it, so the key is bound for the demo to press and sits on no button.
+		"alleycat_no": {"keys": [KEY_N]},
 	})
 	_windowed = [screen.offset_left, screen.offset_top, screen.offset_right, screen.offset_bottom]
 	# The node loads on its own _ready, which has now been and gone, so ask rather than wait for a
@@ -274,8 +277,8 @@ func _stage_for(text: String) -> AlleyCatControls.Stage:
 ## Held rather than tapped for a set number of frames, because the game reads its inputs once per tick of
 ## its own clock and that is slower than a frame, so any count would be a guess.
 func _answer_the_joystick_question(asking: bool) -> void:
-	var action: StringName = controls.action_button_2
-	if action.is_empty() or not InputMap.has_action(action):
+	var action: StringName = &"alleycat_no"
+	if not InputMap.has_action(action):
 		return
 	if asking and not _answering:
 		Input.action_press(action)

@@ -71,9 +71,10 @@ func test_every_input_the_game_listens_for_has_a_button() -> void:
 	for slot: String in AlleyCatControls.BINDINGS:
 		mapped.append(String(demo.controls.get(&"action_" + slot)))
 	for action: String in AlleyCat.get_expected_inputs():
-		# Button 2 the game never reads, a restart is not something to leave on a pad, and Alt is the
-		# demo's to press: the only screens that want it are waits, and it answers them itself.
-		if action in ["alleycat_button_2", "alleycat_restart", "alleycat_alt"]:
+		# Button 2 the game never reads, a restart is not something to leave on a pad, and Alt and No are
+		# the demo's to press: the only screens that want them are waits and a question about hardware,
+		# and it answers both itself.
+		if action in ["alleycat_button_2", "alleycat_restart", "alleycat_alt", "alleycat_no"]:
 			continue
 		assert_true(mapped.has(action), "%s is on a button" % action)
 	assert_true(InputMap.has_action(&"alleycat_alt"), "Alt is still bound, just not drawn")
@@ -117,6 +118,43 @@ func test_jump_is_the_face_button_the_space_bar_and_up() -> void:
 		assert_true(InputMap.action_has_event("alleycat_up", event), "alleycat_up answers to it")
 
 
+## Dropping off a fence in Alley Cat is pushing down, and the left face button is where it sits, so a thumb
+## on a phone has Jump and Drop side by side instead of two more arrows to find.
+func test_drop_is_the_left_face_button_and_down() -> void:
+	assert_eq(String(demo.controls.action_button_2), "alleycat_down")
+	assert_eq(demo.controls.joypad_button_2_label.text, "Drop")
+	for event: InputEvent in [_pad_button(JOY_BUTTON_X), _key(KEY_DOWN)]:
+		assert_true(InputMap.action_has_event("alleycat_down", event), "alleycat_down answers to it")
+
+
+## The joystick question is the demo's to answer, so No is bound for it to press but sits on no button, and
+## answering does not walk the cat down the alley.
+func test_the_demo_answers_the_joystick_question_with_no_and_not_with_a_walk() -> void:
+	assert_true(InputMap.has_action(&"alleycat_no"), "No is bound")
+	demo._answer_the_joystick_question(true)
+	assert_true(Input.is_action_pressed(&"alleycat_no"), "the demo holds No down")
+	assert_false(Input.is_action_pressed(&"alleycat_down"), "and not Drop, which is on the button No used to be on")
+	demo._answer_the_joystick_question(false)
+	assert_false(Input.is_action_pressed(&"alleycat_no"), "and lets go when the question is gone")
+
+
+## On a touchscreen the cat walks on Left and Right alone: Up is Jump and Down is Drop, both face buttons,
+## and those two are drawn bigger than the rest because they are what the game is played with.
+func test_on_a_touchscreen_jump_and_drop_are_big_and_the_arrows_are_left_and_right() -> void:
+	demo.controls.current_input_type = Controls.InputType.TOUCH
+	assert_false(demo.controls.key_w.visible, "no Up arrow")
+	assert_false(demo.controls.key_s.visible, "no Down arrow")
+	assert_true(demo.controls.key_a.visible, "Left stays")
+	assert_true(demo.controls.key_d.visible, "and Right")
+	assert_eq(demo.controls.joypad_button_0.scale, Vector2.ONE * AlleyCatControls.TOUCH_FACE_SCALE, "Jump is big")
+	assert_eq(demo.controls.joypad_button_2.scale, Vector2.ONE * AlleyCatControls.TOUCH_FACE_SCALE, "and so is Drop")
+	assert_eq(demo.controls.joypad_button_0.position, AlleyCatControls.TOUCH_JUMP_POSITION, "in the corner")
+	demo.controls.current_input_type = Controls.InputType.KEYBOARD_MOUSE
+	assert_true(demo.controls.key_w.visible, "a keyboard has all four arrows")
+	assert_eq(demo.controls.joypad_button_0.scale, Vector2.ONE, "and the pad-sized buttons")
+	assert_ne(demo.controls.joypad_button_0.position, AlleyCatControls.TOUCH_JUMP_POSITION, "back where the scene put it")
+
+
 func _key(keycode: Key) -> InputEventKey:
 	var event: InputEventKey = InputEventKey.new()
 	event.physical_keycode = keycode
@@ -149,7 +187,7 @@ func test_the_slots_are_labelled_with_what_the_game_does() -> void:
 func test_the_labels_swap_for_the_setup_questions_and_back() -> void:
 	demo.controls.set_setting_up(true)
 	assert_eq(demo.controls.joypad_button_3_label.text, "Yes")
-	assert_eq(demo.controls.joypad_button_2_label.text, "No")
+	assert_eq(demo.controls.joypad_button_2_label.text, "", "Drop says nothing on a screen with nothing to drop from")
 	assert_eq(demo.controls.joypad_button_11_label.text, "Kitten")
 	assert_eq(demo.controls.joypad_button_14_label.text, "Alley Cat")
 
