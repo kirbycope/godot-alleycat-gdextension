@@ -513,7 +513,10 @@ from the editor, and for pasting into a conversation about which sprite is which
 Naming beats guessing: three separate guesses at which sprite was the player's cat were all wrong before the
 sheets existed. Names typed into the panel live in `artwork.tres`, and `build_artwork_resource.py` rewrites
 that file from nothing rather than reading the old one, so a name that has to survive a rebuild goes in the
-`KNOWN` dictionary at the top of the script - which is where the cat's twelve frames are.
+`KNOWN` dictionary at the top of the script - which is where the cat's twelve frames are. Every other row has a name too, from `GUESSES` beside it: the best reading of a sweep that recorded which
+room each sprite was drawn in and where, the room's routine in the disassembly, and the picture itself. The
+game has no names for its artwork, so those are guesses, and the ones that are only a guess say so with a
+question mark - "Cat Swim Sink?", "Bird Flying?". A name typed into the panel wins over either dictionary.
 
 **Blanks are left out.** An address the game blits from that decodes to a rectangle of one flat colour is
 not a picture - a run of identical bytes used to clear a strip - and the builder drops it. So are the

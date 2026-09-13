@@ -224,9 +224,9 @@ note = "24x13, drawn 36607 times; ANDed into the background, so white is see-thr
 
 [sub_resource type="Resource" id="S_13400_8x6"]
 script = ExtResource("2_sprite")
-resource_name = "0x13400  8x6  drawn 27393"
-label = "0x13400  8x6  drawn 27393"
-group = ""
+resource_name = "Fish 1 of 4"
+label = "Fish 1 of 4"
+group = "Fishbowl"
 source = 78848
 original = ExtResource("30_o")
 draws = 27393
@@ -235,9 +235,9 @@ note = "8x6, drawn 27393 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1340C_8x6"]
 script = ExtResource("2_sprite")
-resource_name = "0x1340C  8x6  drawn 27123"
-label = "0x1340C  8x6  drawn 27123"
-group = ""
+resource_name = "Fish 2 of 4"
+label = "Fish 2 of 4"
+group = "Fishbowl"
 source = 78860
 original = ExtResource("31_o")
 draws = 27123
@@ -246,9 +246,9 @@ note = "8x6, drawn 27123 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13424_8x6"]
 script = ExtResource("2_sprite")
-resource_name = "0x13424  8x6  drawn 26874"
-label = "0x13424  8x6  drawn 26874"
-group = ""
+resource_name = "Fish 4 of 4"
+label = "Fish 4 of 4"
+group = "Fishbowl"
 source = 78884
 original = ExtResource("32_o")
 draws = 26874
@@ -257,9 +257,9 @@ note = "8x6, drawn 26874 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13418_8x6"]
 script = ExtResource("2_sprite")
-resource_name = "0x13418  8x6  drawn 26595"
-label = "0x13418  8x6  drawn 26595"
-group = ""
+resource_name = "Fish 3 of 4"
+label = "Fish 3 of 4"
+group = "Fishbowl"
 source = 78872
 original = ExtResource("33_o")
 draws = 26595
@@ -268,9 +268,9 @@ note = "8x6, drawn 26595 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12138_8x4"]
 script = ExtResource("2_sprite")
-resource_name = "0x12138  8x4  drawn 18713"
-label = "0x12138  8x4  drawn 18713"
-group = ""
+resource_name = "Fish Small 4 of 4"
+label = "Fish Small 4 of 4"
+group = "Fishbowl"
 source = 74040
 original = ExtResource("34_o")
 draws = 18713
@@ -279,9 +279,9 @@ note = "8x4, drawn 18713 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12128_8x4"]
 script = ExtResource("2_sprite")
-resource_name = "0x12128  8x4  drawn 18621"
-label = "0x12128  8x4  drawn 18621"
-group = ""
+resource_name = "Fish Small 2 of 4"
+label = "Fish Small 2 of 4"
+group = "Fishbowl"
 source = 74024
 original = ExtResource("35_o")
 draws = 18621
@@ -290,9 +290,9 @@ note = "8x4, drawn 18621 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12130_8x4"]
 script = ExtResource("2_sprite")
-resource_name = "0x12130  8x4  drawn 18447"
-label = "0x12130  8x4  drawn 18447"
-group = ""
+resource_name = "Fish Small 3 of 4"
+label = "Fish Small 3 of 4"
+group = "Fishbowl"
 source = 74032
 original = ExtResource("36_o")
 draws = 18447
@@ -301,9 +301,9 @@ note = "8x4, drawn 18447 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12120_8x4"]
 script = ExtResource("2_sprite")
-resource_name = "0x12120  8x4  drawn 18326"
-label = "0x12120  8x4  drawn 18326"
-group = ""
+resource_name = "Fish Small 1 of 4"
+label = "Fish Small 1 of 4"
+group = "Fishbowl"
 source = 74016
 original = ExtResource("37_o")
 draws = 18326
@@ -312,8 +312,8 @@ note = "8x4, drawn 18326 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10B7C_24x13"]
 script = ExtResource("2_sprite")
-resource_name = "0x10B7C  24x13  drawn 14347"
-label = "0x10B7C  24x13  drawn 14347"
+resource_name = "Cat Jump Up 2"
+label = "Cat Jump Up 2"
 group = "Cat"
 source = 68476
 texture = ExtResource("4_over")
@@ -346,9 +346,9 @@ note = "16x8, drawn 14012 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_13430_16x2"]
 script = ExtResource("2_sprite")
-resource_name = "0x13430  16x2  drawn 11809"
-label = "0x13430  16x2  drawn 11809"
-group = ""
+resource_name = "Water Ripple 1 of 4"
+label = "Water Ripple 1 of 4"
+group = "Fishbowl"
 source = 78896
 original = ExtResource("41_o")
 draws = 11809
@@ -357,9 +357,9 @@ note = "16x2, drawn 11809 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13438_16x2"]
 script = ExtResource("2_sprite")
-resource_name = "0x13438  16x2  drawn 11790"
-label = "0x13438  16x2  drawn 11790"
-group = ""
+resource_name = "Water Ripple 2 of 4"
+label = "Water Ripple 2 of 4"
+group = "Fishbowl"
 source = 78904
 original = ExtResource("42_o")
 draws = 11790
@@ -368,9 +368,9 @@ note = "16x2, drawn 11790 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13440_16x2"]
 script = ExtResource("2_sprite")
-resource_name = "0x13440  16x2  drawn 11746"
-label = "0x13440  16x2  drawn 11746"
-group = ""
+resource_name = "Water Ripple 3 of 4"
+label = "Water Ripple 3 of 4"
+group = "Fishbowl"
 source = 78912
 original = ExtResource("43_o")
 draws = 11746
@@ -379,9 +379,9 @@ note = "16x2, drawn 11746 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13448_16x2"]
 script = ExtResource("2_sprite")
-resource_name = "0x13448  16x2  drawn 11744"
-label = "0x13448  16x2  drawn 11744"
-group = ""
+resource_name = "Water Ripple 4 of 4"
+label = "Water Ripple 4 of 4"
+group = "Fishbowl"
 source = 78920
 original = ExtResource("44_o")
 draws = 11744
@@ -402,9 +402,9 @@ note = "24x11, drawn 7457 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_108EA_24x13"]
 script = ExtResource("2_sprite")
-resource_name = "0x108EA  24x13  drawn 6399"
-label = "0x108EA  24x13  drawn 6399"
-group = ""
+resource_name = "Cat Swim Right 2 of 3"
+label = "Cat Swim Right 2 of 3"
+group = "Fishbowl"
 source = 67818
 original = ExtResource("46_o")
 draws = 6399
@@ -484,9 +484,9 @@ note = "24x11, drawn 5244 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_10974_24x14"]
 script = ExtResource("2_sprite")
-resource_name = "0x10974  24x14  drawn 5197"
-label = "0x10974  24x14  drawn 5197"
-group = ""
+resource_name = "Cat Rear Up 1 of 2"
+label = "Cat Rear Up 1 of 2"
+group = "Cat"
 source = 67956
 original = ExtResource("53_o")
 draws = 5197
@@ -507,9 +507,9 @@ note = "24x11, drawn 5170 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_109C8_24x13"]
 script = ExtResource("2_sprite")
-resource_name = "0x109C8  24x13  drawn 5147"
-label = "0x109C8  24x13  drawn 5147"
-group = ""
+resource_name = "Cat Rear Up 2 of 2"
+label = "Cat Rear Up 2 of 2"
+group = "Cat"
 source = 68040
 original = ExtResource("55_o")
 draws = 5147
@@ -588,9 +588,9 @@ note = "24x11, drawn 4434 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_13E50_16x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x13E50  16x12  drawn 4287"
-label = "0x13E50  16x12  drawn 4287"
-group = ""
+resource_name = "Cheese Mouse Right"
+label = "Cheese Mouse Right"
+group = "Cheese"
 source = 81488
 original = ExtResource("62_o")
 draws = 4287
@@ -599,9 +599,9 @@ note = "16x12, drawn 4287 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_10818_24x13"]
 script = ExtResource("2_sprite")
-resource_name = "0x10818  24x13  drawn 4259"
-label = "0x10818  24x13  drawn 4259"
-group = ""
+resource_name = "Cat Swim Left 2 of 3"
+label = "Cat Swim Left 2 of 3"
+group = "Fishbowl"
 source = 67608
 original = ExtResource("63_o")
 draws = 4259
@@ -610,9 +610,9 @@ note = "24x13, drawn 4259 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_13E20_16x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x13E20  16x12  drawn 4246"
-label = "0x13E20  16x12  drawn 4246"
-group = ""
+resource_name = "Cheese Mouse Left"
+label = "Cheese Mouse Left"
+group = "Cheese"
 source = 81440
 original = ExtResource("64_o")
 draws = 4246
@@ -657,9 +657,9 @@ note = "16x6, drawn 3978 times; ANDed into the background, so white is see-throu
 
 [sub_resource type="Resource" id="S_12EE0_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x12EE0  16x8  drawn 3921"
-label = "0x12EE0  16x8  drawn 3921"
-group = ""
+resource_name = "Heart"
+label = "Heart"
+group = "Hearts"
 source = 77536
 original = ExtResource("68_o")
 draws = 3921
@@ -668,9 +668,9 @@ note = "16x8, drawn 3921 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12F00_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x12F00  16x8  drawn 3449"
-label = "0x12F00  16x8  drawn 3449"
-group = ""
+resource_name = "Heart Cracked?"
+label = "Heart Cracked?"
+group = "Hearts"
 source = 77568
 original = ExtResource("69_o")
 draws = 3449
@@ -691,9 +691,9 @@ note = "16x6, drawn 3447 times; ANDed into the background, so white is see-throu
 
 [sub_resource type="Resource" id="S_10938_24x10"]
 script = ExtResource("2_sprite")
-resource_name = "0x10938  24x10  drawn 3188"
-label = "0x10938  24x10  drawn 3188"
-group = ""
+resource_name = "Cat Swim Right 3 of 3"
+label = "Cat Swim Right 3 of 3"
+group = "Fishbowl"
 source = 67896
 original = ExtResource("71_o")
 draws = 3188
@@ -702,9 +702,9 @@ note = "24x10, drawn 3188 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_108A2_24x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x108A2  24x12  drawn 3070"
-label = "0x108A2  24x12  drawn 3070"
-group = ""
+resource_name = "Cat Swim Right 1 of 3"
+label = "Cat Swim Right 1 of 3"
+group = "Fishbowl"
 source = 67746
 original = ExtResource("72_o")
 draws = 3070
@@ -713,8 +713,8 @@ note = "24x12, drawn 3070 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_10C96_24x10"]
 script = ExtResource("2_sprite")
-resource_name = "0x10C96  24x10  drawn 3049"
-label = "0x10C96  24x10  drawn 3049"
+resource_name = "Cat Leap Land 2 of 2"
+label = "Cat Leap Land 2 of 2"
 group = "Cat"
 source = 68758
 texture = ExtResource("5_over")
@@ -725,9 +725,9 @@ note = "24x10, drawn 3049 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_10C5A_24x10"]
 script = ExtResource("2_sprite")
-resource_name = "0x10C5A  24x10  drawn 2849"
-label = "0x10C5A  24x10  drawn 2849"
-group = ""
+resource_name = "Cat Leap Land 1 of 2"
+label = "Cat Leap Land 1 of 2"
+group = "Cat"
 source = 68698
 original = ExtResource("74_o")
 draws = 2849
@@ -736,9 +736,9 @@ note = "24x10, drawn 2849 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_10C12_24x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x10C12  24x12  drawn 2805"
-label = "0x10C12  24x12  drawn 2805"
-group = ""
+resource_name = "Cat Leap 2 of 2"
+label = "Cat Leap 2 of 2"
+group = "Cat"
 source = 68626
 original = ExtResource("75_o")
 draws = 2805
@@ -747,9 +747,9 @@ note = "24x12, drawn 2805 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_10BCA_24x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x10BCA  24x12  drawn 2776"
-label = "0x10BCA  24x12  drawn 2776"
-group = ""
+resource_name = "Cat Leap 1 of 2"
+label = "Cat Leap 1 of 2"
+group = "Cat"
 source = 68554
 original = ExtResource("76_o")
 draws = 2776
@@ -758,8 +758,8 @@ note = "24x12, drawn 2776 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_12A24_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A24  8x8  drawn 2655"
-label = "0x12A24  8x8  drawn 2655"
+resource_name = "Fence Piece 3 of 9"
+label = "Fence Piece 3 of 9"
 group = "Fence"
 source = 76324
 original = ExtResource("77_o")
@@ -769,8 +769,8 @@ note = "8x8, drawn 2655 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A14_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A14  8x8  drawn 2629"
-label = "0x12A14  8x8  drawn 2629"
+resource_name = "Fence Piece 2 of 9"
+label = "Fence Piece 2 of 9"
 group = "Fence"
 source = 76308
 original = ExtResource("78_o")
@@ -791,9 +791,9 @@ note = "32x8, drawn 2554 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13840_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13840  8x8  drawn 2523"
-label = "0x13840  8x8  drawn 2523"
-group = ""
+resource_name = "Shelf Item 2 of 7"
+label = "Shelf Item 2 of 7"
+group = "Bookcase"
 source = 79936
 original = ExtResource("80_o")
 draws = 2523
@@ -802,9 +802,9 @@ note = "8x8, drawn 2523 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10A16_16x14"]
 script = ExtResource("2_sprite")
-resource_name = "0x10A16  16x14  drawn 2342"
-label = "0x10A16  16x14  drawn 2342"
-group = ""
+resource_name = "Cat Swim Sink?"
+label = "Cat Swim Sink?"
+group = "Fishbowl"
 source = 68118
 original = ExtResource("81_o")
 draws = 2342
@@ -813,9 +813,9 @@ note = "16x14, drawn 2342 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_107D0_24x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x107D0  24x12  drawn 2238"
-label = "0x107D0  24x12  drawn 2238"
-group = ""
+resource_name = "Cat Swim Left 1 of 3"
+label = "Cat Swim Left 1 of 3"
+group = "Fishbowl"
 source = 67536
 original = ExtResource("82_o")
 draws = 2238
@@ -824,9 +824,9 @@ note = "24x12, drawn 2238 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_10A4E_16x13"]
 script = ExtResource("2_sprite")
-resource_name = "0x10A4E  16x13  drawn 2153"
-label = "0x10A4E  16x13  drawn 2153"
-group = ""
+resource_name = "Cat Swim Tread?"
+label = "Cat Swim Tread?"
+group = "Fishbowl"
 source = 68174
 original = ExtResource("83_o")
 draws = 2153
@@ -835,8 +835,8 @@ note = "16x13, drawn 2153 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_11380_32x15"]
 script = ExtResource("2_sprite")
-resource_name = "0x11380  32x15  drawn 2152"
-label = "0x11380  32x15  drawn 2152"
+resource_name = "Fight Cloud 1 of 3"
+label = "Fight Cloud 1 of 3"
 group = "Fight"
 source = 70528
 texture = ExtResource("24_over")
@@ -847,9 +847,9 @@ note = "32x15, drawn 2152 times; laid over the background with black see-through
 
 [sub_resource type="Resource" id="S_10866_24x10"]
 script = ExtResource("2_sprite")
-resource_name = "0x10866  24x10  drawn 2119"
-label = "0x10866  24x10  drawn 2119"
-group = ""
+resource_name = "Cat Swim Left 3 of 3"
+label = "Cat Swim Left 3 of 3"
+group = "Fishbowl"
 source = 67686
 original = ExtResource("85_o")
 draws = 2119
@@ -858,9 +858,9 @@ note = "24x10, drawn 2119 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_133C2_8x5"]
 script = ExtResource("2_sprite")
-resource_name = "0x133C2  8x5  drawn 2078"
-label = "0x133C2  8x5  drawn 2078"
-group = ""
+resource_name = "Broom Dust 2 of 3"
+label = "Broom Dust 2 of 3"
+group = "Room"
 source = 78786
 original = ExtResource("86_o")
 draws = 2078
@@ -928,8 +928,8 @@ note = "32x15, drawn 1890 times; laid over the background with black see-through
 
 [sub_resource type="Resource" id="S_12A44_8x5"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A44  8x5  drawn 1518"
-label = "0x12A44  8x5  drawn 1518"
+resource_name = "Fence Piece 5 of 9"
+label = "Fence Piece 5 of 9"
 group = "Fence"
 source = 76356
 original = ExtResource("92_o")
@@ -939,8 +939,8 @@ note = "8x5, drawn 1518 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A34_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A34  8x8  drawn 1497"
-label = "0x12A34  8x8  drawn 1497"
+resource_name = "Fence Piece 4 of 9"
+label = "Fence Piece 4 of 9"
 group = "Fence"
 source = 76340
 original = ExtResource("93_o")
@@ -950,9 +950,9 @@ note = "8x8, drawn 1497 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17030_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17030  16x8  drawn 1466"
-label = "0x17030  16x8  drawn 1466"
-group = ""
+resource_name = "Hearts Arrow 1 of 12"
+label = "Hearts Arrow 1 of 12"
+group = "Hearts"
 source = 94256
 original = ExtResource("94_o")
 draws = 1466
@@ -961,9 +961,9 @@ note = "16x8, drawn 1466 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_115D8_32x15"]
 script = ExtResource("2_sprite")
-resource_name = "0x115D8  32x15  drawn 1446"
-label = "0x115D8  32x15  drawn 1446"
-group = ""
+resource_name = "Dog Run 3 of 5"
+label = "Dog Run 3 of 5"
+group = "Dog"
 source = 71128
 original = ExtResource("95_o")
 draws = 1446
@@ -972,9 +972,9 @@ note = "32x15, drawn 1446 times; laid over the background with black see-through
 
 [sub_resource type="Resource" id="S_11650_32x15"]
 script = ExtResource("2_sprite")
-resource_name = "0x11650  32x15  drawn 1438"
-label = "0x11650  32x15  drawn 1438"
-group = ""
+resource_name = "Dog Run 4 of 5"
+label = "Dog Run 4 of 5"
+group = "Dog"
 source = 71248
 original = ExtResource("96_o")
 draws = 1438
@@ -983,8 +983,8 @@ note = "32x15, drawn 1438 times; laid over the background with black see-through
 
 [sub_resource type="Resource" id="S_12780_40x16"]
 script = ExtResource("2_sprite")
-resource_name = "0x12780  40x16  drawn 1438"
-label = "0x12780  40x16  drawn 1438"
+resource_name = "Window"
+label = "Window"
 group = "Window"
 source = 75648
 original = ExtResource("97_o")
@@ -994,8 +994,8 @@ note = "40x16, drawn 1438 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A04_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A04  8x8  drawn 1418"
-label = "0x12A04  8x8  drawn 1418"
+resource_name = "Fence Piece 1 of 9"
+label = "Fence Piece 1 of 9"
 group = "Fence"
 source = 76292
 original = ExtResource("98_o")
@@ -1005,9 +1005,9 @@ note = "8x8, drawn 1418 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17070_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17070  16x8  drawn 1363"
-label = "0x17070  16x8  drawn 1363"
-group = ""
+resource_name = "Hearts Arrow 3 of 12"
+label = "Hearts Arrow 3 of 12"
+group = "Hearts"
 source = 94320
 original = ExtResource("99_o")
 draws = 1363
@@ -1027,9 +1027,9 @@ note = "8x8, drawn 1358 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17050_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17050  16x8  drawn 1355"
-label = "0x17050  16x8  drawn 1355"
-group = ""
+resource_name = "Hearts Arrow 2 of 12"
+label = "Hearts Arrow 2 of 12"
+group = "Hearts"
 source = 94288
 original = ExtResource("101_o")
 draws = 1355
@@ -1038,9 +1038,9 @@ note = "16x8, drawn 1355 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_13A10_24x14"]
 script = ExtResource("2_sprite")
-resource_name = "0x13A10  24x14  drawn 1273"
-label = "0x13A10  24x14  drawn 1273"
-group = ""
+resource_name = "Spider 2 of 3"
+label = "Spider 2 of 3"
+group = "Bookcase"
 source = 80400
 original = ExtResource("102_o")
 draws = 1273
@@ -1061,8 +1061,8 @@ note = "16x6, drawn 1235 times; ANDed into the background, so white is see-throu
 
 [sub_resource type="Resource" id="S_12A4E_8x5"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A4E  8x5  drawn 1187"
-label = "0x12A4E  8x5  drawn 1187"
+resource_name = "Fence Piece 6 of 9"
+label = "Fence Piece 6 of 9"
 group = "Fence"
 source = 76366
 original = ExtResource("104_o")
@@ -1072,9 +1072,9 @@ note = "8x5, drawn 1187 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10A82_16x9"]
 script = ExtResource("2_sprite")
-resource_name = "0x10A82  16x9  drawn 1184"
-label = "0x10A82  16x9  drawn 1184"
-group = ""
+resource_name = "Cat Swim Small"
+label = "Cat Swim Small"
+group = "Fishbowl"
 source = 68226
 original = ExtResource("105_o")
 draws = 1184
@@ -1083,8 +1083,8 @@ note = "16x9, drawn 1184 times; ANDed into the background, so white is see-throu
 
 [sub_resource type="Resource" id="S_113F8_32x15"]
 script = ExtResource("2_sprite")
-resource_name = "0x113F8  32x15  drawn 1177"
-label = "0x113F8  32x15  drawn 1177"
+resource_name = "Fight Cloud 2 of 3"
+label = "Fight Cloud 2 of 3"
 group = "Fight"
 source = 70648
 texture = ExtResource("25_over")
@@ -1095,9 +1095,9 @@ note = "32x15, drawn 1177 times; laid over the background with black see-through
 
 [sub_resource type="Resource" id="S_139BC_24x14"]
 script = ExtResource("2_sprite")
-resource_name = "0x139BC  24x14  drawn 1171"
-label = "0x139BC  24x14  drawn 1171"
-group = ""
+resource_name = "Spider 1 of 3"
+label = "Spider 1 of 3"
+group = "Bookcase"
 source = 80316
 original = ExtResource("107_o")
 draws = 1171
@@ -1106,9 +1106,9 @@ note = "24x14, drawn 1171 times; laid over the background with black see-through
 
 [sub_resource type="Resource" id="S_13860_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13860  8x8  drawn 1169"
-label = "0x13860  8x8  drawn 1169"
-group = ""
+resource_name = "Shelf Item 4 of 7"
+label = "Shelf Item 4 of 7"
+group = "Bookcase"
 source = 79968
 original = ExtResource("108_o")
 draws = 1169
@@ -1128,8 +1128,8 @@ note = "40x12, drawn 1161 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A58_8x5"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A58  8x5  drawn 1096"
-label = "0x12A58  8x5  drawn 1096"
+resource_name = "Fence Piece 7 of 9"
+label = "Fence Piece 7 of 9"
 group = "Fence"
 source = 76376
 original = ExtResource("110_o")
@@ -1139,8 +1139,8 @@ note = "8x5, drawn 1096 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_11470_32x15"]
 script = ExtResource("2_sprite")
-resource_name = "0x11470  32x15  drawn 1091"
-label = "0x11470  32x15  drawn 1091"
+resource_name = "Fight Cloud 3 of 3"
+label = "Fight Cloud 3 of 3"
 group = "Fight"
 source = 70768
 texture = ExtResource("26_over")
@@ -1151,8 +1151,8 @@ note = "32x15, drawn 1091 times; laid over the background with black see-through
 
 [sub_resource type="Resource" id="S_12A62_8x5"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A62  8x5  drawn 1079"
-label = "0x12A62  8x5  drawn 1079"
+resource_name = "Fence Piece 8 of 9"
+label = "Fence Piece 8 of 9"
 group = "Fence"
 source = 76386
 original = ExtResource("112_o")
@@ -1173,9 +1173,9 @@ note = "32x11, drawn 1040 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13C02_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13C02  8x8  drawn 1035"
-label = "0x13C02  8x8  drawn 1035"
-group = ""
+resource_name = "Cheese Bit 2 of 2"
+label = "Cheese Bit 2 of 2"
+group = "Cheese"
 source = 80898
 original = ExtResource("114_o")
 draws = 1035
@@ -1184,9 +1184,9 @@ note = "8x8, drawn 1035 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13E80_16x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x13E80  16x12  drawn 1027"
-label = "0x13E80  16x12  drawn 1027"
-group = ""
+resource_name = "Cheese Mouse Peek 1 of 2"
+label = "Cheese Mouse Peek 1 of 2"
+group = "Cheese"
 source = 81536
 original = ExtResource("115_o")
 draws = 1027
@@ -1195,9 +1195,9 @@ note = "16x12, drawn 1027 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_13EB0_16x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x13EB0  16x12  drawn 1025"
-label = "0x13EB0  16x12  drawn 1025"
-group = ""
+resource_name = "Cheese Mouse Peek 2 of 2"
+label = "Cheese Mouse Peek 2 of 2"
+group = "Cheese"
 source = 81584
 original = ExtResource("116_o")
 draws = 1025
@@ -1206,8 +1206,8 @@ note = "16x12, drawn 1025 times; ANDed into the background, so white is see-thro
 
 [sub_resource type="Resource" id="S_12A6C_8x5"]
 script = ExtResource("2_sprite")
-resource_name = "0x12A6C  8x5  drawn 991"
-label = "0x12A6C  8x5  drawn 991"
+resource_name = "Fence Piece 9 of 9"
+label = "Fence Piece 9 of 9"
 group = "Fence"
 source = 76396
 original = ExtResource("117_o")
@@ -1217,9 +1217,9 @@ note = "8x5, drawn 991 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13BF8_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13BF8  8x8  drawn 923"
-label = "0x13BF8  8x8  drawn 923"
-group = ""
+resource_name = "Cheese Bit 1 of 2"
+label = "Cheese Bit 1 of 2"
+group = "Cheese"
 source = 80888
 original = ExtResource("118_o")
 draws = 923
@@ -1228,9 +1228,9 @@ note = "8x8, drawn 923 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13890_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13890  8x8  drawn 915"
-label = "0x13890  8x8  drawn 915"
-group = ""
+resource_name = "Shelf Item 7 of 7"
+label = "Shelf Item 7 of 7"
+group = "Bookcase"
 source = 80016
 original = ExtResource("119_o")
 draws = 915
@@ -1239,9 +1239,9 @@ note = "8x8, drawn 915 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13870_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13870  8x8  drawn 909"
-label = "0x13870  8x8  drawn 909"
-group = ""
+resource_name = "Shelf Item 5 of 7"
+label = "Shelf Item 5 of 7"
+group = "Bookcase"
 source = 79984
 original = ExtResource("120_o")
 draws = 909
@@ -1250,9 +1250,9 @@ note = "8x8, drawn 909 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16F10_24x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x16F10  24x12  drawn 907"
-label = "0x16F10  24x12  drawn 907"
-group = ""
+resource_name = "Title Cat Face"
+label = "Title Cat Face"
+group = "Title"
 source = 93968
 original = ExtResource("121_o")
 draws = 907
@@ -1261,9 +1261,9 @@ note = "24x12, drawn 907 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_170F0_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x170F0  16x8  drawn 748"
-label = "0x170F0  16x8  drawn 748"
-group = ""
+resource_name = "Hearts Arrow 7 of 12"
+label = "Hearts Arrow 7 of 12"
+group = "Hearts"
 source = 94448
 original = ExtResource("122_o")
 draws = 748
@@ -1272,9 +1272,9 @@ note = "16x8, drawn 748 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_13880_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13880  8x8  drawn 726"
-label = "0x13880  8x8  drawn 726"
-group = ""
+resource_name = "Shelf Item 6 of 7"
+label = "Shelf Item 6 of 7"
+group = "Bookcase"
 source = 80000
 original = ExtResource("123_o")
 draws = 726
@@ -1283,9 +1283,9 @@ note = "8x8, drawn 726 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17090_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17090  16x8  drawn 686"
-label = "0x17090  16x8  drawn 686"
-group = ""
+resource_name = "Hearts Arrow 4 of 12"
+label = "Hearts Arrow 4 of 12"
+group = "Hearts"
 source = 94352
 original = ExtResource("124_o")
 draws = 686
@@ -1294,9 +1294,9 @@ note = "16x8, drawn 686 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_17130_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17130  16x8  drawn 683"
-label = "0x17130  16x8  drawn 683"
-group = ""
+resource_name = "Hearts Arrow 9 of 12"
+label = "Hearts Arrow 9 of 12"
+group = "Hearts"
 source = 94512
 original = ExtResource("125_o")
 draws = 683
@@ -1305,9 +1305,9 @@ note = "16x8, drawn 683 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_17150_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17150  16x8  drawn 680"
-label = "0x17150  16x8  drawn 680"
-group = ""
+resource_name = "Hearts Arrow 10 of 12"
+label = "Hearts Arrow 10 of 12"
+group = "Hearts"
 source = 94544
 original = ExtResource("126_o")
 draws = 680
@@ -1316,9 +1316,9 @@ note = "16x8, drawn 680 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_1431C_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x1431C  16x8  drawn 569"
-label = "0x1431C  16x8  drawn 569"
-group = ""
+resource_name = "Dog Bowl"
+label = "Dog Bowl"
+group = "Dog"
 source = 82716
 original = ExtResource("127_o")
 draws = 569
@@ -1327,9 +1327,9 @@ note = "16x8, drawn 569 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17190_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17190  16x8  drawn 569"
-label = "0x17190  16x8  drawn 569"
-group = ""
+resource_name = "Hearts Arrow 12 of 12"
+label = "Hearts Arrow 12 of 12"
+group = "Hearts"
 source = 94608
 original = ExtResource("128_o")
 draws = 569
@@ -1338,9 +1338,9 @@ note = "16x8, drawn 569 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_17170_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17170  16x8  drawn 566"
-label = "0x17170  16x8  drawn 566"
-group = ""
+resource_name = "Hearts Arrow 11 of 12"
+label = "Hearts Arrow 11 of 12"
+group = "Hearts"
 source = 94576
 original = ExtResource("129_o")
 draws = 566
@@ -1349,9 +1349,9 @@ note = "16x8, drawn 566 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_17110_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x17110  16x8  drawn 556"
-label = "0x17110  16x8  drawn 556"
-group = ""
+resource_name = "Hearts Arrow 8 of 12"
+label = "Hearts Arrow 8 of 12"
+group = "Hearts"
 source = 94480
 original = ExtResource("130_o")
 draws = 556
@@ -1360,9 +1360,9 @@ note = "16x8, drawn 556 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_13850_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13850  8x8  drawn 453"
-label = "0x13850  8x8  drawn 453"
-group = ""
+resource_name = "Shelf Item 3 of 7"
+label = "Shelf Item 3 of 7"
+group = "Bookcase"
 source = 79952
 original = ExtResource("131_o")
 draws = 453
@@ -1371,9 +1371,9 @@ note = "8x8, drawn 453 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13830_8x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x13830  8x8  drawn 424"
-label = "0x13830  8x8  drawn 424"
-group = ""
+resource_name = "Shelf Item 1 of 7"
+label = "Shelf Item 1 of 7"
+group = "Bookcase"
 source = 79920
 original = ExtResource("132_o")
 draws = 424
@@ -1382,9 +1382,9 @@ note = "8x8, drawn 424 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13680_16x10"]
 script = ExtResource("2_sprite")
-resource_name = "0x13680  16x10  drawn 417"
-label = "0x13680  16x10  drawn 417"
-group = ""
+resource_name = "Fishbowl on Table 3 of 4"
+label = "Fishbowl on Table 3 of 4"
+group = "Fishbowl"
 source = 79488
 original = ExtResource("133_o")
 draws = 417
@@ -1393,9 +1393,9 @@ note = "16x10, drawn 417 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_136A8_16x10"]
 script = ExtResource("2_sprite")
-resource_name = "0x136A8  16x10  drawn 413"
-label = "0x136A8  16x10  drawn 413"
-group = ""
+resource_name = "Fishbowl on Table 4 of 4"
+label = "Fishbowl on Table 4 of 4"
+group = "Fishbowl"
 source = 79528
 original = ExtResource("134_o")
 draws = 413
@@ -1404,9 +1404,9 @@ note = "16x10, drawn 413 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13658_16x10"]
 script = ExtResource("2_sprite")
-resource_name = "0x13658  16x10  drawn 399"
-label = "0x13658  16x10  drawn 399"
-group = ""
+resource_name = "Fishbowl on Table 2 of 4"
+label = "Fishbowl on Table 2 of 4"
+group = "Fishbowl"
 source = 79448
 original = ExtResource("135_o")
 draws = 399
@@ -1415,9 +1415,9 @@ note = "16x10, drawn 399 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13630_16x10"]
 script = ExtResource("2_sprite")
-resource_name = "0x13630  16x10  drawn 375"
-label = "0x13630  16x10  drawn 375"
-group = ""
+resource_name = "Fishbowl on Table 1 of 4"
+label = "Fishbowl on Table 1 of 4"
+group = "Fishbowl"
 source = 79408
 original = ExtResource("136_o")
 draws = 375
@@ -1426,9 +1426,9 @@ note = "16x10, drawn 375 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_170B0_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x170B0  16x8  drawn 366"
-label = "0x170B0  16x8  drawn 366"
-group = ""
+resource_name = "Hearts Arrow 5 of 12"
+label = "Hearts Arrow 5 of 12"
+group = "Hearts"
 source = 94384
 original = ExtResource("137_o")
 draws = 366
@@ -1437,9 +1437,9 @@ note = "16x8, drawn 366 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_170D0_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x170D0  16x8  drawn 348"
-label = "0x170D0  16x8  drawn 348"
-group = ""
+resource_name = "Hearts Arrow 6 of 12"
+label = "Hearts Arrow 6 of 12"
+group = "Hearts"
 source = 94416
 original = ExtResource("138_o")
 draws = 348
@@ -1470,9 +1470,9 @@ note = "8x8, drawn 241 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1182D_16x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x1182D  16x12  drawn 228"
-label = "0x1182D  16x12  drawn 228"
-group = ""
+resource_name = "Bird Flying?"
+label = "Bird Flying?"
+group = "Birdcage"
 source = 71725
 original = ExtResource("141_o")
 draws = 228
@@ -1492,9 +1492,9 @@ note = "24x8, drawn 209 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_14202_8x1"]
 script = ExtResource("2_sprite")
-resource_name = "0x14202  8x1  drawn 191"
-label = "0x14202  8x1  drawn 191"
-group = ""
+resource_name = "White Line 8x1"
+label = "White Line 8x1"
+group = "Cheese"
 source = 82434
 original = ExtResource("143_o")
 draws = 191
@@ -1503,9 +1503,9 @@ note = "8x1, drawn 191 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10ADA_24x14"]
 script = ExtResource("2_sprite")
-resource_name = "0x10ADA  24x14  drawn 190"
-label = "0x10ADA  24x14  drawn 190"
-group = ""
+resource_name = "Cat Fall"
+label = "Cat Fall"
+group = "Cat"
 source = 68314
 original = ExtResource("144_o")
 draws = 190
@@ -1558,9 +1558,9 @@ note = "8x8, drawn 110 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_133CC_8x5"]
 script = ExtResource("2_sprite")
-resource_name = "0x133CC  8x5  drawn 90"
-label = "0x133CC  8x5  drawn 90"
-group = ""
+resource_name = "Broom Dust 3 of 3"
+label = "Broom Dust 3 of 3"
+group = "Room"
 source = 78796
 original = ExtResource("149_o")
 draws = 90
@@ -1569,9 +1569,9 @@ note = "8x5, drawn 90 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1439C_40x13"]
 script = ExtResource("2_sprite")
-resource_name = "0x1439C  40x13  drawn 87"
-label = "0x1439C  40x13  drawn 87"
-group = ""
+resource_name = "Dog Asleep 1 of 2"
+label = "Dog Asleep 1 of 2"
+group = "Dog"
 source = 82844
 original = ExtResource("150_o")
 draws = 87
@@ -1602,9 +1602,9 @@ note = "8x8, drawn 69 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13450_40x18"]
 script = ExtResource("2_sprite")
-resource_name = "0x13450  40x18  drawn 66"
-label = "0x13450  40x18  drawn 66"
-group = ""
+resource_name = "ZAP"
+label = "ZAP"
+group = "Fishbowl"
 source = 78928
 original = ExtResource("153_o")
 draws = 66
@@ -1613,9 +1613,9 @@ note = "40x18, drawn 66 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_120A0_16x16"]
 script = ExtResource("2_sprite")
-resource_name = "0x120A0  16x16  drawn 39"
-label = "0x120A0  16x16  drawn 39"
-group = ""
+resource_name = "Portrait Man"
+label = "Portrait Man"
+group = "Room"
 source = 73888
 original = ExtResource("154_o")
 draws = 39
@@ -1624,9 +1624,9 @@ note = "16x16, drawn 39 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12BF0_24x15"]
 script = ExtResource("2_sprite")
-resource_name = "0x12BF0  24x15  drawn 36"
-label = "0x12BF0  24x15  drawn 36"
-group = ""
+resource_name = "Girl Cat"
+label = "Girl Cat"
+group = "Hearts"
 source = 76784
 original = ExtResource("155_o")
 draws = 36
@@ -1635,9 +1635,9 @@ note = "24x15, drawn 36 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13DAA_16x1"]
 script = ExtResource("2_sprite")
-resource_name = "0x13DAA  16x1  drawn 31"
-label = "0x13DAA  16x1  drawn 31"
-group = ""
+resource_name = "Cheese Edge"
+label = "Cheese Edge"
+group = "Cheese"
 source = 81322
 original = ExtResource("156_o")
 draws = 31
@@ -1646,9 +1646,9 @@ note = "16x1, drawn 31 times; ANDed into the background, so white is see-through
 
 [sub_resource type="Resource" id="S_1441E_40x13"]
 script = ExtResource("2_sprite")
-resource_name = "0x1441E  40x13  drawn 27"
-label = "0x1441E  40x13  drawn 27"
-group = ""
+resource_name = "Dog Asleep 2 of 2"
+label = "Dog Asleep 2 of 2"
+group = "Dog"
 source = 82974
 original = ExtResource("157_o")
 draws = 27
@@ -1657,9 +1657,9 @@ note = "40x13, drawn 27 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16F58_48x17"]
 script = ExtResource("2_sprite")
-resource_name = "0x16F58  48x17  drawn 27"
-label = "0x16F58  48x17  drawn 27"
-group = ""
+resource_name = "Fight Swearing"
+label = "Fight Swearing"
+group = "Fight"
 source = 94040
 original = ExtResource("158_o")
 draws = 27
@@ -1668,8 +1668,8 @@ note = "48x17, drawn 27 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16738_24x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x16738  24x12  drawn 26"
-label = "0x16738  24x12  drawn 26"
+resource_name = "By"
+label = "By"
 group = "Title"
 source = 91960
 original = ExtResource("159_o")
@@ -1690,8 +1690,8 @@ note = "8x8, drawn 25 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16780_112x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x16780  112x8  drawn 25"
-label = "0x16780  112x8  drawn 25"
+resource_name = "Bill Williams"
+label = "Bill Williams"
 group = "Title"
 source = 92032
 original = ExtResource("161_o")
@@ -1701,8 +1701,8 @@ note = "112x8, drawn 25 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16860_96x11"]
 script = ExtResource("2_sprite")
-resource_name = "0x16860  96x11  drawn 25"
-label = "0x16860  96x11  drawn 25"
+resource_name = "(c) Copyright"
+label = "(c) Copyright"
 group = "Title"
 source = 92256
 original = ExtResource("162_o")
@@ -1712,9 +1712,9 @@ note = "96x11, drawn 25 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_138C0_48x21"]
 script = ExtResource("2_sprite")
-resource_name = "0x138C0  48x21  drawn 24"
-label = "0x138C0  48x21  drawn 24"
-group = ""
+resource_name = "Bye!!"
+label = "Bye!!"
+group = "Bookcase"
 source = 80064
 original = ExtResource("163_o")
 draws = 24
@@ -1723,8 +1723,8 @@ note = "48x21, drawn 24 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_16968_32x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x16968  32x8  drawn 24"
-label = "0x16968  32x8  drawn 24"
+resource_name = "1984"
+label = "1984"
 group = "Title"
 source = 92520
 original = ExtResource("164_o")
@@ -1734,8 +1734,8 @@ note = "32x8, drawn 24 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16A98_80x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x16A98  80x12  drawn 24"
-label = "0x16A98  80x12  drawn 24"
+resource_name = "SynSoft TM"
+label = "SynSoft TM"
 group = "Title"
 source = 92824
 original = ExtResource("165_o")
@@ -1745,9 +1745,9 @@ note = "80x12, drawn 24 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_11ED0_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x11ED0  16x8  drawn 22"
-label = "0x11ED0  16x8  drawn 22"
-group = ""
+resource_name = "Points 50"
+label = "Points 50"
+group = "Score"
 source = 73424
 original = ExtResource("166_o")
 draws = 22
@@ -1822,9 +1822,9 @@ note = "8x8, drawn 16 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_120E0_16x16"]
 script = ExtResource("2_sprite")
-resource_name = "0x120E0  16x16  drawn 15"
-label = "0x120E0  16x16  drawn 15"
-group = ""
+resource_name = "Portrait Woman"
+label = "Portrait Woman"
+group = "Room"
 source = 73952
 original = ExtResource("173_o")
 draws = 15
@@ -1833,9 +1833,9 @@ note = "16x16, drawn 15 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_140BE_24x16"]
 script = ExtResource("2_sprite")
-resource_name = "0x140BE  24x16  drawn 13"
-label = "0x140BE  24x16  drawn 13"
-group = ""
+resource_name = "Birdcage 1 of 2"
+label = "Birdcage 1 of 2"
+group = "Birdcage"
 source = 82110
 original = ExtResource("174_o")
 draws = 13
@@ -1855,8 +1855,8 @@ note = "16x10, drawn 11 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16252_88x29"]
 script = ExtResource("2_sprite")
-resource_name = "0x16252  88x29  drawn 2"
-label = "0x16252  88x29  drawn 2"
+resource_name = "IBM Presents"
+label = "IBM Presents"
 group = "Title"
 source = 90706
 original = ExtResource("176_o")
@@ -1866,8 +1866,8 @@ note = "88x29, drawn 2 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_164D0_112x22"]
 script = ExtResource("2_sprite")
-resource_name = "0x164D0  112x22  drawn 1"
-label = "0x164D0  112x22  drawn 1"
+resource_name = "Alley Cat TM"
+label = "Alley Cat TM"
 group = "Title"
 source = 91344
 original = ExtResource("177_o")
@@ -1877,8 +1877,8 @@ note = "112x22, drawn 1 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_169A8_80x12"]
 script = ExtResource("2_sprite")
-resource_name = "0x169A8  80x12  drawn 1"
-label = "0x169A8  80x12  drawn 1"
+resource_name = "IBM Corp."
+label = "IBM Corp."
 group = "Title"
 source = 92584
 original = ExtResource("178_o")
@@ -1888,9 +1888,9 @@ note = "80x12, drawn 1 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1074E_24x5"]
 script = ExtResource("2_sprite")
-resource_name = "0x1074E  24x5  drawn 0"
-label = "0x1074E  24x5  drawn 0"
-group = ""
+resource_name = "GLUB"
+label = "GLUB"
+group = "Fishbowl"
 source = 67406
 original = ExtResource("179_o")
 draws = 0
@@ -1899,9 +1899,9 @@ note = "24x5, drawn 0 times; ANDed into the background, so white is see-through 
 
 [sub_resource type="Resource" id="S_11779_40x18"]
 script = ExtResource("2_sprite")
-resource_name = "0x11779  40x18  drawn 0"
-label = "0x11779  40x18  drawn 0"
-group = ""
+resource_name = "BONK!"
+label = "BONK!"
+group = "Fight"
 source = 71545
 original = ExtResource("180_o")
 draws = 0
@@ -1910,9 +1910,9 @@ note = "40x18, drawn 0 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11E70_48x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x11E70  48x8  drawn 0"
-label = "0x11E70  48x8  drawn 0"
-group = ""
+resource_name = "SQUEAK!"
+label = "SQUEAK!"
+group = "Fight"
 source = 73328
 original = ExtResource("181_o")
 draws = 0
@@ -1921,9 +1921,9 @@ note = "48x8, drawn 0 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11EF0_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x11EF0  16x8  drawn 0"
-label = "0x11EF0  16x8  drawn 0"
-group = ""
+resource_name = "Points 70"
+label = "Points 70"
+group = "Score"
 source = 73456
 original = ExtResource("182_o")
 draws = 0
@@ -1932,9 +1932,9 @@ note = "16x8, drawn 0 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11F10_16x8"]
 script = ExtResource("2_sprite")
-resource_name = "0x11F10  16x8  drawn 0"
-label = "0x11F10  16x8  drawn 0"
-group = ""
+resource_name = "Points 90"
+label = "Points 90"
+group = "Score"
 source = 73488
 original = ExtResource("183_o")
 draws = 0

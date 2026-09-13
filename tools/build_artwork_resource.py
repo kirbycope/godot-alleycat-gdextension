@@ -51,6 +51,80 @@ for _frame, _source in enumerate(CAT_WALK_RIGHT, start=1):
     KNOWN[_source] = "Cat walk right %d of %d" % (_frame, len(CAT_WALK_RIGHT))
     GROUPS[_source] = "Cat"
 
+# Best guesses for the rest, from a sweep that recorded which room each sprite was drawn in and where, the
+# room routines in the disassembly, and a look at the picture. A name somebody types in the panel wins over
+# any of these, and a row not listed here keeps its address as its name. Where the guess is a guess, the
+# name says so with a question mark rather than pretending.
+GUESSES = {
+    # The cat, beyond walking and standing.
+    0x10B7C: ("Cat Jump Up 2", "Cat"),
+    0x10BCA: ("Cat Leap 1 of 2", "Cat"), 0x10C12: ("Cat Leap 2 of 2", "Cat"),
+    0x10C5A: ("Cat Leap Land 1 of 2", "Cat"), 0x10C96: ("Cat Leap Land 2 of 2", "Cat"),
+    0x10ADA: ("Cat Fall", "Cat"),
+    0x10974: ("Cat Rear Up 1 of 2", "Cat"), 0x109C8: ("Cat Rear Up 2 of 2", "Cat"),
+    # In the fishbowl.
+    0x107D0: ("Cat Swim Left 1 of 3", "Fishbowl"), 0x10818: ("Cat Swim Left 2 of 3", "Fishbowl"),
+    0x10866: ("Cat Swim Left 3 of 3", "Fishbowl"),
+    0x108A2: ("Cat Swim Right 1 of 3", "Fishbowl"), 0x108EA: ("Cat Swim Right 2 of 3", "Fishbowl"),
+    0x10938: ("Cat Swim Right 3 of 3", "Fishbowl"),
+    0x10A16: ("Cat Swim Sink?", "Fishbowl"), 0x10A4E: ("Cat Swim Tread?", "Fishbowl"), 0x10A82: ("Cat Swim Small", "Fishbowl"),
+    0x12120: ("Fish Small 1 of 4", "Fishbowl"), 0x12128: ("Fish Small 2 of 4", "Fishbowl"),
+    0x12130: ("Fish Small 3 of 4", "Fishbowl"), 0x12138: ("Fish Small 4 of 4", "Fishbowl"),
+    0x13400: ("Fish 1 of 4", "Fishbowl"), 0x1340C: ("Fish 2 of 4", "Fishbowl"),
+    0x13418: ("Fish 3 of 4", "Fishbowl"), 0x13424: ("Fish 4 of 4", "Fishbowl"),
+    0x13430: ("Water Ripple 1 of 4", "Fishbowl"), 0x13438: ("Water Ripple 2 of 4", "Fishbowl"),
+    0x13440: ("Water Ripple 3 of 4", "Fishbowl"), 0x13448: ("Water Ripple 4 of 4", "Fishbowl"),
+    0x13450: ("ZAP", "Fishbowl"), 0x1074E: ("GLUB", "Fishbowl"),
+    0x13630: ("Fishbowl on Table 1 of 4", "Fishbowl"), 0x13658: ("Fishbowl on Table 2 of 4", "Fishbowl"),
+    0x13680: ("Fishbowl on Table 3 of 4", "Fishbowl"), 0x136A8: ("Fishbowl on Table 4 of 4", "Fishbowl"),
+    # The bookcase.
+    0x139BC: ("Spider 1 of 3", "Bookcase"), 0x13A10: ("Spider 2 of 3", "Bookcase"), 0x13A6F: ("Spider 3 of 3", "Bookcase"),
+    0x138C0: ("Bye!!", "Bookcase"),
+    0x13830: ("Shelf Item 1 of 7", "Bookcase"), 0x13840: ("Shelf Item 2 of 7", "Bookcase"),
+    0x13850: ("Shelf Item 3 of 7", "Bookcase"), 0x13860: ("Shelf Item 4 of 7", "Bookcase"),
+    0x13870: ("Shelf Item 5 of 7", "Bookcase"), 0x13880: ("Shelf Item 6 of 7", "Bookcase"),
+    0x13890: ("Shelf Item 7 of 7", "Bookcase"),
+    # The cheese.
+    0x13E20: ("Cheese Mouse Left", "Cheese"), 0x13E50: ("Cheese Mouse Right", "Cheese"),
+    0x13E80: ("Cheese Mouse Peek 1 of 2", "Cheese"), 0x13EB0: ("Cheese Mouse Peek 2 of 2", "Cheese"),
+    0x13BF8: ("Cheese Bit 1 of 2", "Cheese"), 0x13C02: ("Cheese Bit 2 of 2", "Cheese"),
+    0x13DAA: ("Cheese Edge", "Cheese"),
+    # The birdcage and the dogs.
+    0x140BE: ("Birdcage 1 of 2", "Birdcage"), 0x1411E: ("Birdcage 2 of 2", "Birdcage"),
+    0x1182D: ("Bird Flying?", "Birdcage"),
+    0x1439C: ("Dog Asleep 1 of 2", "Dog"), 0x1441E: ("Dog Asleep 2 of 2", "Dog"), 0x1431C: ("Dog Bowl", "Dog"),
+    0x115D8: ("Dog Run 3 of 5", "Dog"), 0x11650: ("Dog Run 4 of 5", "Dog"),
+    0x11779: ("BONK!", "Fight"), 0x11E70: ("SQUEAK!", "Fight"), 0x16F58: ("Fight Swearing", "Fight"),
+    # The rooms in general.
+    0x120A0: ("Portrait Man", "Room"), 0x120E0: ("Portrait Woman", "Room"),
+    0x133B8: ("Broom Dust 1 of 3", "Room"), 0x133C2: ("Broom Dust 2 of 3", "Room"), 0x133CC: ("Broom Dust 3 of 3", "Room"),
+    # The hearts.
+    0x12BF0: ("Girl Cat", "Hearts"), 0x12EE0: ("Heart", "Hearts"), 0x12F00: ("Heart Cracked?", "Hearts"),
+    0x17030: ("Hearts Arrow 1 of 12", "Hearts"), 0x17050: ("Hearts Arrow 2 of 12", "Hearts"),
+    0x17070: ("Hearts Arrow 3 of 12", "Hearts"), 0x17090: ("Hearts Arrow 4 of 12", "Hearts"),
+    0x170B0: ("Hearts Arrow 5 of 12", "Hearts"), 0x170D0: ("Hearts Arrow 6 of 12", "Hearts"),
+    0x170F0: ("Hearts Arrow 7 of 12", "Hearts"), 0x17110: ("Hearts Arrow 8 of 12", "Hearts"),
+    0x17130: ("Hearts Arrow 9 of 12", "Hearts"), 0x17150: ("Hearts Arrow 10 of 12", "Hearts"),
+    0x17170: ("Hearts Arrow 11 of 12", "Hearts"), 0x17190: ("Hearts Arrow 12 of 12", "Hearts"),
+    # The alley and the title.
+    0x11ED0: ("Points 50", "Score"), 0x11EF0: ("Points 70", "Score"), 0x11F10: ("Points 90", "Score"),
+    0x16F10: ("Title Cat Face", "Title"), 0x169A8: ("IBM Corp.", "Title"),
+    0x16252: ("IBM Presents", "Title"), 0x164D0: ("Alley Cat TM", "Title"), 0x16738: ("By", "Title"),
+    0x16780: ("Bill Williams", "Title"), 0x16860: ("(c) Copyright", "Title"), 0x16968: ("1984", "Title"),
+    0x16A98: ("SynSoft TM", "Title"),
+    0x11380: ("Fight Cloud 1 of 3", "Fight"), 0x113F8: ("Fight Cloud 2 of 3", "Fight"), 0x11470: ("Fight Cloud 3 of 3", "Fight"),
+    0x14202: ("White Line 8x1", "Cheese"),
+    0x12780: ("Window", "Window"),
+    0x12A04: ("Fence Piece 1 of 9", "Fence"), 0x12A14: ("Fence Piece 2 of 9", "Fence"),
+    0x12A24: ("Fence Piece 3 of 9", "Fence"), 0x12A34: ("Fence Piece 4 of 9", "Fence"),
+    0x12A44: ("Fence Piece 5 of 9", "Fence"), 0x12A4E: ("Fence Piece 6 of 9", "Fence"),
+    0x12A58: ("Fence Piece 7 of 9", "Fence"), 0x12A62: ("Fence Piece 8 of 9", "Fence"),
+    0x12A6C: ("Fence Piece 9 of 9", "Fence"),
+}
+for _source, (_name, _group) in GUESSES.items():
+    KNOWN.setdefault(_source, _name)
+    GROUPS.setdefault(_source, _group)
+
 TEXTURE = '[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/%s" id="%s"]'
 
 
