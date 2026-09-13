@@ -1,218 +1,220 @@
-[gd_resource type="Resource" script_class="AlleyCatArtwork" load_steps=391 format=3]
+[gd_resource type="Resource" script_class="AlleyCatArtwork" format=3 uid="uid://bb1d0rl7cysg6"]
 
-[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_artwork.gd" id="1_artwork"]
-[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_sprite.gd" id="2_sprite"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_jump_01.png" id="3_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_direction_down.png" id="4_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_jump_02.png" id="5_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_01.png" id="6_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_02.png" id="7_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_03.png" id="8_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_04.png" id="9_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_05.png" id="10_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_06.png" id="11_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_01.png" id="12_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_02.png" id="13_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_03.png" id="14_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_04.png" id="15_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_05.png" id="16_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_06.png" id="17_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_top_03.png" id="18_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_top_04.png" id="19_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_top_02.png" id="20_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_bottom_03.png" id="21_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_bottom_02.png" id="22_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_bottom_01.png" id="23_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/fight_01.png" id="24_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/fight_02.png" id="25_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/fight_03.png" id="26_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/dog_run_left_01.png" id="27_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/dog_run_left_02.png" id="28_over"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10B2E_24x13.png" id="29_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13400_8x6.png" id="30_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1340C_8x6.png" id="31_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13424_8x6.png" id="32_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13418_8x6.png" id="33_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12138_8x4.png" id="34_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12128_8x4.png" id="35_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12130_8x4.png" id="36_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12120_8x4.png" id="37_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10B7C_24x13.png" id="38_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11FB0_16x8.png" id="39_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F90_16x8.png" id="40_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13430_16x2.png" id="41_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13438_16x2.png" id="42_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13440_16x2.png" id="43_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13448_16x2.png" id="44_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10CD2_24x11.png" id="45_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_108EA_24x13.png" id="46_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10E5E_24x11.png" id="47_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10D14_24x11.png" id="48_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F30_16x8.png" id="49_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10D56_24x11.png" id="50_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10E1C_24x11.png" id="51_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10D98_24x11.png" id="52_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10974_24x14.png" id="53_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10DDA_24x11.png" id="54_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_109C8_24x13.png" id="55_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F50_16x8.png" id="56_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F70_16x8.png" id="57_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11062_16x6.png" id="58_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10EE2_24x11.png" id="59_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10FA8_24x11.png" id="60_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10EA0_24x11.png" id="61_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13E50_16x12.png" id="62_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10818_24x13.png" id="63_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13E20_16x12.png" id="64_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10F66_24x11.png" id="65_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10F24_24x11.png" id="66_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10FEA_16x6.png" id="67_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12EE0_16x8.png" id="68_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12F00_16x8.png" id="69_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11002_16x6.png" id="70_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10938_24x10.png" id="71_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_108A2_24x12.png" id="72_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10C96_24x10.png" id="73_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10C5A_24x10.png" id="74_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10C12_24x12.png" id="75_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10BCA_24x12.png" id="76_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A24_8x8.png" id="77_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A14_8x8.png" id="78_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12AEE_32x8.png" id="79_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13840_8x8.png" id="80_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10A16_16x14.png" id="81_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_107D0_24x12.png" id="82_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10A4E_16x13.png" id="83_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11380_32x15.png" id="84_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10866_24x10.png" id="85_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_133C2_8x5.png" id="86_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1104A_16x6.png" id="87_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_114E8_32x15.png" id="88_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11DF0_16x13.png" id="89_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11032_16x6.png" id="90_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11560_32x15.png" id="91_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A44_8x5.png" id="92_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A34_8x8.png" id="93_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17030_16x8.png" id="94_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_115D8_32x15.png" id="95_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11650_32x15.png" id="96_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12780_40x16.png" id="97_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A04_8x8.png" id="98_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17070_16x8.png" id="99_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12820_8x8.png" id="100_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17050_16x8.png" id="101_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13A10_24x14.png" id="102_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1101A_16x6.png" id="103_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A4E_8x5.png" id="104_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10A82_16x9.png" id="105_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_113F8_32x15.png" id="106_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_139BC_24x14.png" id="107_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13860_8x8.png" id="108_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A76_40x12.png" id="109_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A58_8x5.png" id="110_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11470_32x15.png" id="111_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A62_8x5.png" id="112_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12B2E_32x11.png" id="113_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13C02_8x8.png" id="114_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13E80_16x12.png" id="115_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13EB0_16x12.png" id="116_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A6C_8x5.png" id="117_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13BF8_8x8.png" id="118_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13890_8x8.png" id="119_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13870_8x8.png" id="120_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16F10_24x12.png" id="121_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_170F0_16x8.png" id="122_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13880_8x8.png" id="123_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17090_16x8.png" id="124_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17130_16x8.png" id="125_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17150_16x8.png" id="126_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1431C_16x8.png" id="127_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17190_16x8.png" id="128_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17170_16x8.png" id="129_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17110_16x8.png" id="130_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13850_8x8.png" id="131_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13830_8x8.png" id="132_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13680_16x10.png" id="133_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_136A8_16x10.png" id="134_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13658_16x10.png" id="135_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13630_16x10.png" id="136_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_170B0_16x8.png" id="137_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_170D0_16x8.png" id="138_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12840_8x8.png" id="139_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12990_8x8.png" id="140_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1182D_16x12.png" id="141_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1584C_24x8.png" id="142_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_14202_8x1.png" id="143_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10ADA_24x14.png" id="144_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12850_8x8.png" id="145_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12860_8x8.png" id="146_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128B0_8x8.png" id="147_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12880_8x8.png" id="148_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_133CC_8x5.png" id="149_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1439C_40x13.png" id="150_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_157E0_24x18.png" id="151_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12830_8x8.png" id="152_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13450_40x18.png" id="153_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_120A0_16x16.png" id="154_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12BF0_24x15.png" id="155_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13DAA_16x1.png" id="156_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1441E_40x13.png" id="157_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16F58_48x17.png" id="158_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16738_24x12.png" id="159_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12920_8x8.png" id="160_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16780_112x8.png" id="161_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16860_96x11.png" id="162_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_138C0_48x21.png" id="163_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16968_32x8.png" id="164_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16A98_80x12.png" id="165_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11ED0_16x8.png" id="166_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_158E0_16x12.png" id="167_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_158A4_16x15.png" id="168_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128E0_8x8.png" id="169_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_15910_16x15.png" id="170_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12870_8x8.png" id="171_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12910_8x8.png" id="172_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_120E0_16x16.png" id="173_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_140BE_24x16.png" id="174_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1587C_16x10.png" id="175_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16252_88x29.png" id="176_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_164D0_112x22.png" id="177_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_169A8_80x12.png" id="178_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1074E_24x5.png" id="179_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11779_40x18.png" id="180_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11E70_48x8.png" id="181_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11EF0_16x8.png" id="182_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F10_16x8.png" id="183_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12890_8x8.png" id="184_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128A0_8x8.png" id="185_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128C0_8x8.png" id="186_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128D0_8x8.png" id="187_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128F0_8x8.png" id="188_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12900_8x8.png" id="189_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12930_8x8.png" id="190_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12940_8x8.png" id="191_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12950_8x8.png" id="192_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12960_8x8.png" id="193_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12970_8x8.png" id="194_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12980_8x8.png" id="195_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D900_8x8.png" id="196_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D910_8x8.png" id="197_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D920_8x8.png" id="198_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D930_8x8.png" id="199_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D940_8x8.png" id="200_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D950_8x8.png" id="201_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D960_8x8.png" id="202_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D970_8x8.png" id="203_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D980_8x8.png" id="204_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D990_8x8.png" id="205_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D9A0_8x8.png" id="206_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D9B0_8x8.png" id="207_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D9C0_8x8.png" id="208_o"]
-[ext_resource type="Texture2D" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D9D0_8x8.png" id="209_o"]
+[ext_resource type="Script" uid="uid://c51mb1d2i63kv" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_artwork.gd" id="1_artwork"]
+[ext_resource type="Script" uid="uid://bbqgue7dkegpy" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_sprite.gd" id="2_sprite"]
+[ext_resource type="Texture2D" uid="uid://drecyl7evqaq7" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_jump_01.png" id="3_over"]
+[ext_resource type="Texture2D" uid="uid://42o0vfgorw2b" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_direction_down.png" id="4_over"]
+[ext_resource type="Texture2D" uid="uid://c0686jx7a6vuo" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_jump_02.png" id="5_over"]
+[ext_resource type="Texture2D" uid="uid://cp3sc0ca4kunv" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_01.png" id="6_over"]
+[ext_resource type="Texture2D" uid="uid://cjf24rw4mf43m" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_02.png" id="7_over"]
+[ext_resource type="Texture2D" uid="uid://cwru3cfc2hhj" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_03.png" id="8_over"]
+[ext_resource type="Texture2D" uid="uid://d3s5ym6fhesr7" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_04.png" id="9_over"]
+[ext_resource type="Texture2D" uid="uid://7ukoiay41ioe" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_05.png" id="10_over"]
+[ext_resource type="Texture2D" uid="uid://dcshod54v6fj8" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_right_06.png" id="11_over"]
+[ext_resource type="Texture2D" uid="uid://lp23vw7dg2ek" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_01.png" id="12_over"]
+[ext_resource type="Texture2D" uid="uid://ctvdfyrku658a" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_02.png" id="13_over"]
+[ext_resource type="Texture2D" uid="uid://bywgkh4y0060o" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_03.png" id="14_over"]
+[ext_resource type="Texture2D" uid="uid://es868q1nwoe6" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_04.png" id="15_over"]
+[ext_resource type="Texture2D" uid="uid://qsjaqwrkeiab" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_05.png" id="16_over"]
+[ext_resource type="Texture2D" uid="uid://bvscms3jlnxi1" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_walk_left_06.png" id="17_over"]
+[ext_resource type="Texture2D" uid="uid://b57283jfkxkx8" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_top_03.png" id="18_over"]
+[ext_resource type="Texture2D" uid="uid://6limu1i6un8x" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_top_04.png" id="19_over"]
+[ext_resource type="Texture2D" uid="uid://bpcuj2tv5ur5f" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_top_02.png" id="20_over"]
+[ext_resource type="Texture2D" uid="uid://lndhf3s854ri" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_bottom_03.png" id="21_over"]
+[ext_resource type="Texture2D" uid="uid://cjarcec6qbmn8" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_bottom_02.png" id="22_over"]
+[ext_resource type="Texture2D" uid="uid://dac3t6ennrkmr" path="res://addons/godot_alleycat_gdextension/assets/artwork/cat_idle_bottom_01.png" id="23_over"]
+[ext_resource type="Texture2D" uid="uid://c5traf6iidwm4" path="res://addons/godot_alleycat_gdextension/assets/artwork/fight_01.png" id="24_over"]
+[ext_resource type="Texture2D" uid="uid://y47e1x16ot43" path="res://addons/godot_alleycat_gdextension/assets/artwork/fight_02.png" id="25_over"]
+[ext_resource type="Texture2D" uid="uid://dru16jayfsyuv" path="res://addons/godot_alleycat_gdextension/assets/artwork/fight_03.png" id="26_over"]
+[ext_resource type="Texture2D" uid="uid://dftisg6ffh6yv" path="res://addons/godot_alleycat_gdextension/assets/artwork/dog_run_left_01.png" id="27_over"]
+[ext_resource type="Texture2D" uid="uid://cb25rcxkgw3wa" path="res://addons/godot_alleycat_gdextension/assets/artwork/dog_run_left_02.png" id="28_over"]
+[ext_resource type="Texture2D" uid="uid://daad1sdj7ixha" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10B2E_24x13.png" id="29_o"]
+[ext_resource type="Texture2D" uid="uid://cnevwo8qe2swi" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13400_8x6.png" id="30_o"]
+[ext_resource type="Texture2D" uid="uid://dhentlumq0ko3" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1340C_8x6.png" id="31_o"]
+[ext_resource type="Texture2D" uid="uid://dxk7esk8ig5e3" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13424_8x6.png" id="32_o"]
+[ext_resource type="Texture2D" uid="uid://4yahdcoej58u" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13418_8x6.png" id="33_o"]
+[ext_resource type="Texture2D" uid="uid://mqnged4ils18" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12138_8x4.png" id="34_o"]
+[ext_resource type="Texture2D" uid="uid://c3st7w818b8xf" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12128_8x4.png" id="35_o"]
+[ext_resource type="Texture2D" uid="uid://cus6hy1xsyrpo" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12130_8x4.png" id="36_o"]
+[ext_resource type="Texture2D" uid="uid://dss6i8r1j7u6g" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12120_8x4.png" id="37_o"]
+[ext_resource type="Texture2D" uid="uid://cd8wotdvs3ax6" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10B7C_24x13.png" id="38_o"]
+[ext_resource type="Texture2D" uid="uid://b7lebleqleceb" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11FB0_16x8.png" id="39_o"]
+[ext_resource type="Texture2D" uid="uid://cwiyafouh0xhq" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F90_16x8.png" id="40_o"]
+[ext_resource type="Texture2D" uid="uid://y2sd6ax6l06g" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13430_16x2.png" id="41_o"]
+[ext_resource type="Texture2D" uid="uid://bi3k1pqp4xgw8" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13438_16x2.png" id="42_o"]
+[ext_resource type="Texture2D" uid="uid://dgystqvu5ehmn" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13440_16x2.png" id="43_o"]
+[ext_resource type="Texture2D" uid="uid://bwglqo5awftbl" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13448_16x2.png" id="44_o"]
+[ext_resource type="Texture2D" uid="uid://chkdae0exgcu4" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10CD2_24x11.png" id="45_o"]
+[ext_resource type="Texture2D" uid="uid://b60fs1kcvb7ds" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_108EA_24x13.png" id="46_o"]
+[ext_resource type="Texture2D" uid="uid://b4lkklxq1pxy6" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10E5E_24x11.png" id="47_o"]
+[ext_resource type="Texture2D" uid="uid://2jpujtm1x7nj" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10D14_24x11.png" id="48_o"]
+[ext_resource type="Texture2D" uid="uid://d1wapfwi7b5jh" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F30_16x8.png" id="49_o"]
+[ext_resource type="Texture2D" uid="uid://culydalwe41hq" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10D56_24x11.png" id="50_o"]
+[ext_resource type="Texture2D" uid="uid://ckkc03psauxdg" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10E1C_24x11.png" id="51_o"]
+[ext_resource type="Texture2D" uid="uid://bqmvppomevdsk" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10D98_24x11.png" id="52_o"]
+[ext_resource type="Texture2D" uid="uid://bys8wrmm5qdqb" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10974_24x14.png" id="53_o"]
+[ext_resource type="Texture2D" uid="uid://b34qa2ynypco8" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10DDA_24x11.png" id="54_o"]
+[ext_resource type="Texture2D" uid="uid://cwyuuthiak7y1" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_109C8_24x13.png" id="55_o"]
+[ext_resource type="Texture2D" uid="uid://b6oa6tcolmxe" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F50_16x8.png" id="56_o"]
+[ext_resource type="Texture2D" uid="uid://ckxv77e7qlm7x" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F70_16x8.png" id="57_o"]
+[ext_resource type="Texture2D" uid="uid://gk0hrgul8t8i" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11062_16x6.png" id="58_o"]
+[ext_resource type="Texture2D" uid="uid://o5wj0vhfxcxf" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10EE2_24x11.png" id="59_o"]
+[ext_resource type="Texture2D" uid="uid://btvjynrjcxij3" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10FA8_24x11.png" id="60_o"]
+[ext_resource type="Texture2D" uid="uid://c07f2wqlr4vbv" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10EA0_24x11.png" id="61_o"]
+[ext_resource type="Texture2D" uid="uid://d3sshn6j3uxgw" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13E50_16x12.png" id="62_o"]
+[ext_resource type="Texture2D" uid="uid://f035gkl1ojh6" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10818_24x13.png" id="63_o"]
+[ext_resource type="Texture2D" uid="uid://c3edg5an0fbhv" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13E20_16x12.png" id="64_o"]
+[ext_resource type="Texture2D" uid="uid://egldu3la5irh" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10F66_24x11.png" id="65_o"]
+[ext_resource type="Texture2D" uid="uid://ci6e546ndh0gj" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10F24_24x11.png" id="66_o"]
+[ext_resource type="Texture2D" uid="uid://divk3xpyloycq" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10FEA_16x6.png" id="67_o"]
+[ext_resource type="Texture2D" uid="uid://do42nnps8xlhc" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12EE0_16x8.png" id="68_o"]
+[ext_resource type="Texture2D" uid="uid://d12kkbnov0ipu" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12F00_16x8.png" id="69_o"]
+[ext_resource type="Texture2D" uid="uid://ct75a483x36mb" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11002_16x6.png" id="70_o"]
+[ext_resource type="Texture2D" uid="uid://cwet1lt8mqfvy" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10938_24x10.png" id="71_o"]
+[ext_resource type="Texture2D" uid="uid://bds2uspmviqe5" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_108A2_24x12.png" id="72_o"]
+[ext_resource type="Texture2D" uid="uid://duq24yox70wkf" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10C96_24x10.png" id="73_o"]
+[ext_resource type="Texture2D" uid="uid://c2ixb1840hnp7" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10C5A_24x10.png" id="74_o"]
+[ext_resource type="Texture2D" uid="uid://3sogefvirx1g" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10C12_24x12.png" id="75_o"]
+[ext_resource type="Texture2D" uid="uid://whqwl7l6xmhn" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10BCA_24x12.png" id="76_o"]
+[ext_resource type="Texture2D" uid="uid://danmkwcs2v6gi" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A24_8x8.png" id="77_o"]
+[ext_resource type="Texture2D" uid="uid://lujardtwyagr" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A14_8x8.png" id="78_o"]
+[ext_resource type="Texture2D" uid="uid://bpbkoi3pyxbwo" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12AEE_32x8.png" id="79_o"]
+[ext_resource type="Texture2D" uid="uid://bln45qhcq0v7x" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13840_8x8.png" id="80_o"]
+[ext_resource type="Texture2D" uid="uid://b07atwycjq61s" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10A16_16x14.png" id="81_o"]
+[ext_resource type="Texture2D" uid="uid://oxog5r4uskeu" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_107D0_24x12.png" id="82_o"]
+[ext_resource type="Texture2D" uid="uid://dbrwxiaw0l8jt" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10A4E_16x13.png" id="83_o"]
+[ext_resource type="Texture2D" uid="uid://b6yqenqku4cg4" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11380_32x15.png" id="84_o"]
+[ext_resource type="Texture2D" uid="uid://dwxqcfrdsqtai" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10866_24x10.png" id="85_o"]
+[ext_resource type="Texture2D" uid="uid://crap76a4pii36" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_133C2_8x5.png" id="86_o"]
+[ext_resource type="Texture2D" uid="uid://j0ve02ca8vo8" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1104A_16x6.png" id="87_o"]
+[ext_resource type="Texture2D" uid="uid://c2iqeobdvnw6b" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_114E8_32x15.png" id="88_o"]
+[ext_resource type="Texture2D" uid="uid://dhc8kobm7hatt" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11DF0_16x13.png" id="89_o"]
+[ext_resource type="Texture2D" uid="uid://ces1m2gb3lb6m" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11032_16x6.png" id="90_o"]
+[ext_resource type="Texture2D" uid="uid://oe084y4j6m17" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11560_32x15.png" id="91_o"]
+[ext_resource type="Texture2D" uid="uid://dw4xbncpfli0x" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A44_8x5.png" id="92_o"]
+[ext_resource type="Texture2D" uid="uid://xvrt3unkafcl" path="res://addons/godot_alleycat_gdextension/assets/artwork/dog_run_right_01.png" id="93_6qdac"]
+[ext_resource type="Texture2D" uid="uid://84mc0u10u4cl" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A34_8x8.png" id="93_o"]
+[ext_resource type="Texture2D" uid="uid://dy2dwn7o11ycy" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17030_16x8.png" id="94_o"]
+[ext_resource type="Texture2D" uid="uid://d34gjloii20sc" path="res://addons/godot_alleycat_gdextension/assets/artwork/dog_run_right_02.png" id="95_63t3u"]
+[ext_resource type="Texture2D" uid="uid://ns5xe4vn0cy" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_115D8_32x15.png" id="95_o"]
+[ext_resource type="Texture2D" uid="uid://dshxof44kop1a" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11650_32x15.png" id="96_o"]
+[ext_resource type="Texture2D" uid="uid://c3iklgn7w7vq6" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12780_40x16.png" id="97_o"]
+[ext_resource type="Texture2D" uid="uid://bvnjf0jitlbqe" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A04_8x8.png" id="98_o"]
+[ext_resource type="Texture2D" uid="uid://cek3i3p1pd88t" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17070_16x8.png" id="99_o"]
+[ext_resource type="Texture2D" uid="uid://di42fld46ic8o" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12820_8x8.png" id="100_o"]
+[ext_resource type="Texture2D" uid="uid://df4dsjg2iky8e" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17050_16x8.png" id="101_o"]
+[ext_resource type="Texture2D" uid="uid://hvn1j02b4rd3" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13A10_24x14.png" id="102_o"]
+[ext_resource type="Texture2D" uid="uid://binv03yqxn36b" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1101A_16x6.png" id="103_o"]
+[ext_resource type="Texture2D" uid="uid://cd4klgplgyxr4" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A4E_8x5.png" id="104_o"]
+[ext_resource type="Texture2D" uid="uid://c4w2382txyoi3" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10A82_16x9.png" id="105_o"]
+[ext_resource type="Texture2D" uid="uid://pjoffbfp1jfc" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_113F8_32x15.png" id="106_o"]
+[ext_resource type="Texture2D" uid="uid://c187kqtbxwqok" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_139BC_24x14.png" id="107_o"]
+[ext_resource type="Texture2D" uid="uid://btsu5psrym30a" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13860_8x8.png" id="108_o"]
+[ext_resource type="Texture2D" uid="uid://dixpkm2822bt6" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A76_40x12.png" id="109_o"]
+[ext_resource type="Texture2D" uid="uid://cm5e6tnj42f7h" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A58_8x5.png" id="110_o"]
+[ext_resource type="Texture2D" uid="uid://1d8klf4fewor" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11470_32x15.png" id="111_o"]
+[ext_resource type="Texture2D" uid="uid://b7pb5lrvw4r52" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A62_8x5.png" id="112_o"]
+[ext_resource type="Texture2D" uid="uid://d2433td7cq18c" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12B2E_32x11.png" id="113_o"]
+[ext_resource type="Texture2D" uid="uid://cemnit6foa6pr" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13C02_8x8.png" id="114_o"]
+[ext_resource type="Texture2D" uid="uid://btuyyiopggq5p" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13E80_16x12.png" id="115_o"]
+[ext_resource type="Texture2D" uid="uid://cka3opj7mfu4m" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13EB0_16x12.png" id="116_o"]
+[ext_resource type="Texture2D" uid="uid://cu1bkypr880nk" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12A6C_8x5.png" id="117_o"]
+[ext_resource type="Texture2D" uid="uid://dd2kl12mxvnt5" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13BF8_8x8.png" id="118_o"]
+[ext_resource type="Texture2D" uid="uid://dfu38tr28ghqg" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13890_8x8.png" id="119_o"]
+[ext_resource type="Texture2D" uid="uid://bp477t0irjch0" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13870_8x8.png" id="120_o"]
+[ext_resource type="Texture2D" uid="uid://dpvubex2hetv2" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16F10_24x12.png" id="121_o"]
+[ext_resource type="Texture2D" uid="uid://didrdogmpklen" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_170F0_16x8.png" id="122_o"]
+[ext_resource type="Texture2D" uid="uid://hf8cqnpjsdkm" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13880_8x8.png" id="123_o"]
+[ext_resource type="Texture2D" uid="uid://xy7b5q8nsdjc" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17090_16x8.png" id="124_o"]
+[ext_resource type="Texture2D" uid="uid://c3fcyqg5pwfor" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17130_16x8.png" id="125_o"]
+[ext_resource type="Texture2D" uid="uid://dre0sveqgxgfg" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17150_16x8.png" id="126_o"]
+[ext_resource type="Texture2D" uid="uid://cthl164cd466m" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1431C_16x8.png" id="127_o"]
+[ext_resource type="Texture2D" uid="uid://bjbwjd26jre6g" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17190_16x8.png" id="128_o"]
+[ext_resource type="Texture2D" uid="uid://djq2ikxa2vn1w" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17170_16x8.png" id="129_o"]
+[ext_resource type="Texture2D" uid="uid://cqbrrgb7qjyn4" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_17110_16x8.png" id="130_o"]
+[ext_resource type="Texture2D" uid="uid://cy6sj7b6lfeoi" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13850_8x8.png" id="131_o"]
+[ext_resource type="Texture2D" uid="uid://djaxj6g5bnmm2" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13830_8x8.png" id="132_o"]
+[ext_resource type="Texture2D" uid="uid://crwc6fcllk2gi" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13680_16x10.png" id="133_o"]
+[ext_resource type="Texture2D" uid="uid://brq1qd8agrbg2" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_136A8_16x10.png" id="134_o"]
+[ext_resource type="Texture2D" uid="uid://degticyyxeuag" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13658_16x10.png" id="135_o"]
+[ext_resource type="Texture2D" uid="uid://bd86ribc3igfw" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13630_16x10.png" id="136_o"]
+[ext_resource type="Texture2D" uid="uid://drveiwugeqrkv" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_170B0_16x8.png" id="137_o"]
+[ext_resource type="Texture2D" uid="uid://dcgh6nqe4iyd5" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_170D0_16x8.png" id="138_o"]
+[ext_resource type="Texture2D" uid="uid://dyigjon7adeue" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12840_8x8.png" id="139_o"]
+[ext_resource type="Texture2D" uid="uid://d4hdmsdjwmecm" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12990_8x8.png" id="140_o"]
+[ext_resource type="Texture2D" uid="uid://btvhcyg81g6a4" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1182D_16x12.png" id="141_o"]
+[ext_resource type="Texture2D" uid="uid://joyhkw1mg2ux" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1584C_24x8.png" id="142_o"]
+[ext_resource type="Texture2D" uid="uid://bt2pof7bqbamw" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_14202_8x1.png" id="143_o"]
+[ext_resource type="Texture2D" uid="uid://c5pq685f1324b" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_10ADA_24x14.png" id="144_o"]
+[ext_resource type="Texture2D" uid="uid://bganew1q4tesb" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12850_8x8.png" id="145_o"]
+[ext_resource type="Texture2D" uid="uid://8legw4c3dn1u" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12860_8x8.png" id="146_o"]
+[ext_resource type="Texture2D" uid="uid://clfxy0eu7xyeb" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128B0_8x8.png" id="147_o"]
+[ext_resource type="Texture2D" uid="uid://84bbe6tmvjls" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12880_8x8.png" id="148_o"]
+[ext_resource type="Texture2D" uid="uid://t4siff7yvk63" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_133CC_8x5.png" id="149_o"]
+[ext_resource type="Texture2D" uid="uid://3je20ao47uad" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1439C_40x13.png" id="150_o"]
+[ext_resource type="Texture2D" uid="uid://di4mfui1n38l0" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_157E0_24x18.png" id="151_o"]
+[ext_resource type="Texture2D" uid="uid://lhe4ytp655m" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12830_8x8.png" id="152_o"]
+[ext_resource type="Texture2D" uid="uid://b31ednbbboqpm" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13450_40x18.png" id="153_o"]
+[ext_resource type="Texture2D" uid="uid://bsa54mnwaylim" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_120A0_16x16.png" id="154_o"]
+[ext_resource type="Texture2D" uid="uid://cyg0iq1im74vt" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12BF0_24x15.png" id="155_o"]
+[ext_resource type="Texture2D" uid="uid://bodfjs6gguhfx" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_13DAA_16x1.png" id="156_o"]
+[ext_resource type="Texture2D" uid="uid://cq0urfvlnder7" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1441E_40x13.png" id="157_o"]
+[ext_resource type="Texture2D" uid="uid://cuan8u0ci0nmx" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16F58_48x17.png" id="158_o"]
+[ext_resource type="Texture2D" uid="uid://bum2l4t6yypui" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16738_24x12.png" id="159_o"]
+[ext_resource type="Texture2D" uid="uid://cq44n0ryp6in6" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12920_8x8.png" id="160_o"]
+[ext_resource type="Texture2D" uid="uid://gjdvags7km28" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16780_112x8.png" id="161_o"]
+[ext_resource type="Texture2D" uid="uid://4nrlqsaupo88" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16860_96x11.png" id="162_o"]
+[ext_resource type="Texture2D" uid="uid://ccloxbnon2whp" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_138C0_48x21.png" id="163_o"]
+[ext_resource type="Texture2D" uid="uid://catbagyit7g6a" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16968_32x8.png" id="164_o"]
+[ext_resource type="Texture2D" uid="uid://cmngdnxccll8q" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16A98_80x12.png" id="165_o"]
+[ext_resource type="Texture2D" uid="uid://c52lrmp8nede7" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11ED0_16x8.png" id="166_o"]
+[ext_resource type="Texture2D" uid="uid://dhh58ys2323kk" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_158E0_16x12.png" id="167_o"]
+[ext_resource type="Texture2D" uid="uid://bgqx0p5g5jppr" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_158A4_16x15.png" id="168_o"]
+[ext_resource type="Texture2D" uid="uid://cbsdlrkapoqrx" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128E0_8x8.png" id="169_o"]
+[ext_resource type="Texture2D" uid="uid://clc0dian4itr2" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_15910_16x15.png" id="170_o"]
+[ext_resource type="Texture2D" uid="uid://dmlbsepmjmhxp" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12870_8x8.png" id="171_o"]
+[ext_resource type="Texture2D" uid="uid://de658y5xd1gpt" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12910_8x8.png" id="172_o"]
+[ext_resource type="Texture2D" uid="uid://ttu4p0e7ragg" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_120E0_16x16.png" id="173_o"]
+[ext_resource type="Texture2D" uid="uid://df5xy4b4uofp8" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_140BE_24x16.png" id="174_o"]
+[ext_resource type="Texture2D" uid="uid://cnwxo5j8fga8e" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1587C_16x10.png" id="175_o"]
+[ext_resource type="Texture2D" uid="uid://dogcpedbqe5ia" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_16252_88x29.png" id="176_o"]
+[ext_resource type="Texture2D" uid="uid://cniaysuiqjpwa" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_164D0_112x22.png" id="177_o"]
+[ext_resource type="Texture2D" uid="uid://cswrt7wmhjpf3" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_169A8_80x12.png" id="178_o"]
+[ext_resource type="Texture2D" uid="uid://b10gsdkeutxph" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_1074E_24x5.png" id="179_o"]
+[ext_resource type="Texture2D" uid="uid://1yu44ak2gcbr" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11779_40x18.png" id="180_o"]
+[ext_resource type="Texture2D" uid="uid://bjofjuy6acgx" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11E70_48x8.png" id="181_o"]
+[ext_resource type="Texture2D" uid="uid://funviejksvnq" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11EF0_16x8.png" id="182_o"]
+[ext_resource type="Texture2D" uid="uid://b8b7ntcyowm7v" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_11F10_16x8.png" id="183_o"]
+[ext_resource type="Texture2D" uid="uid://b0pc1g2rj00wj" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12890_8x8.png" id="184_o"]
+[ext_resource type="Texture2D" uid="uid://b7jgbmcq8ivf7" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128A0_8x8.png" id="185_o"]
+[ext_resource type="Texture2D" uid="uid://ckjly8w2lhmqc" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128C0_8x8.png" id="186_o"]
+[ext_resource type="Texture2D" uid="uid://qavmjt5aiv7o" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128D0_8x8.png" id="187_o"]
+[ext_resource type="Texture2D" uid="uid://b1evja4r2sgiy" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_128F0_8x8.png" id="188_o"]
+[ext_resource type="Texture2D" uid="uid://ba01pb20kxv5a" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12900_8x8.png" id="189_o"]
+[ext_resource type="Texture2D" uid="uid://cm16s5bxv83x" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12930_8x8.png" id="190_o"]
+[ext_resource type="Texture2D" uid="uid://mq1dpfngihy" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12940_8x8.png" id="191_o"]
+[ext_resource type="Texture2D" uid="uid://cakruw4riidf3" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12950_8x8.png" id="192_o"]
+[ext_resource type="Texture2D" uid="uid://dd3knfnbharyy" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12960_8x8.png" id="193_o"]
+[ext_resource type="Texture2D" uid="uid://df0fpdr420nin" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12970_8x8.png" id="194_o"]
+[ext_resource type="Texture2D" uid="uid://bh3eu4wh07xwk" path="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_12980_8x8.png" id="195_o"]
+[ext_resource type="Texture2D" uid="uid://bp43xm2qekojq" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D900_8x8.png" id="196_o"]
+[ext_resource type="Texture2D" uid="uid://440udey36uw2" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D910_8x8.png" id="197_o"]
+[ext_resource type="Texture2D" uid="uid://rm5cqcfiu6sc" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D920_8x8.png" id="198_o"]
+[ext_resource type="Texture2D" uid="uid://bege4mhcild14" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D930_8x8.png" id="199_o"]
+[ext_resource type="Texture2D" uid="uid://bse8amclhw2tv" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D940_8x8.png" id="200_o"]
+[ext_resource type="Texture2D" uid="uid://dapqmpkujxhet" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D950_8x8.png" id="201_o"]
+[ext_resource type="Texture2D" uid="uid://dqyeg1eksno6q" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D960_8x8.png" id="202_o"]
+[ext_resource type="Texture2D" uid="uid://d4bhg8aevwxqc" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D970_8x8.png" id="203_o"]
+[ext_resource type="Texture2D" uid="uid://buj3csyqqnhop" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D980_8x8.png" id="204_o"]
+[ext_resource type="Texture2D" uid="uid://cglbgy3rfduiy" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D990_8x8.png" id="205_o"]
+[ext_resource type="Texture2D" uid="uid://3ne16xf01sy2" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D9A0_8x8.png" id="206_o"]
+[ext_resource type="Texture2D" uid="uid://cei8scco3l71m" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D9B0_8x8.png" id="207_o"]
+[ext_resource type="Texture2D" uid="uid://by6m0kaexki4j" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D9C0_8x8.png" id="208_o"]
+[ext_resource type="Texture2D" uid="uid://c15ueermbt573" path="res://addons/godot_alleycat_gdextension/assets/artwork/added/sprite_1D9D0_8x8.png" id="209_o"]
 
 [sub_resource type="Resource" id="S_10B2E_24x13"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Jump Up"
+script = ExtResource("2_sprite")
 label = "Cat Jump Up"
 group = "Cat"
 source = 68398
@@ -223,96 +225,88 @@ masked_draws = 36607
 note = "24x13, drawn 36607 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_13400_8x6"]
-script = ExtResource("2_sprite")
 resource_name = "Fish 1 of 4"
+script = ExtResource("2_sprite")
 label = "Fish 1 of 4"
 group = "Fishbowl"
 source = 78848
 original = ExtResource("30_o")
 draws = 27393
-masked_draws = 0
 note = "8x6, drawn 27393 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1340C_8x6"]
-script = ExtResource("2_sprite")
 resource_name = "Fish 2 of 4"
+script = ExtResource("2_sprite")
 label = "Fish 2 of 4"
 group = "Fishbowl"
 source = 78860
 original = ExtResource("31_o")
 draws = 27123
-masked_draws = 0
 note = "8x6, drawn 27123 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13424_8x6"]
-script = ExtResource("2_sprite")
 resource_name = "Fish 4 of 4"
+script = ExtResource("2_sprite")
 label = "Fish 4 of 4"
 group = "Fishbowl"
 source = 78884
 original = ExtResource("32_o")
 draws = 26874
-masked_draws = 0
 note = "8x6, drawn 26874 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13418_8x6"]
-script = ExtResource("2_sprite")
 resource_name = "Fish 3 of 4"
+script = ExtResource("2_sprite")
 label = "Fish 3 of 4"
 group = "Fishbowl"
 source = 78872
 original = ExtResource("33_o")
 draws = 26595
-masked_draws = 0
 note = "8x6, drawn 26595 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12138_8x4"]
-script = ExtResource("2_sprite")
 resource_name = "Fish Small 4 of 4"
+script = ExtResource("2_sprite")
 label = "Fish Small 4 of 4"
 group = "Fishbowl"
 source = 74040
 original = ExtResource("34_o")
 draws = 18713
-masked_draws = 0
 note = "8x4, drawn 18713 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12128_8x4"]
-script = ExtResource("2_sprite")
 resource_name = "Fish Small 2 of 4"
+script = ExtResource("2_sprite")
 label = "Fish Small 2 of 4"
 group = "Fishbowl"
 source = 74024
 original = ExtResource("35_o")
 draws = 18621
-masked_draws = 0
 note = "8x4, drawn 18621 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12130_8x4"]
-script = ExtResource("2_sprite")
 resource_name = "Fish Small 3 of 4"
+script = ExtResource("2_sprite")
 label = "Fish Small 3 of 4"
 group = "Fishbowl"
 source = 74032
 original = ExtResource("36_o")
 draws = 18447
-masked_draws = 0
 note = "8x4, drawn 18447 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12120_8x4"]
-script = ExtResource("2_sprite")
 resource_name = "Fish Small 1 of 4"
+script = ExtResource("2_sprite")
 label = "Fish Small 1 of 4"
 group = "Fishbowl"
 source = 74016
 original = ExtResource("37_o")
 draws = 18326
-masked_draws = 0
 note = "8x4, drawn 18326 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10B7C_24x13"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Jump Up 2"
+script = ExtResource("2_sprite")
 label = "Cat Jump Up 2"
 group = "Cat"
 source = 68476
@@ -323,8 +317,8 @@ masked_draws = 14347
 note = "24x13, drawn 14347 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11FB0_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Mouse Run Left 02"
+script = ExtResource("2_sprite")
 label = "Mouse Run Left 02"
 group = "Mouse"
 source = 73648
@@ -334,8 +328,8 @@ masked_draws = 14217
 note = "16x8, drawn 14217 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11F90_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Mouse Run Left 01"
+script = ExtResource("2_sprite")
 label = "Mouse Run Left 01"
 group = "Mouse"
 source = 73616
@@ -345,52 +339,48 @@ masked_draws = 14012
 note = "16x8, drawn 14012 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_13430_16x2"]
-script = ExtResource("2_sprite")
 resource_name = "Water Ripple 1 of 4"
+script = ExtResource("2_sprite")
 label = "Water Ripple 1 of 4"
 group = "Fishbowl"
 source = 78896
 original = ExtResource("41_o")
 draws = 11809
-masked_draws = 0
 note = "16x2, drawn 11809 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13438_16x2"]
-script = ExtResource("2_sprite")
 resource_name = "Water Ripple 2 of 4"
+script = ExtResource("2_sprite")
 label = "Water Ripple 2 of 4"
 group = "Fishbowl"
 source = 78904
 original = ExtResource("42_o")
 draws = 11790
-masked_draws = 0
 note = "16x2, drawn 11790 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13440_16x2"]
-script = ExtResource("2_sprite")
 resource_name = "Water Ripple 3 of 4"
+script = ExtResource("2_sprite")
 label = "Water Ripple 3 of 4"
 group = "Fishbowl"
 source = 78912
 original = ExtResource("43_o")
 draws = 11746
-masked_draws = 0
 note = "16x2, drawn 11746 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13448_16x2"]
-script = ExtResource("2_sprite")
 resource_name = "Water Ripple 4 of 4"
+script = ExtResource("2_sprite")
 label = "Water Ripple 4 of 4"
 group = "Fishbowl"
 source = 78920
 original = ExtResource("44_o")
 draws = 11744
-masked_draws = 0
 note = "16x2, drawn 11744 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10CD2_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk right 1 of 6"
+script = ExtResource("2_sprite")
 label = "Cat walk right 1 of 6"
 group = "Cat"
 source = 68818
@@ -401,8 +391,8 @@ masked_draws = 7457
 note = "24x11, drawn 7457 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_108EA_24x13"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Right 2 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Swim Right 2 of 3"
 group = "Fishbowl"
 source = 67818
@@ -412,8 +402,8 @@ masked_draws = 6399
 note = "24x13, drawn 6399 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10E5E_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk left 1 of 6  (24x11)"
+script = ExtResource("2_sprite")
 label = "Cat walk left 1 of 6  (24x11)"
 group = "Cat"
 source = 69214
@@ -424,8 +414,8 @@ masked_draws = 6275
 note = "24x11, drawn 6275 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10D14_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk right 2 of 6"
+script = ExtResource("2_sprite")
 label = "Cat walk right 2 of 6"
 group = "Cat"
 source = 68884
@@ -436,8 +426,8 @@ masked_draws = 5530
 note = "24x11, drawn 5530 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11F30_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Mouse Idle 01"
+script = ExtResource("2_sprite")
 label = "Mouse Idle 01"
 group = "Mouse"
 source = 73520
@@ -447,8 +437,8 @@ masked_draws = 5472
 note = "16x8, drawn 5472 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10D56_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk right 3 of 6"
+script = ExtResource("2_sprite")
 label = "Cat walk right 3 of 6"
 group = "Cat"
 source = 68950
@@ -459,8 +449,8 @@ masked_draws = 5407
 note = "24x11, drawn 5407 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10E1C_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk right 6 of 6"
+script = ExtResource("2_sprite")
 label = "Cat walk right 6 of 6"
 group = "Cat"
 source = 69148
@@ -471,8 +461,8 @@ masked_draws = 5371
 note = "24x11, drawn 5371 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10D98_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk right 4 of 6"
+script = ExtResource("2_sprite")
 label = "Cat walk right 4 of 6"
 group = "Cat"
 source = 69016
@@ -483,8 +473,8 @@ masked_draws = 5244
 note = "24x11, drawn 5244 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10974_24x14"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Rear Up 1 of 2"
+script = ExtResource("2_sprite")
 label = "Cat Rear Up 1 of 2"
 group = "Cat"
 source = 67956
@@ -494,8 +484,8 @@ masked_draws = 5197
 note = "24x14, drawn 5197 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10DDA_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk right 5 of 6"
+script = ExtResource("2_sprite")
 label = "Cat walk right 5 of 6"
 group = "Cat"
 source = 69082
@@ -506,8 +496,8 @@ masked_draws = 5170
 note = "24x11, drawn 5170 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_109C8_24x13"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Rear Up 2 of 2"
+script = ExtResource("2_sprite")
 label = "Cat Rear Up 2 of 2"
 group = "Cat"
 source = 68040
@@ -517,8 +507,8 @@ masked_draws = 5147
 note = "24x13, drawn 5147 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11F50_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Mouse Run Right 01"
+script = ExtResource("2_sprite")
 label = "Mouse Run Right 01"
 group = "Mouse"
 source = 73552
@@ -528,8 +518,8 @@ masked_draws = 4733
 note = "16x8, drawn 4733 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11F70_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Mouse Run Right 02"
+script = ExtResource("2_sprite")
 label = "Mouse Run Right 02"
 group = "Mouse"
 source = 73584
@@ -539,8 +529,8 @@ masked_draws = 4710
 note = "16x8, drawn 4710 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11062_16x6"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Idle Bottom Tail Wag 1 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Idle Bottom Tail Wag 1 of 3"
 group = "Cat"
 source = 69730
@@ -551,8 +541,8 @@ masked_draws = 4558
 note = "16x6, drawn 4558 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10EE2_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk left 3 of 6"
+script = ExtResource("2_sprite")
 label = "Cat walk left 3 of 6"
 group = "Cat"
 source = 69346
@@ -563,8 +553,8 @@ masked_draws = 4543
 note = "24x11, drawn 4543 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10FA8_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk left 6 of 6  (24x11)"
+script = ExtResource("2_sprite")
 label = "Cat walk left 6 of 6  (24x11)"
 group = "Cat"
 source = 69544
@@ -575,8 +565,8 @@ masked_draws = 4463
 note = "24x11, drawn 4463 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10EA0_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk left 2 of 6  (24x11)"
+script = ExtResource("2_sprite")
 label = "Cat walk left 2 of 6  (24x11)"
 group = "Cat"
 source = 69280
@@ -587,8 +577,8 @@ masked_draws = 4434
 note = "24x11, drawn 4434 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_13E50_16x12"]
-script = ExtResource("2_sprite")
 resource_name = "Cheese Mouse Right"
+script = ExtResource("2_sprite")
 label = "Cheese Mouse Right"
 group = "Cheese"
 source = 81488
@@ -598,8 +588,8 @@ masked_draws = 4287
 note = "16x12, drawn 4287 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10818_24x13"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Left 2 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Swim Left 2 of 3"
 group = "Fishbowl"
 source = 67608
@@ -609,8 +599,8 @@ masked_draws = 4259
 note = "24x13, drawn 4259 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_13E20_16x12"]
-script = ExtResource("2_sprite")
 resource_name = "Cheese Mouse Left"
+script = ExtResource("2_sprite")
 label = "Cheese Mouse Left"
 group = "Cheese"
 source = 81440
@@ -620,8 +610,8 @@ masked_draws = 4246
 note = "16x12, drawn 4246 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10F66_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk left 5 of 6  (24x11)"
+script = ExtResource("2_sprite")
 label = "Cat walk left 5 of 6  (24x11)"
 group = "Cat"
 source = 69478
@@ -632,8 +622,8 @@ masked_draws = 4133
 note = "24x11, drawn 4133 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10F24_24x11"]
-script = ExtResource("2_sprite")
 resource_name = "Cat walk left 4 of 6  (24x11)"
+script = ExtResource("2_sprite")
 label = "Cat walk left 4 of 6  (24x11)"
 group = "Cat"
 source = 69412
@@ -644,8 +634,8 @@ masked_draws = 4064
 note = "24x11, drawn 4064 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10FEA_16x6"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Idle Eyes Right"
+script = ExtResource("2_sprite")
 label = "Cat Idle Eyes Right"
 group = "Cat"
 source = 69610
@@ -656,30 +646,28 @@ masked_draws = 3978
 note = "16x6, drawn 3978 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_12EE0_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Heart"
+script = ExtResource("2_sprite")
 label = "Heart"
 group = "Hearts"
 source = 77536
 original = ExtResource("68_o")
 draws = 3921
-masked_draws = 0
 note = "16x8, drawn 3921 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12F00_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Heart Cracked?"
+script = ExtResource("2_sprite")
 label = "Heart Cracked?"
 group = "Hearts"
 source = 77568
 original = ExtResource("69_o")
 draws = 3449
-masked_draws = 0
 note = "16x8, drawn 3449 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_11002_16x6"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Idle Eyes Left"
+script = ExtResource("2_sprite")
 label = "Cat Idle Eyes Left"
 group = "Cat"
 source = 69634
@@ -690,8 +678,8 @@ masked_draws = 3447
 note = "16x6, drawn 3447 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10938_24x10"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Right 3 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Swim Right 3 of 3"
 group = "Fishbowl"
 source = 67896
@@ -701,8 +689,8 @@ masked_draws = 3188
 note = "24x10, drawn 3188 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_108A2_24x12"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Right 1 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Swim Right 1 of 3"
 group = "Fishbowl"
 source = 67746
@@ -712,8 +700,8 @@ masked_draws = 3070
 note = "24x12, drawn 3070 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10C96_24x10"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Leap Land 2 of 2"
+script = ExtResource("2_sprite")
 label = "Cat Leap Land 2 of 2"
 group = "Cat"
 source = 68758
@@ -724,8 +712,8 @@ masked_draws = 3049
 note = "24x10, drawn 3049 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10C5A_24x10"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Leap Land 1 of 2"
+script = ExtResource("2_sprite")
 label = "Cat Leap Land 1 of 2"
 group = "Cat"
 source = 68698
@@ -735,8 +723,8 @@ masked_draws = 2849
 note = "24x10, drawn 2849 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10C12_24x12"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Leap 2 of 2"
+script = ExtResource("2_sprite")
 label = "Cat Leap 2 of 2"
 group = "Cat"
 source = 68626
@@ -746,8 +734,8 @@ masked_draws = 2805
 note = "24x12, drawn 2805 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10BCA_24x12"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Leap 1 of 2"
+script = ExtResource("2_sprite")
 label = "Cat Leap 1 of 2"
 group = "Cat"
 source = 68554
@@ -757,52 +745,48 @@ masked_draws = 2776
 note = "24x12, drawn 2776 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_12A24_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 3 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 3 of 9"
 group = "Fence"
 source = 76324
 original = ExtResource("77_o")
 draws = 2655
-masked_draws = 0
 note = "8x8, drawn 2655 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A14_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 2 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 2 of 9"
 group = "Fence"
 source = 76308
 original = ExtResource("78_o")
 draws = 2629
-masked_draws = 0
 note = "8x8, drawn 2629 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12AEE_32x8"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Can Middle"
+script = ExtResource("2_sprite")
 label = "Trash Can Middle"
 group = "Trash"
 source = 76526
 original = ExtResource("79_o")
 draws = 2554
-masked_draws = 0
 note = "32x8, drawn 2554 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13840_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Shelf Item 2 of 7"
+script = ExtResource("2_sprite")
 label = "Shelf Item 2 of 7"
 group = "Bookcase"
 source = 79936
 original = ExtResource("80_o")
 draws = 2523
-masked_draws = 0
 note = "8x8, drawn 2523 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10A16_16x14"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Sink?"
+script = ExtResource("2_sprite")
 label = "Cat Swim Sink?"
 group = "Fishbowl"
 source = 68118
@@ -812,8 +796,8 @@ masked_draws = 2342
 note = "16x14, drawn 2342 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_107D0_24x12"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Left 1 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Swim Left 1 of 3"
 group = "Fishbowl"
 source = 67536
@@ -823,8 +807,8 @@ masked_draws = 2238
 note = "24x12, drawn 2238 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_10A4E_16x13"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Tread?"
+script = ExtResource("2_sprite")
 label = "Cat Swim Tread?"
 group = "Fishbowl"
 source = 68174
@@ -834,20 +818,19 @@ masked_draws = 2153
 note = "16x13, drawn 2153 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11380_32x15"]
-script = ExtResource("2_sprite")
 resource_name = "Fight Cloud 1 of 3"
+script = ExtResource("2_sprite")
 label = "Fight Cloud 1 of 3"
 group = "Fight"
 source = 70528
 texture = ExtResource("24_over")
 original = ExtResource("84_o")
 draws = 2152
-masked_draws = 0
 note = "32x15, drawn 2152 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_10866_24x10"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Left 3 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Swim Left 3 of 3"
 group = "Fishbowl"
 source = 67686
@@ -857,19 +840,18 @@ masked_draws = 2119
 note = "24x10, drawn 2119 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_133C2_8x5"]
-script = ExtResource("2_sprite")
 resource_name = "Broom Dust 2 of 3"
+script = ExtResource("2_sprite")
 label = "Broom Dust 2 of 3"
 group = "Room"
 source = 78786
 original = ExtResource("86_o")
 draws = 2078
-masked_draws = 0
 note = "8x5, drawn 2078 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1104A_16x6"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Idle Bottom Tail Wag 2 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Idle Bottom Tail Wag 2 of 3"
 group = "Cat"
 source = 69706
@@ -880,31 +862,29 @@ masked_draws = 1931
 note = "16x6, drawn 1931 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_114E8_32x15"]
-script = ExtResource("2_sprite")
 resource_name = "Dog Run Left 01"
+script = ExtResource("2_sprite")
 label = "Dog Run Left 01"
 group = "Dog"
 source = 70888
 texture = ExtResource("27_over")
 original = ExtResource("88_o")
 draws = 1922
-masked_draws = 0
 note = "32x15, drawn 1922 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11DF0_16x13"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Cat"
+script = ExtResource("2_sprite")
 label = "Trash Cat"
 group = "Trash"
 source = 73200
 original = ExtResource("89_o")
 draws = 1906
-masked_draws = 0
 note = "16x13, drawn 1906 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11032_16x6"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Idle Bottom Tail Wag 3 of 3"
+script = ExtResource("2_sprite")
 label = "Cat Idle Bottom Tail Wag 3 of 3"
 group = "Cat"
 source = 69682
@@ -915,141 +895,131 @@ masked_draws = 1899
 note = "16x6, drawn 1899 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11560_32x15"]
-script = ExtResource("2_sprite")
 resource_name = "Dog Run Left 02"
+script = ExtResource("2_sprite")
 label = "Dog Run Left 02"
 group = "Dog"
 source = 71008
 texture = ExtResource("28_over")
 original = ExtResource("91_o")
 draws = 1890
-masked_draws = 0
 note = "32x15, drawn 1890 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_12A44_8x5"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 5 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 5 of 9"
 group = "Fence"
 source = 76356
 original = ExtResource("92_o")
 draws = 1518
-masked_draws = 0
 note = "8x5, drawn 1518 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A34_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 4 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 4 of 9"
 group = "Fence"
 source = 76340
 original = ExtResource("93_o")
 draws = 1497
-masked_draws = 0
 note = "8x8, drawn 1497 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17030_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 1 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 1 of 12"
 group = "Hearts"
 source = 94256
 original = ExtResource("94_o")
 draws = 1466
-masked_draws = 0
 note = "16x8, drawn 1466 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_115D8_32x15"]
-script = ExtResource("2_sprite")
 resource_name = "Dog Run 3 of 5"
+script = ExtResource("2_sprite")
 label = "Dog Run 3 of 5"
 group = "Dog"
 source = 71128
+texture = ExtResource("93_6qdac")
 original = ExtResource("95_o")
 draws = 1446
-masked_draws = 0
 note = "32x15, drawn 1446 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11650_32x15"]
-script = ExtResource("2_sprite")
 resource_name = "Dog Run 4 of 5"
+script = ExtResource("2_sprite")
 label = "Dog Run 4 of 5"
 group = "Dog"
 source = 71248
+texture = ExtResource("95_63t3u")
 original = ExtResource("96_o")
 draws = 1438
-masked_draws = 0
 note = "32x15, drawn 1438 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_12780_40x16"]
-script = ExtResource("2_sprite")
 resource_name = "Window"
+script = ExtResource("2_sprite")
 label = "Window"
 group = "Window"
 source = 75648
 original = ExtResource("97_o")
 draws = 1438
-masked_draws = 0
 note = "40x16, drawn 1438 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A04_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 1 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 1 of 9"
 group = "Fence"
 source = 76292
 original = ExtResource("98_o")
 draws = 1418
-masked_draws = 0
 note = "8x8, drawn 1418 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17070_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 3 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 3 of 12"
 group = "Hearts"
 source = 94320
 original = ExtResource("99_o")
 draws = 1363
-masked_draws = 0
 note = "16x8, drawn 1363 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_12820_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 0"
+script = ExtResource("2_sprite")
 label = "Digit 0"
 group = "Font"
 source = 75808
 original = ExtResource("100_o")
 draws = 1358
-masked_draws = 0
 note = "8x8, drawn 1358 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17050_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 2 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 2 of 12"
 group = "Hearts"
 source = 94288
 original = ExtResource("101_o")
 draws = 1355
-masked_draws = 0
 note = "16x8, drawn 1355 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_13A10_24x14"]
-script = ExtResource("2_sprite")
 resource_name = "Spider 2 of 3"
+script = ExtResource("2_sprite")
 label = "Spider 2 of 3"
 group = "Bookcase"
 source = 80400
 original = ExtResource("102_o")
 draws = 1273
-masked_draws = 0
 note = "24x14, drawn 1273 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_1101A_16x6"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Idle Eyes Closed"
+script = ExtResource("2_sprite")
 label = "Cat Idle Eyes Closed"
 group = "Cat"
 source = 69658
@@ -1060,19 +1030,18 @@ masked_draws = 1235
 note = "16x6, drawn 1235 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_12A4E_8x5"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 6 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 6 of 9"
 group = "Fence"
 source = 76366
 original = ExtResource("104_o")
 draws = 1187
-masked_draws = 0
 note = "8x5, drawn 1187 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10A82_16x9"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Swim Small"
+script = ExtResource("2_sprite")
 label = "Cat Swim Small"
 group = "Fishbowl"
 source = 68226
@@ -1082,109 +1051,100 @@ masked_draws = 1184
 note = "16x9, drawn 1184 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_113F8_32x15"]
-script = ExtResource("2_sprite")
 resource_name = "Fight Cloud 2 of 3"
+script = ExtResource("2_sprite")
 label = "Fight Cloud 2 of 3"
 group = "Fight"
 source = 70648
 texture = ExtResource("25_over")
 original = ExtResource("106_o")
 draws = 1177
-masked_draws = 0
 note = "32x15, drawn 1177 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_139BC_24x14"]
-script = ExtResource("2_sprite")
 resource_name = "Spider 1 of 3"
+script = ExtResource("2_sprite")
 label = "Spider 1 of 3"
 group = "Bookcase"
 source = 80316
 original = ExtResource("107_o")
 draws = 1171
-masked_draws = 0
 note = "24x14, drawn 1171 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_13860_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Shelf Item 4 of 7"
+script = ExtResource("2_sprite")
 label = "Shelf Item 4 of 7"
 group = "Bookcase"
 source = 79968
 original = ExtResource("108_o")
 draws = 1169
-masked_draws = 0
 note = "8x8, drawn 1169 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A76_40x12"]
-script = ExtResource("2_sprite")
 resource_name = "Trach Can Top"
+script = ExtResource("2_sprite")
 label = "Trach Can Top"
 group = "Trash"
 source = 76406
 original = ExtResource("109_o")
 draws = 1161
-masked_draws = 0
 note = "40x12, drawn 1161 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12A58_8x5"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 7 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 7 of 9"
 group = "Fence"
 source = 76376
 original = ExtResource("110_o")
 draws = 1096
-masked_draws = 0
 note = "8x5, drawn 1096 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_11470_32x15"]
-script = ExtResource("2_sprite")
 resource_name = "Fight Cloud 3 of 3"
+script = ExtResource("2_sprite")
 label = "Fight Cloud 3 of 3"
 group = "Fight"
 source = 70768
 texture = ExtResource("26_over")
 original = ExtResource("111_o")
 draws = 1091
-masked_draws = 0
 note = "32x15, drawn 1091 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_12A62_8x5"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 8 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 8 of 9"
 group = "Fence"
 source = 76386
 original = ExtResource("112_o")
 draws = 1079
-masked_draws = 0
 note = "8x5, drawn 1079 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12B2E_32x11"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Can Bottom"
+script = ExtResource("2_sprite")
 label = "Trash Can Bottom"
 group = "Trash"
 source = 76590
 original = ExtResource("113_o")
 draws = 1040
-masked_draws = 0
 note = "32x11, drawn 1040 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13C02_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Cheese Bit 2 of 2"
+script = ExtResource("2_sprite")
 label = "Cheese Bit 2 of 2"
 group = "Cheese"
 source = 80898
 original = ExtResource("114_o")
 draws = 1035
-masked_draws = 0
 note = "8x8, drawn 1035 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13E80_16x12"]
-script = ExtResource("2_sprite")
 resource_name = "Cheese Mouse Peek 1 of 2"
+script = ExtResource("2_sprite")
 label = "Cheese Mouse Peek 1 of 2"
 group = "Cheese"
 source = 81536
@@ -1194,8 +1154,8 @@ masked_draws = 1027
 note = "16x12, drawn 1027 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_13EB0_16x12"]
-script = ExtResource("2_sprite")
 resource_name = "Cheese Mouse Peek 2 of 2"
+script = ExtResource("2_sprite")
 label = "Cheese Mouse Peek 2 of 2"
 group = "Cheese"
 source = 81584
@@ -1205,305 +1165,278 @@ masked_draws = 1025
 note = "16x12, drawn 1025 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_12A6C_8x5"]
-script = ExtResource("2_sprite")
 resource_name = "Fence Piece 9 of 9"
+script = ExtResource("2_sprite")
 label = "Fence Piece 9 of 9"
 group = "Fence"
 source = 76396
 original = ExtResource("117_o")
 draws = 991
-masked_draws = 0
 note = "8x5, drawn 991 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13BF8_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Cheese Bit 1 of 2"
+script = ExtResource("2_sprite")
 label = "Cheese Bit 1 of 2"
 group = "Cheese"
 source = 80888
 original = ExtResource("118_o")
 draws = 923
-masked_draws = 0
 note = "8x8, drawn 923 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13890_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Shelf Item 7 of 7"
+script = ExtResource("2_sprite")
 label = "Shelf Item 7 of 7"
 group = "Bookcase"
 source = 80016
 original = ExtResource("119_o")
 draws = 915
-masked_draws = 0
 note = "8x8, drawn 915 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13870_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Shelf Item 5 of 7"
+script = ExtResource("2_sprite")
 label = "Shelf Item 5 of 7"
 group = "Bookcase"
 source = 79984
 original = ExtResource("120_o")
 draws = 909
-masked_draws = 0
 note = "8x8, drawn 909 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16F10_24x12"]
-script = ExtResource("2_sprite")
 resource_name = "Title Cat Face"
+script = ExtResource("2_sprite")
 label = "Title Cat Face"
 group = "Title"
 source = 93968
 original = ExtResource("121_o")
 draws = 907
-masked_draws = 0
 note = "24x12, drawn 907 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_170F0_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 7 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 7 of 12"
 group = "Hearts"
 source = 94448
 original = ExtResource("122_o")
 draws = 748
-masked_draws = 0
 note = "16x8, drawn 748 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_13880_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Shelf Item 6 of 7"
+script = ExtResource("2_sprite")
 label = "Shelf Item 6 of 7"
 group = "Bookcase"
 source = 80000
 original = ExtResource("123_o")
 draws = 726
-masked_draws = 0
 note = "8x8, drawn 726 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17090_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 4 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 4 of 12"
 group = "Hearts"
 source = 94352
 original = ExtResource("124_o")
 draws = 686
-masked_draws = 0
 note = "16x8, drawn 686 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_17130_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 9 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 9 of 12"
 group = "Hearts"
 source = 94512
 original = ExtResource("125_o")
 draws = 683
-masked_draws = 0
 note = "16x8, drawn 683 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_17150_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 10 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 10 of 12"
 group = "Hearts"
 source = 94544
 original = ExtResource("126_o")
 draws = 680
-masked_draws = 0
 note = "16x8, drawn 680 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_1431C_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Dog Bowl"
+script = ExtResource("2_sprite")
 label = "Dog Bowl"
 group = "Dog"
 source = 82716
 original = ExtResource("127_o")
 draws = 569
-masked_draws = 0
 note = "16x8, drawn 569 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_17190_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 12 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 12 of 12"
 group = "Hearts"
 source = 94608
 original = ExtResource("128_o")
 draws = 569
-masked_draws = 0
 note = "16x8, drawn 569 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_17170_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 11 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 11 of 12"
 group = "Hearts"
 source = 94576
 original = ExtResource("129_o")
 draws = 566
-masked_draws = 0
 note = "16x8, drawn 566 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_17110_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 8 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 8 of 12"
 group = "Hearts"
 source = 94480
 original = ExtResource("130_o")
 draws = 556
-masked_draws = 0
 note = "16x8, drawn 556 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_13850_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Shelf Item 3 of 7"
+script = ExtResource("2_sprite")
 label = "Shelf Item 3 of 7"
 group = "Bookcase"
 source = 79952
 original = ExtResource("131_o")
 draws = 453
-masked_draws = 0
 note = "8x8, drawn 453 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13830_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Shelf Item 1 of 7"
+script = ExtResource("2_sprite")
 label = "Shelf Item 1 of 7"
 group = "Bookcase"
 source = 79920
 original = ExtResource("132_o")
 draws = 424
-masked_draws = 0
 note = "8x8, drawn 424 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13680_16x10"]
-script = ExtResource("2_sprite")
 resource_name = "Fishbowl on Table 3 of 4"
+script = ExtResource("2_sprite")
 label = "Fishbowl on Table 3 of 4"
 group = "Fishbowl"
 source = 79488
 original = ExtResource("133_o")
 draws = 417
-masked_draws = 0
 note = "16x10, drawn 417 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_136A8_16x10"]
-script = ExtResource("2_sprite")
 resource_name = "Fishbowl on Table 4 of 4"
+script = ExtResource("2_sprite")
 label = "Fishbowl on Table 4 of 4"
 group = "Fishbowl"
 source = 79528
 original = ExtResource("134_o")
 draws = 413
-masked_draws = 0
 note = "16x10, drawn 413 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13658_16x10"]
-script = ExtResource("2_sprite")
 resource_name = "Fishbowl on Table 2 of 4"
+script = ExtResource("2_sprite")
 label = "Fishbowl on Table 2 of 4"
 group = "Fishbowl"
 source = 79448
 original = ExtResource("135_o")
 draws = 399
-masked_draws = 0
 note = "16x10, drawn 399 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13630_16x10"]
-script = ExtResource("2_sprite")
 resource_name = "Fishbowl on Table 1 of 4"
+script = ExtResource("2_sprite")
 label = "Fishbowl on Table 1 of 4"
 group = "Fishbowl"
 source = 79408
 original = ExtResource("136_o")
 draws = 375
-masked_draws = 0
 note = "16x10, drawn 375 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_170B0_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 5 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 5 of 12"
 group = "Hearts"
 source = 94384
 original = ExtResource("137_o")
 draws = 366
-masked_draws = 0
 note = "16x8, drawn 366 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_170D0_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Hearts Arrow 6 of 12"
+script = ExtResource("2_sprite")
 label = "Hearts Arrow 6 of 12"
 group = "Hearts"
 source = 94416
 original = ExtResource("138_o")
 draws = 348
-masked_draws = 0
 note = "16x8, drawn 348 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_12840_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 2"
+script = ExtResource("2_sprite")
 label = "Digit 2"
 group = "Font"
 source = 75840
 original = ExtResource("139_o")
 draws = 275
-masked_draws = 0
 note = "8x8, drawn 275 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12990_8x8"]
+resource_name = "Letter K"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 23"
-label = "Font glyph 23"
+label = "Letter K"
 group = "Font"
 source = 76176
 original = ExtResource("140_o")
 draws = 241
-masked_draws = 0
 note = "8x8, drawn 241 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1182D_16x12"]
-script = ExtResource("2_sprite")
 resource_name = "Bird Flying?"
+script = ExtResource("2_sprite")
 label = "Bird Flying?"
 group = "Birdcage"
 source = 71725
 original = ExtResource("141_o")
 draws = 228
-masked_draws = 0
 note = "16x12, drawn 228 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_1584C_24x8"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Bone"
+script = ExtResource("2_sprite")
 label = "Trash Bone"
 group = "Trash"
 source = 88140
 original = ExtResource("142_o")
 draws = 209
-masked_draws = 0
 note = "24x8, drawn 209 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_14202_8x1"]
-script = ExtResource("2_sprite")
 resource_name = "White Line 8x1"
+script = ExtResource("2_sprite")
 label = "White Line 8x1"
 group = "Cheese"
 source = 82434
 original = ExtResource("143_o")
 draws = 191
-masked_draws = 0
 note = "8x1, drawn 191 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_10ADA_24x14"]
-script = ExtResource("2_sprite")
 resource_name = "Cat Fall"
+script = ExtResource("2_sprite")
 label = "Cat Fall"
 group = "Cat"
 source = 68314
@@ -1513,129 +1446,118 @@ masked_draws = 190
 note = "24x14, drawn 190 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_12850_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 3"
+script = ExtResource("2_sprite")
 label = "Digit 3"
 group = "Font"
 source = 75856
 original = ExtResource("145_o")
 draws = 163
-masked_draws = 0
 note = "8x8, drawn 163 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12860_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 4"
+script = ExtResource("2_sprite")
 label = "Digit 4"
 group = "Font"
 source = 75872
 original = ExtResource("146_o")
 draws = 130
-masked_draws = 0
 note = "8x8, drawn 130 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_128B0_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 9"
+script = ExtResource("2_sprite")
 label = "Digit 9"
 group = "Font"
 source = 75952
 original = ExtResource("147_o")
 draws = 123
-masked_draws = 0
 note = "8x8, drawn 123 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12880_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 6"
+script = ExtResource("2_sprite")
 label = "Digit 6"
 group = "Font"
 source = 75904
 original = ExtResource("148_o")
 draws = 110
-masked_draws = 0
 note = "8x8, drawn 110 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_133CC_8x5"]
-script = ExtResource("2_sprite")
 resource_name = "Broom Dust 3 of 3"
+script = ExtResource("2_sprite")
 label = "Broom Dust 3 of 3"
 group = "Room"
 source = 78796
 original = ExtResource("149_o")
 draws = 90
-masked_draws = 0
 note = "8x5, drawn 90 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1439C_40x13"]
-script = ExtResource("2_sprite")
 resource_name = "Dog Asleep 1 of 2"
+script = ExtResource("2_sprite")
 label = "Dog Asleep 1 of 2"
 group = "Dog"
 source = 82844
 original = ExtResource("150_o")
 draws = 87
-masked_draws = 0
 note = "40x13, drawn 87 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_157E0_24x18"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Fish Bone"
+script = ExtResource("2_sprite")
 label = "Trash Fish Bone"
 group = "Trash"
 source = 88032
 original = ExtResource("151_o")
 draws = 83
-masked_draws = 0
 note = "24x18, drawn 83 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12830_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 1"
+script = ExtResource("2_sprite")
 label = "Digit 1"
 group = "Font"
 source = 75824
 original = ExtResource("152_o")
 draws = 69
-masked_draws = 0
 note = "8x8, drawn 69 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13450_40x18"]
-script = ExtResource("2_sprite")
 resource_name = "ZAP"
+script = ExtResource("2_sprite")
 label = "ZAP"
 group = "Fishbowl"
 source = 78928
 original = ExtResource("153_o")
 draws = 66
-masked_draws = 0
 note = "40x18, drawn 66 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_120A0_16x16"]
-script = ExtResource("2_sprite")
 resource_name = "Portrait Man"
+script = ExtResource("2_sprite")
 label = "Portrait Man"
 group = "Room"
 source = 73888
 original = ExtResource("154_o")
 draws = 39
-masked_draws = 0
 note = "16x16, drawn 39 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12BF0_24x15"]
-script = ExtResource("2_sprite")
 resource_name = "Girl Cat"
+script = ExtResource("2_sprite")
 label = "Girl Cat"
 group = "Hearts"
 source = 76784
 original = ExtResource("155_o")
 draws = 36
-masked_draws = 0
 note = "24x15, drawn 36 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_13DAA_16x1"]
-script = ExtResource("2_sprite")
 resource_name = "Cheese Edge"
+script = ExtResource("2_sprite")
 label = "Cheese Edge"
 group = "Cheese"
 source = 81322
@@ -1645,195 +1567,178 @@ masked_draws = 31
 note = "16x1, drawn 31 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_1441E_40x13"]
-script = ExtResource("2_sprite")
 resource_name = "Dog Asleep 2 of 2"
+script = ExtResource("2_sprite")
 label = "Dog Asleep 2 of 2"
 group = "Dog"
 source = 82974
 original = ExtResource("157_o")
 draws = 27
-masked_draws = 0
 note = "40x13, drawn 27 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16F58_48x17"]
-script = ExtResource("2_sprite")
 resource_name = "Fight Swearing"
+script = ExtResource("2_sprite")
 label = "Fight Swearing"
 group = "Fight"
 source = 94040
 original = ExtResource("158_o")
 draws = 27
-masked_draws = 0
 note = "48x17, drawn 27 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16738_24x12"]
-script = ExtResource("2_sprite")
 resource_name = "By"
+script = ExtResource("2_sprite")
 label = "By"
 group = "Title"
 source = 91960
 original = ExtResource("159_o")
 draws = 26
-masked_draws = 0
 note = "24x12, drawn 26 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12920_8x8"]
+resource_name = "Letter T"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 16"
-label = "Font glyph 16"
+label = "Letter T"
 group = "Font"
 source = 76064
 original = ExtResource("160_o")
 draws = 25
-masked_draws = 0
 note = "8x8, drawn 25 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16780_112x8"]
-script = ExtResource("2_sprite")
 resource_name = "Bill Williams"
+script = ExtResource("2_sprite")
 label = "Bill Williams"
 group = "Title"
 source = 92032
 original = ExtResource("161_o")
 draws = 25
-masked_draws = 0
 note = "112x8, drawn 25 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16860_96x11"]
-script = ExtResource("2_sprite")
 resource_name = "(c) Copyright"
+script = ExtResource("2_sprite")
 label = "(c) Copyright"
 group = "Title"
 source = 92256
 original = ExtResource("162_o")
 draws = 25
-masked_draws = 0
 note = "96x11, drawn 25 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_138C0_48x21"]
-script = ExtResource("2_sprite")
 resource_name = "Bye!!"
+script = ExtResource("2_sprite")
 label = "Bye!!"
 group = "Bookcase"
 source = 80064
 original = ExtResource("163_o")
 draws = 24
-masked_draws = 0
 note = "48x21, drawn 24 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_16968_32x8"]
-script = ExtResource("2_sprite")
 resource_name = "1984"
+script = ExtResource("2_sprite")
 label = "1984"
 group = "Title"
 source = 92520
 original = ExtResource("164_o")
 draws = 24
-masked_draws = 0
 note = "32x8, drawn 24 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16A98_80x12"]
-script = ExtResource("2_sprite")
 resource_name = "SynSoft TM"
+script = ExtResource("2_sprite")
 label = "SynSoft TM"
 group = "Title"
 source = 92824
 original = ExtResource("165_o")
 draws = 24
-masked_draws = 0
 note = "80x12, drawn 24 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_11ED0_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Points 50"
+script = ExtResource("2_sprite")
 label = "Points 50"
 group = "Score"
 source = 73424
 original = ExtResource("166_o")
 draws = 22
-masked_draws = 0
 note = "16x8, drawn 22 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_158E0_16x12"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Shoe Fallen"
+script = ExtResource("2_sprite")
 label = "Trash Shoe Fallen"
 group = "Trash"
 source = 88288
 original = ExtResource("167_o")
 draws = 19
-masked_draws = 0
 note = "16x12, drawn 19 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_158A4_16x15"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Spilled Bag"
+script = ExtResource("2_sprite")
 label = "Trash Spilled Bag"
 group = "Trash"
 source = 88228
 original = ExtResource("168_o")
 draws = 18
-masked_draws = 0
 note = "16x15, drawn 18 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_128E0_8x8"]
+resource_name = "Letter H"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 12"
-label = "Font glyph 12"
+label = "Letter H"
 group = "Font"
 source = 76000
 original = ExtResource("169_o")
 draws = 17
-masked_draws = 0
 note = "8x8, drawn 17 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_15910_16x15"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Shoe Upright"
+script = ExtResource("2_sprite")
 label = "Trash Shoe Upright"
 group = "Trash"
 source = 88336
 original = ExtResource("170_o")
 draws = 17
-masked_draws = 0
 note = "16x15, drawn 17 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12870_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 5"
+script = ExtResource("2_sprite")
 label = "Digit 5"
 group = "Font"
 source = 75888
 original = ExtResource("171_o")
 draws = 16
-masked_draws = 0
 note = "8x8, drawn 16 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12910_8x8"]
+resource_name = "Letter A"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 15"
-label = "Font glyph 15"
+label = "Letter A"
 group = "Font"
 source = 76048
 original = ExtResource("172_o")
 draws = 16
-masked_draws = 0
 note = "8x8, drawn 16 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_120E0_16x16"]
-script = ExtResource("2_sprite")
 resource_name = "Portrait Woman"
+script = ExtResource("2_sprite")
 label = "Portrait Woman"
 group = "Room"
 source = 73952
 original = ExtResource("173_o")
 draws = 15
-masked_draws = 0
 note = "16x16, drawn 15 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_140BE_24x16"]
-script = ExtResource("2_sprite")
 resource_name = "Birdcage 1 of 2"
+script = ExtResource("2_sprite")
 label = "Birdcage 1 of 2"
 group = "Birdcage"
 source = 82110
@@ -1843,388 +1748,322 @@ masked_draws = 13
 note = "24x16, drawn 13 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_1587C_16x10"]
-script = ExtResource("2_sprite")
 resource_name = "Trash Fish Tail"
+script = ExtResource("2_sprite")
 label = "Trash Fish Tail"
 group = "Trash"
 source = 88188
 original = ExtResource("175_o")
 draws = 11
-masked_draws = 0
 note = "16x10, drawn 11 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_16252_88x29"]
-script = ExtResource("2_sprite")
 resource_name = "IBM Presents"
+script = ExtResource("2_sprite")
 label = "IBM Presents"
 group = "Title"
 source = 90706
 original = ExtResource("176_o")
 draws = 2
-masked_draws = 0
 note = "88x29, drawn 2 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_164D0_112x22"]
-script = ExtResource("2_sprite")
 resource_name = "Alley Cat TM"
+script = ExtResource("2_sprite")
 label = "Alley Cat TM"
 group = "Title"
 source = 91344
 original = ExtResource("177_o")
 draws = 1
-masked_draws = 0
 note = "112x22, drawn 1 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_169A8_80x12"]
-script = ExtResource("2_sprite")
 resource_name = "IBM Corp."
+script = ExtResource("2_sprite")
 label = "IBM Corp."
 group = "Title"
 source = 92584
 original = ExtResource("178_o")
 draws = 1
-masked_draws = 0
 note = "80x12, drawn 1 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1074E_24x5"]
-script = ExtResource("2_sprite")
 resource_name = "GLUB"
+script = ExtResource("2_sprite")
 label = "GLUB"
 group = "Fishbowl"
 source = 67406
 original = ExtResource("179_o")
-draws = 0
-masked_draws = 0
 note = "24x5, drawn 0 times; ANDed into the background, so white is see-through and black is ink"
 
 [sub_resource type="Resource" id="S_11779_40x18"]
-script = ExtResource("2_sprite")
 resource_name = "BONK!"
+script = ExtResource("2_sprite")
 label = "BONK!"
 group = "Fight"
 source = 71545
 original = ExtResource("180_o")
-draws = 0
-masked_draws = 0
 note = "40x18, drawn 0 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11E70_48x8"]
-script = ExtResource("2_sprite")
 resource_name = "SQUEAK!"
+script = ExtResource("2_sprite")
 label = "SQUEAK!"
 group = "Fight"
 source = 73328
 original = ExtResource("181_o")
-draws = 0
-masked_draws = 0
 note = "48x8, drawn 0 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11EF0_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Points 70"
+script = ExtResource("2_sprite")
 label = "Points 70"
 group = "Score"
 source = 73456
 original = ExtResource("182_o")
-draws = 0
-masked_draws = 0
 note = "16x8, drawn 0 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_11F10_16x8"]
-script = ExtResource("2_sprite")
 resource_name = "Points 90"
+script = ExtResource("2_sprite")
 label = "Points 90"
 group = "Score"
 source = 73488
 original = ExtResource("183_o")
-draws = 0
-masked_draws = 0
 note = "16x8, drawn 0 times; laid over the background with black see-through"
 
 [sub_resource type="Resource" id="S_12890_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 7"
+script = ExtResource("2_sprite")
 label = "Digit 7"
 group = "Font"
 source = 75920
 original = ExtResource("184_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_128A0_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Digit 8"
+script = ExtResource("2_sprite")
 label = "Digit 8"
 group = "Font"
 source = 75936
 original = ExtResource("185_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_128C0_8x8"]
+resource_name = "Letter I"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 10"
-label = "Font glyph 10"
+label = "Letter I"
 group = "Font"
 source = 75968
 original = ExtResource("186_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_128D0_8x8"]
+resource_name = "Letter !"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 11"
-label = "Font glyph 11"
+label = "Letter !"
 group = "Font"
 source = 75984
 original = ExtResource("187_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_128F0_8x8"]
+resource_name = "Letter -"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 13"
-label = "Font glyph 13"
+label = "Letter -"
 group = "Font"
 source = 76016
 original = ExtResource("188_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12900_8x8"]
+resource_name = "Letter C"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 14"
-label = "Font glyph 14"
+label = "Letter C"
 group = "Font"
 source = 76032
 original = ExtResource("189_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12930_8x8"]
+resource_name = "Letter L"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 17"
-label = "Font glyph 17"
+label = "Letter L"
 group = "Font"
 source = 76080
 original = ExtResource("190_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12940_8x8"]
+resource_name = "Letter V"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 18"
-label = "Font glyph 18"
+label = "Letter V"
 group = "Font"
 source = 76096
 original = ExtResource("191_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12950_8x8"]
+resource_name = "Letter E"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 19"
-label = "Font glyph 19"
+label = "Letter E"
 group = "Font"
 source = 76112
 original = ExtResource("192_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12960_8x8"]
+resource_name = "Letter M"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 20"
-label = "Font glyph 20"
+label = "Letter M"
 group = "Font"
 source = 76128
 original = ExtResource("193_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12970_8x8"]
+resource_name = "Letter U"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 21"
-label = "Font glyph 21"
+label = "Letter U"
 group = "Font"
 source = 76144
 original = ExtResource("194_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_12980_8x8"]
+resource_name = "Letter S"
 script = ExtResource("2_sprite")
-resource_name = "Font glyph 22"
-label = "Font glyph 22"
+label = "Letter S"
 group = "Font"
 source = 76160
 original = ExtResource("195_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn 0 times; copied whole, nothing see-through"
 
 [sub_resource type="Resource" id="S_1D900_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter B"
+script = ExtResource("2_sprite")
 label = "Letter B"
 group = "Font"
 source = 121088
 original = ExtResource("196_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D900"
 
 [sub_resource type="Resource" id="S_1D910_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter D"
+script = ExtResource("2_sprite")
 label = "Letter D"
 group = "Font"
 source = 121104
 original = ExtResource("197_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D910"
 
 [sub_resource type="Resource" id="S_1D920_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter F"
+script = ExtResource("2_sprite")
 label = "Letter F"
 group = "Font"
 source = 121120
 original = ExtResource("198_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D920"
 
 [sub_resource type="Resource" id="S_1D930_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter G"
+script = ExtResource("2_sprite")
 label = "Letter G"
 group = "Font"
 source = 121136
 original = ExtResource("199_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D930"
 
 [sub_resource type="Resource" id="S_1D940_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter J"
+script = ExtResource("2_sprite")
 label = "Letter J"
 group = "Font"
 source = 121152
 original = ExtResource("200_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D940"
 
 [sub_resource type="Resource" id="S_1D950_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter N"
+script = ExtResource("2_sprite")
 label = "Letter N"
 group = "Font"
 source = 121168
 original = ExtResource("201_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D950"
 
 [sub_resource type="Resource" id="S_1D960_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter O"
+script = ExtResource("2_sprite")
 label = "Letter O"
 group = "Font"
 source = 121184
 original = ExtResource("202_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D960"
 
 [sub_resource type="Resource" id="S_1D970_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter P"
+script = ExtResource("2_sprite")
 label = "Letter P"
 group = "Font"
 source = 121200
 original = ExtResource("203_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D970"
 
 [sub_resource type="Resource" id="S_1D980_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter Q"
+script = ExtResource("2_sprite")
 label = "Letter Q"
 group = "Font"
 source = 121216
 original = ExtResource("204_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D980"
 
 [sub_resource type="Resource" id="S_1D990_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter R"
+script = ExtResource("2_sprite")
 label = "Letter R"
 group = "Font"
 source = 121232
 original = ExtResource("205_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D990"
 
 [sub_resource type="Resource" id="S_1D9A0_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter W"
+script = ExtResource("2_sprite")
 label = "Letter W"
 group = "Font"
 source = 121248
 original = ExtResource("206_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D9A0"
 
 [sub_resource type="Resource" id="S_1D9B0_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter X"
+script = ExtResource("2_sprite")
 label = "Letter X"
 group = "Font"
 source = 121264
 original = ExtResource("207_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D9B0"
 
 [sub_resource type="Resource" id="S_1D9C0_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter Y"
+script = ExtResource("2_sprite")
 label = "Letter Y"
 group = "Font"
 source = 121280
 original = ExtResource("208_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D9C0"
 
 [sub_resource type="Resource" id="S_1D9D0_8x8"]
-script = ExtResource("2_sprite")
 resource_name = "Letter Z"
+script = ExtResource("2_sprite")
 label = "Letter Z"
 group = "Font"
 source = 121296
 original = ExtResource("209_o")
-draws = 0
-masked_draws = 0
 note = "8x8, drawn rather than found: written into the machine at 0x1D9D0"
 
 [resource]
