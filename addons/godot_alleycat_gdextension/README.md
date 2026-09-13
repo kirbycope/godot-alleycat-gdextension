@@ -534,6 +534,12 @@ the mice) leaves the background wherever it is white, a *keyed* one (the dog) wh
 *plain* one nowhere. The exported picture carries that as alpha, so what the catalogue shows is what the
 screen shows, and a replacement drawn on transparency lands the same way.
 
+**Quick sprites.** A tick of the game is not always one frame of everything. When the cat is quick - the walk
+along the fence on the title screen - the game draws a frame, wipes it with the saved background and draws
+the next one four pixels on, all inside one tick, and the report holds all three. Only what nothing was drawn
+over afterwards is still on the screen, so the overlay leaves out any entry the game drew over later in the
+same report; taking them all painted two cats a step apart, and the wiped one trailed until the next tick.
+
 **Parts of a sprite.** The game does not always draw a sprite from its first byte. It clips the cat and the
 dog at the side of the screen by lifting a column out of the artwork into a scratch buffer and drawing that,
 and it has things rise out of and sink into their surroundings by drawing the lower rows only, the source

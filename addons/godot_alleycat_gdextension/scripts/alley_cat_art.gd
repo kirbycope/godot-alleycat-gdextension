@@ -105,16 +105,36 @@ func _process(_delta: float) -> void:
 	_reported = report.size()
 	_tick = report
 
-	var mine: Array = []
-	for sprite: Dictionary in report:
-		if _replacement_for(sprite) != null:
-			mine.append(sprite)
+	var mine: Array = _still_standing(report)
 	# A report with one of ours in it replaces what is up, wholesale. The game draws one frame of an
 	# animation at a time, so keeping the old one alongside would paint two cats a step apart.
 	if not mine.is_empty():
 		_showing = mine
 		_drawn_this_tick = true
 		queue_redraw()
+
+
+## The entries of [param report] that have a replacement and are still on the screen at the end of it. The
+## report is a tick's drawing in order, and a tick is not always one frame of everything: when the cat is
+## quick - the walk along the fence on the title screen - the game draws a frame, wipes it with the saved
+## background, and draws the next one four pixels on, all in one tick. Taking every replaced entry then
+## paints two cats, and the one the game has already wiped trails a step behind until the next tick, which
+## is the flicker. Anything the game draws over later in the same report has gone, and is left out.
+func _still_standing(report: Array) -> Array:
+	var standing: Array = []
+	for i: int in report.size():
+		var sprite: Dictionary = report[i]
+		if _replacement_for(sprite) == null:
+			continue
+		var box: Rect2 = _rect_of(sprite)
+		var gone: bool = false
+		for j: int in range(i + 1, report.size()):
+			if box.intersects(_rect_of(report[j])):
+				gone = true
+				break
+		if not gone:
+			standing.append(sprite)
+	return standing
 
 
 ## A whole game tick has gone by. If none of ours was drawn in it, anything the game drew over one of them

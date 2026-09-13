@@ -630,6 +630,34 @@ func test_a_partly_drawn_sprite_draws_the_top_of_its_replacement() -> void:
 	art.artwork = was
 
 
+## When the cat is quick the game draws a frame, wipes it, and draws the next one all in one tick, and the
+## report holds all three. Only the frame nothing was drawn over afterwards is still on the screen; showing
+## the wiped one as well paints two cats a step apart, which is what the title screen's walk looked like.
+func test_a_frame_the_game_wiped_later_in_the_tick_is_not_shown() -> void:
+	var artwork: AlleyCatArtwork = AlleyCatArtwork.new()
+	for source: int in [0x10D56, 0x10DDA]:
+		var frame: AlleyCatSprite = AlleyCatSprite.new()
+		frame.source = source
+		frame.texture = PlaceholderTexture2D.new()
+		artwork.sprites.append(frame)
+	var art: AlleyCatArt = demo.art
+	var was: AlleyCatArtwork = art.artwork
+	art.artwork = artwork
+	var report: Array = [
+		{"source": 0x10D56, "x": 16, "y": 96, "width": 24, "height": 11, "stride": 0},
+		{"source": 0x106FA, "x": 16, "y": 96, "width": 24, "height": 11, "stride": 0},
+		{"source": 0x10DDA, "x": 20, "y": 96, "width": 24, "height": 11, "stride": 0},
+	]
+	var standing: Array = art._still_standing(report)
+	assert_eq(standing.size(), 1, "one cat, not two")
+	assert_eq(int(standing[0]["source"]), 0x10DDA, "the one drawn last, after the wipe")
+	# The same two frames drawn apart from each other both stand.
+	report[1] = {"source": 0x106FA, "x": 200, "y": 96, "width": 24, "height": 11, "stride": 0}
+	report[2] = {"source": 0x10DDA, "x": 120, "y": 96, "width": 24, "height": 11, "stride": 0}
+	assert_eq(art._still_standing(report).size(), 2, "nothing drawn over either, so both are up")
+	art.artwork = was
+
+
 ## The report says which routine drew each sprite and whether it was a clipped column, which is what the
 ## catalogue needs to know which colour is see-through and what the overlay needs to draw the right slice.
 func test_the_report_says_how_each_sprite_was_drawn() -> void:
