@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://nomqh1yjimve"
-path="res://.godot/imported/sprite_115DA_24x15.png-dd49ed856788b9b7c2bda934bd0c0e60.ctex"
+uid="uid://cwyuuthiak7y1"
+path="res://.godot/imported/sprite_109C8_24x13.png-ba79bd6b418f4fb5f808e8b994991673.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_115DA_24x15.png"
-dest_files=["res://.godot/imported/sprite_115DA_24x15.png-dd49ed856788b9b7c2bda934bd0c0e60.ctex"]
+source_file="res://addons/godot_alleycat_gdextension/assets/artwork/original/sprite_109C8_24x13.png"
+dest_files=["res://.godot/imported/sprite_109C8_24x13.png-ba79bd6b418f4fb5f808e8b994991673.ctex"]
 
 [params]
 

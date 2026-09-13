@@ -37,6 +37,23 @@ const EDGES: Array = [
 ## The four skills, so each one's own screens and its own creatures get drawn.
 const SKILLS: Array[Key] = [KEY_K, KEY_H, KEY_T, KEY_A]
 
+## The seven screens that are not the alley, as the game numbers them in the word at DS:0004: the fishbowl
+## room, inside the fishbowl, the bookcase, the cheese, the birdcage, the dogs, the hearts. Room 1 turns into
+## room 2 on its own once the cat is in the bowl, so both are listed and the sweep follows.
+const ROOMS: Array[int] = [7, 5, 6, 3, 4, 1, 2]
+
+## Where the game's data segment starts, so an offset the disassembly names becomes an address to poke.
+const DS: int = 0x10100
+
+## What to do in a room, as an action and how long to hold it in seconds. Time rather than frames, because a
+## frame is a few milliseconds here and the rooms want the cat to swim, climb and walk for a while.
+const ROOM_DRIVE: Array = [
+	[&"", 2.5], [&"alleycat_right", 2.0], [&"alleycat_up", 1.0], [&"alleycat_left", 2.5], [&"alleycat_down", 1.0],
+	[&"alleycat_up", 0.4], [&"", 2.0], [&"alleycat_right", 1.5], [&"alleycat_up", 1.5], [&"", 0.5],
+	[&"alleycat_left", 1.5], [&"alleycat_down", 1.5], [&"alleycat_up", 0.3], [&"alleycat_right", 3.0],
+	[&"", 2.5], [&"alleycat_up", 2.0], [&"alleycat_left", 2.0], [&"alleycat_down", 2.0], [&"", 2.5],
+]
+
 var _exe: PackedByteArray
 
 
@@ -57,6 +74,10 @@ func execute(scene_tree: SceneTree) -> Variant:
 		await _play(scene_tree, game, seen, 40)
 		for step: Array in EDGES:
 			await _hold(scene_tree, game, seen, step[0], step[1])
+	for room: int in ROOMS:
+		await _enter_a_room(scene_tree, demo, game, seen, room)
+		for step: Array in ROOM_DRIVE:
+			await _hold_for(scene_tree, game, seen, step[0], float(step[1]))
 	var out: Array = []
 	for key: String in seen:
 		out.append(seen[key])
@@ -75,6 +96,41 @@ func _start_a_game(scene_tree: SceneTree, demo: Node, skill: Key) -> void:
 		await scene_tree.process_frame
 		if demo._stage == AlleyCatControls.Stage.PLAYING:
 			break
+
+
+## Into room [param room] without a window. The game gets there at 0x7415 when DS:0551 says the cat went
+## through one: it picks the room from a table by skill at 0x421 or one of five at 0x42D, refuses the last
+## two it remembers at 0x41D and 0x41F, and takes the finale instead when 0x418 is set. So every entry of
+## both tables is made the room wanted, the memory is cleared, and the flag is held up until the alley loop
+## reads it, because something on the way into play clears it once. Whatever room is already up is left
+## first through its own "over" flag at 0x552, since the game's menu key does not always answer in one.
+func _enter_a_room(scene_tree: SceneTree, demo: Node, game: Object, seen: Dictionary, room: int) -> void:
+	game.call(&"poke", DS + 0x552, PackedByteArray([1]))
+	await _hold_for(scene_tree, game, seen, &"", 1.5)
+	await _start_a_game(scene_tree, demo, KEY_K)
+	await _hold_for(scene_tree, game, seen, &"", 0.5)
+	var table: PackedByteArray = PackedByteArray()
+	for i: int in 17:
+		table.append(room)
+	game.call(&"poke", DS + 0x421, table)
+	var started: int = Time.get_ticks_msec()
+	while int(game.call(&"peek_u16", DS + 4)) != room and Time.get_ticks_msec() - started < 6000:
+		game.call(&"poke", DS + 0x41D, PackedByteArray([0xFF, 0xFF, 0xFF, 0xFF]))
+		game.call(&"poke", DS + 0x418, PackedByteArray([1 if room == 7 else 0]))
+		game.call(&"poke", DS + 0x551, PackedByteArray([1]))
+		await scene_tree.process_frame
+		_record(game, seen)
+
+
+func _hold_for(scene_tree: SceneTree, game: Object, seen: Dictionary, action: StringName, seconds: float) -> void:
+	if not action.is_empty():
+		Input.action_press(action)
+	var started: int = Time.get_ticks_msec()
+	while (Time.get_ticks_msec() - started) / 1000.0 < seconds:
+		await scene_tree.process_frame
+		_record(game, seen)
+	if not action.is_empty():
+		Input.action_release(action)
 
 
 ## Walks the cat through every direction a number of times, recording what the game draws throughout. The

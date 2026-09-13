@@ -19,33 +19,40 @@ func texture_for(source: int) -> Texture2D:
 	return _by_source.get(source, null)
 
 
-## How many rows the game's own artwork at [param source] has, or 0 where it is not catalogued. The game
-## draws some artwork a row taller each tick - the thing coming up out of a bin - and each of those draws
-## is the top so many rows of the same picture, so a draw shorter than this is the top of the replacement,
-## not the whole of it squashed.
-func height_for(source: int) -> int:
-	for sprite: AlleyCatSprite in sprites:
-		if sprite != null and sprite.source == source and sprite.original != null:
-			return sprite.original.get_height()
-	return 0
-
-
-## The replacement for a column the game lifted out of a wider sprite, which is how it clips the cat and the
-## dog at the edge of the screen. [method AlleyCat.get_sprites] reports such a draw with the address the
-## column starts at and the sprite's full width in pixels as [code]stride[/code]; the column starts somewhere
-## in that sprite's first row, so the sprite is whichever replaced one lies within a row's bytes before it.
+## Where [param source] falls inside a replaced sprite, or an empty dictionary where it falls in none.
 ##
-## Returns the texture, the column's offset into it in the game's own pixels, and the sprite's full width,
-## or an empty dictionary where nothing replaced contains the column.
-func slice_for(source: int, stride: int) -> Dictionary:
-	if stride <= 0:
-		return {}
+## The game does not always draw a sprite from its first byte. It clips the cat at the screen edge by lifting
+## a column out of the artwork, which starts a word or two into the first row; and it has things rise out of
+## and sink into their surroundings by drawing the lower rows only, which starts a row or more down. Either
+## way the source is inside the sprite's bytes, and the offset says which row and column: a row is width/4
+## bytes. [member AlleyCatSprite.original] is what says how big the sprite is.
+##
+## Returns the texture, the column and row the draw starts at in the game's own pixels, and the sprite's
+## full width and height, all in the game's pixels; the texture's own size stands for the full sprite.
+func locate(source: int) -> Dictionary:
 	for sprite: AlleyCatSprite in sprites:
 		if sprite == null or sprite.texture == null:
 			continue
-		if source >= sprite.source and source < sprite.source + stride / 4:
-			return {"texture": sprite.texture, "column": (source - sprite.source) * 4, "width": stride}
+		if sprite.original == null:
+			if sprite.source == source:
+				return {"texture": sprite.texture, "column": 0, "row": 0, "width": 0, "height": 0}
+			continue
+		var per_row: int = sprite.original.get_width() / 4
+		var span: int = per_row * sprite.original.get_height()
+		if source >= sprite.source and source < sprite.source + span:
+			var offset: int = source - sprite.source
+			return {"texture": sprite.texture, "column": (offset % per_row) * 4, "row": offset / per_row,
+					"width": sprite.original.get_width(), "height": sprite.original.get_height()}
 	return {}
+
+
+## How many bytes of artwork the sprite at [param source] owns - width/4 times height - or 1 where its
+## size is not known. What [method AlleyCat.set_hidden_sprites] needs alongside the address.
+func length_of(source: int) -> int:
+	for sprite: AlleyCatSprite in sprites:
+		if sprite != null and sprite.source == source and sprite.original != null:
+			return sprite.original.get_width() / 4 * sprite.original.get_height()
+	return 1
 
 
 func _rebuild() -> void:

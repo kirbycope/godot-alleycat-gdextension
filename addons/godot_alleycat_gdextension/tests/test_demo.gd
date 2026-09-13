@@ -574,34 +574,38 @@ func test_fullscreen_is_on_the_right_shoulder_and_keeps_the_picture_s_shape() ->
 	assert_eq(demo.screen.get_rect(), before, "and goes back exactly where it was")
 
 
-## The game clips the cat and the dog at the screen edge by lifting a column out of the sprite, and reports
-## such a draw as the sprite with a stride. The replacement for it is the same column of the replacement,
-## found from the sprite the column starts inside.
-func test_a_clipped_sprite_draws_the_matching_slice_of_its_replacement() -> void:
+## The game does not always draw a sprite from its first byte. It clips the cat at the screen edge by
+## lifting a column out of the artwork, and has things rise out of their surroundings by drawing the lower
+## rows only; either way the source lands inside a replaced sprite's bytes, and the offset says which part
+## of the replacement to draw.
+func test_a_draw_from_inside_a_sprite_draws_that_part_of_its_replacement() -> void:
 	var artwork: AlleyCatArtwork = AlleyCatArtwork.new()
 	var frame: AlleyCatSprite = AlleyCatSprite.new()
 	frame.source = 0x10EE2
-	frame.texture = PlaceholderTexture2D.new()
+	frame.original = ImageTexture.create_from_image(Image.create(24, 11, false, Image.FORMAT_RGBA8))
+	frame.texture = ImageTexture.create_from_image(Image.create(48, 22, false, Image.FORMAT_RGBA8))
 	artwork.sprites.append(frame)
-	assert_true(artwork.slice_for(0x10EE2, 0).is_empty(), "no stride, no slice: that is an ordinary draw")
-	assert_true(artwork.slice_for(0x10E00, 24).is_empty(), "a column from somewhere unreplaced is nobody's")
-	var slice: Dictionary = artwork.slice_for(0x10EE2 + 2, 24)
-	assert_eq(slice.get("texture"), frame.texture, "one word into frame 3 is frame 3")
-	assert_eq(int(slice.get("column")), 8, "starting eight pixels in")
-	assert_eq(int(slice.get("width")), 24, "of a sprite twenty-four wide")
-	assert_true(artwork.slice_for(0x10EE2 + 6, 24).is_empty(), "a row's width on is the next sprite, not this one")
+	assert_true(artwork.locate(0x10E00).is_empty(), "somewhere unreplaced is nobody's")
+	assert_true(artwork.locate(0x10EE2 + 66).is_empty(), "and the byte after the last is the next sprite")
+	var column: Dictionary = artwork.locate(0x10EE2 + 2)
+	assert_eq(column.get("texture"), frame.texture, "one word into frame 3 is frame 3")
+	assert_eq([int(column["column"]), int(column["row"])], [8, 0], "starting eight pixels in, on the first row")
+	var lower: Dictionary = artwork.locate(0x10EE2 + 6 * 4)
+	assert_eq([int(lower["column"]), int(lower["row"])], [0, 4], "four rows of six bytes in is the fifth row")
+	assert_eq(artwork.length_of(0x10EE2), 66, "and the whole frame is sixty-six bytes")
+	assert_eq(artwork.length_of(0x12345), 1, "an unknown one is only itself")
 
 	var art: AlleyCatArt = demo.art
 	var was: AlleyCatArtwork = art.artwork
 	art.artwork = artwork
 	assert_eq(art._replacement_for({"source": 0x10EE2 + 4, "stride": 24}), frame.texture,
 			"so a clipped draw of frame 3 is one of ours")
-	assert_null(art._replacement_for({"source": 0x10EE2 + 4, "stride": 0}), "and the same address unclipped is not")
-	# The region drawn is the same column of the replacement, whatever size the replacement was drawn at.
-	var big: Image = Image.create(48, 22, false, Image.FORMAT_RGBA8)
-	frame.texture = ImageTexture.create_from_image(big)
+	assert_null(art._replacement_for({"source": 0x10E00, "stride": 0}), "and something unreplaced is not")
 	var region: Rect2 = art._region_of({"source": 0x10EE2 + 4, "stride": 24, "width": 8, "height": 11}, frame.texture)
 	assert_eq(region, Rect2(32.0, 0.0, 16.0, 22.0), "the last eight of twenty-four pixels is the last third")
+	region = art._region_of({"source": 0x10EE2 + 6 * 4, "stride": 0, "width": 24, "height": 7}, frame.texture)
+	assert_eq(region, Rect2(0.0, 8.0, 48.0, 14.0), "the bottom seven of eleven rows is the bottom seven elevenths")
+	assert_eq(art.replaced_lengths(), PackedInt32Array([66]), "and the game is told how much to hide")
 	art.artwork = was
 
 
@@ -615,8 +619,7 @@ func test_a_partly_drawn_sprite_draws_the_top_of_its_replacement() -> void:
 	creature.original = ImageTexture.create_from_image(Image.create(16, 13, false, Image.FORMAT_RGBA8))
 	creature.texture = ImageTexture.create_from_image(Image.create(64, 52, false, Image.FORMAT_RGBA8))
 	artwork.sprites.append(creature)
-	assert_eq(artwork.height_for(0x11DF0), 13, "the original is thirteen rows")
-	assert_eq(artwork.height_for(0x12345), 0, "and something uncatalogued has no height to speak of")
+	assert_eq(int(artwork.locate(0x11DF0)["height"]), 13, "the original is thirteen rows")
 	var art: AlleyCatArt = demo.art
 	var was: AlleyCatArtwork = art.artwork
 	art.artwork = artwork

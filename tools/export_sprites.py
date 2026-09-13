@@ -169,17 +169,28 @@ def kind_of(entry):
 
 
 def is_phantom(entry, entries):
-    """A narrower entry starting inside the first row of a wider one of the same height.
+    """An entry that is a part of a bigger one: it starts inside the other's artwork and ends inside it too.
 
-    That is what the copy the game makes to clip a sprite at the screen edge looks like when it is mistaken
-    for a sprite: the source is the frame, or a word or two into its first row, and the width is what was
-    left on screen. There is no artwork there in its own right.
+    Two things look like that. The copy the game makes to clip a sprite at the screen edge starts a word or
+    two into the first row, narrower and the same height. And the rooms draw things rising out of and
+    sinking into their surroundings by starting a row or more down the artwork with the height shrunk to
+    match, so the source walks down the sprite six bytes at a time. Neither is artwork in its own right, and
+    the overlay draws the matching part of the replacement for both.
     """
     source, width, height = entry["source"], entry["width"], entry["height"]
     for other in entries:
-        if other["height"] != height or other["width"] <= width:
+        if other is entry or other["width"] < width:
             continue
-        if other["source"] <= source < other["source"] + other["width"] // 4:
+        per_row = other["width"] // 4
+        span = per_row * other["height"]
+        if not (other["source"] <= source < other["source"] + span):
+            continue
+        offset = source - other["source"]
+        if other["width"] == width and offset % per_row != 0:
+            continue
+        if other["width"] > width and offset >= per_row:
+            continue
+        if (other["source"] + span) - source >= per_row * height and (other["width"] > width or other["height"] > height):
             return True
     return False
 

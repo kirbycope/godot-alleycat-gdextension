@@ -168,31 +168,30 @@ func _draw() -> void:
 
 ## The part of [param texture] that stands for the part of the original the game drew, in the texture's
 ## own pixels. The whole of it, usually. A column of it where the game clipped the sprite at the screen
-## edge, which the report says with a stride; the top of it where the game drew the original only so many
-## rows tall, which is how the thing in the bin comes up. The replacement's width stands for the sprite's
-## full width and its height for the full height, whatever resolution it was drawn at.
+## edge, the lower rows where the game drew it rising out of something, the top rows where it drew the
+## original only so many rows tall: [method AlleyCatArtwork.locate] says where the draw's source falls in
+## the artwork, and the report says how much of it was drawn. The replacement's own size stands for the
+## whole sprite, whatever resolution it was drawn at.
 func _region_of(sprite: Dictionary, texture: Texture2D) -> Rect2:
 	var region: Rect2 = Rect2(0.0, 0.0, float(texture.get_width()), float(texture.get_height()))
-	var stride: int = int(sprite.get("stride", 0))
-	if stride > 0:
-		var slice: Dictionary = artwork.slice_for(int(sprite["source"]), stride)
-		var across: float = texture.get_width() / float(slice["width"])
-		region.position.x = float(slice["column"]) * across
-		region.size.x = float(sprite["width"]) * across
-	var full: int = artwork.height_for(int(sprite["source"]))
-	if full > int(sprite["height"]):
-		region.size.y = texture.get_height() * float(sprite["height"]) / float(full)
+	var place: Dictionary = artwork.locate(int(sprite["source"]))
+	if place.is_empty() or int(place["width"]) == 0:
+		return region
+	var across: float = texture.get_width() / float(place["width"])
+	var down: float = texture.get_height() / float(place["height"])
+	region.position = Vector2(float(place["column"]) * across, float(place["row"]) * down)
+	region.size = Vector2(minf(float(sprite["width"]), float(place["width"]) - float(place["column"])) * across,
+			minf(float(sprite["height"]), float(place["height"]) - float(place["row"])) * down)
 	return region
 
 
 ## The replacement for what one entry of the report says was drawn: the sprite's own, or, where the game
 ## drew a column lifted out of a wider sprite, that sprite's. Null where there is none.
 func _replacement_for(sprite: Dictionary) -> Texture2D:
-	var stride: int = int(sprite.get("stride", 0))
-	if stride == 0:
-		return artwork.texture_for(int(sprite["source"]))
-	var slice: Dictionary = artwork.slice_for(int(sprite["source"]), stride)
-	return slice.get("texture", null)
+	var texture: Texture2D = artwork.texture_for(int(sprite["source"]))
+	if texture != null:
+		return texture
+	return artwork.locate(int(sprite["source"])).get("texture", null)
 
 
 ## Finds the game, and asks it to report what it draws. Asked for here rather than in [method _ready],
@@ -219,7 +218,7 @@ func _resolve() -> void:
 func _tell_the_game_what_is_replaced() -> void:
 	if not is_instance_valid(_game) or not _game.has_method(&"set_hidden_sprites"):
 		return
-	_game.call(&"set_hidden_sprites", replaced_sources())
+	_game.call(&"set_hidden_sprites", replaced_sources(), replaced_lengths())
 
 
 ## The addresses the game should stop drawing: every sprite with a replacement, once each. Empty while
@@ -233,6 +232,15 @@ func replaced_sources() -> PackedInt32Array:
 		if sprite.texture != null and not sources.has(sprite.source):
 			sources.append(sprite.source)
 	return sources
+
+
+## How many bytes each of [method replaced_sources] owns, in the same order, so a blit that starts inside
+## one of them - a clipped column, a lower part - is hidden along with the whole.
+func replaced_lengths() -> PackedInt32Array:
+	var lengths: PackedInt32Array = PackedInt32Array()
+	for source: int in replaced_sources():
+		lengths.append(artwork.length_of(source))
+	return lengths
 
 
 ## Where the game's picture actually is inside this rect. The game is drawn centred and letterboxed, keeping

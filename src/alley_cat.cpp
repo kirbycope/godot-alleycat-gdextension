@@ -1,3 +1,4 @@
+#include <vector>
 #include "alley_cat.h"
 
 #include "PureAlleyCat.h"
@@ -76,7 +77,7 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_reports_sprites", "value"), &AlleyCat::set_reports_sprites);
 	ClassDB::bind_method(D_METHOD("get_reports_sprites"), &AlleyCat::get_reports_sprites);
 	ClassDB::bind_method(D_METHOD("get_sprites"), &AlleyCat::get_sprites);
-	ClassDB::bind_method(D_METHOD("set_hidden_sprites", "sources"), &AlleyCat::set_hidden_sprites);
+	ClassDB::bind_method(D_METHOD("set_hidden_sprites", "sources", "lengths"), &AlleyCat::set_hidden_sprites, DEFVAL(PackedInt32Array()));
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "reports_sprites"), "set_reports_sprites", "get_reports_sprites");
 	ClassDB::bind_method(D_METHOD("watch", "from", "to"), &AlleyCat::watch);
 	ClassDB::bind_method(D_METHOD("get_watch_writers"), &AlleyCat::get_watch_writers);
@@ -523,15 +524,17 @@ Dictionary AlleyCat::get_machine_state() const {
 // The blit still runs and the game is none the wiser - its saved backgrounds and its erases are untouched -
 // but nothing it writes reaches the screen, so the replacement sits on the alley rather than on the game's
 // blocky version of the same thing showing through every gap in it.
-void AlleyCat::set_hidden_sprites(const PackedInt32Array &sources) {
-	// A fixed buffer rather than an allocation: the library keeps at most ALLEYCAT_HIDDEN_MAX of them and
-	// this is called whenever a set of artwork is swapped, not every frame.
-	unsigned int list[ALLEYCAT_HIDDEN_MAX];
-	int count = 0;
-	for (int i = 0; i < sources.size() && count < ALLEYCAT_HIDDEN_MAX; i++) {
-		list[count++] = (unsigned int)sources[i];
+void AlleyCat::set_hidden_sprites(const PackedInt32Array &sources, const PackedInt32Array &lengths) {
+	// Each length is how many bytes of artwork the source owns - width / 4 times height - so a blit that
+	// starts inside it is hidden too: the game lifts columns out of a sprite to clip it, and draws the lower
+	// rows of one to have it rise out of something. A length left out hides the exact address only.
+	std::vector<unsigned int> from(sources.size());
+	std::vector<unsigned int> span(sources.size());
+	for (int i = 0; i < sources.size(); i++) {
+		from[i] = (unsigned int)sources[i];
+		span[i] = i < lengths.size() ? (unsigned int)lengths[i] : 1u;
 	}
-	alleycat_hide_sprites(list, count);
+	alleycat_hide_sprites(from.data(), span.data(), (int)from.size());
 }
 
 

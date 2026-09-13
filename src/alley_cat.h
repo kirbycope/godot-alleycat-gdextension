@@ -186,7 +186,7 @@ public:
 	int get_load_address() const;
 	int get_data_address() const;
 	Dictionary get_machine_state() const;
-	void set_hidden_sprites(const PackedInt32Array &sources);
+	void set_hidden_sprites(const PackedInt32Array &sources, const PackedInt32Array &lengths = PackedInt32Array());
 	int poke(int at, const PackedByteArray &bytes);
 	void set_reports_sprites(bool value);
 	bool get_reports_sprites() const;

@@ -212,7 +212,9 @@ int alleycat_watch_callers(unsigned int *into, int max);
 
    Addresses are as alleycat_sprite reports them. Passing a count of zero turns hiding off. */
 #define ALLEYCAT_HIDDEN_MAX 512
-void alleycat_hide_sprites(const unsigned int *sources, int count);
+/* Lengths are how many bytes of artwork each source owns, so that a blit starting inside that artwork - a
+   column lifted out of it, or a draw that starts a few rows down - is hidden along with the whole. */
+void alleycat_hide_sprites(const unsigned int *sources, const unsigned int *lengths, int count);
 
 void alleycat_set_voice_volume(int voice, float volume);
 
@@ -431,6 +433,7 @@ static int      SPRITE_MISSED = 0;
    alleycat_hide_sprites. HIDING_SP is the stack as it stood when that blit was called, which is how the end
    of it is recognised: the routine is reached by a near call, so the stack comes back above that on return. */
 static uint32_t HIDDEN[ALLEYCAT_HIDDEN_MAX];
+static uint32_t HIDDEN_LEN[ALLEYCAT_HIDDEN_MAX];
 static int      HIDDEN_COUNT = 0;
 static int      HIDING = 0;
 static uint16_t HIDING_SP = 0;
@@ -553,10 +556,9 @@ static void note_sprite(void)
     }
     if (!HIDING) {
         for (i = 0; i < HIDDEN_COUNT; i++) {
-            /* A column lifted out of a sprite starts somewhere in that sprite's first row, so a hidden
-               sprite claims any source within one row's width after it. */
-            if (HIDDEN[i] == source
-                    || (stride != 0 && source >= HIDDEN[i] && source < HIDDEN[i] + (uint32_t)stride * 2u)) {
+            /* A hidden sprite claims every byte of its artwork: a column lifted out of it starts in its first
+               row, and a draw of its lower part starts a few rows in. */
+            if (source >= HIDDEN[i] && source < HIDDEN[i] + HIDDEN_LEN[i]) {
                 HIDING = 1;
                 HIDING_SP = R[rSP];
                 break;
@@ -1636,13 +1638,15 @@ void alleycat_report_sprites(int on) { SPRITES_REPORTED = on; alleycat_sprites_b
    afterwards is what was drawn in that frame and nothing older. */
 void alleycat_sprites_begin(void) { SPRITE_COUNT = 0; SPRITE_MISSED = 0; }
 
-void alleycat_hide_sprites(const unsigned int *sources, int count)
+void alleycat_hide_sprites(const unsigned int *sources, const unsigned int *lengths, int count)
 {
     int i;
     if (sources == 0 || count < 0) { count = 0; }
     if (count > ALLEYCAT_HIDDEN_MAX) { count = ALLEYCAT_HIDDEN_MAX; }
     for (i = 0; i < count; i++) {
         HIDDEN[i] = (uint32_t)sources[i];
+        /* A length nobody gave is one byte: the source itself and nothing more. */
+        HIDDEN_LEN[i] = (lengths != 0 && lengths[i] != 0) ? (uint32_t)lengths[i] : 1u;
     }
     HIDDEN_COUNT = count;
     /* Whatever was being hidden a moment ago may not be on the new list, and a blit already running would

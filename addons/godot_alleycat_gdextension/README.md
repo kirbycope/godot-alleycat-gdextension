@@ -413,6 +413,35 @@ attract screen draws one, the cat walking the fence.
 The report is cleared at the start of every frame, so a quiet frame says nothing and a host should read it
 every frame rather than whenever it happens to look.
 
+## The rooms
+
+Alley Cat is one alley and seven other screens, and the game gets from the one to the others through the
+only computed jump in the program: at image offset `0x746E` it reads a word at `DS:0004`, clamps it to 0-7,
+and jumps through a table of eight at `CS:0250` (image `0x7480`). Each target is a small loop that sets the
+word back to itself and calls that screen's routines until one of a handful of flags says it is over.
+
+| `DS:0004` | Screen |
+| --- | --- |
+| 0 | the alley - though the alley's own loop lives elsewhere and only ever *sets* this to 0 |
+| 1 | a room with a fishbowl on a table, and a broom |
+| 2 | inside the fishbowl: the cat swimming among the fish. Room 1 leads here |
+| 3 | the bookcase with the plants on top, and the spider |
+| 4 | the cheese, and the mice in it |
+| 5 | the birdcage on the table |
+| 6 | the sleeping dogs and their bowls |
+| 7 | the hearts: the finale |
+
+How the game picks one is at `0x7415`: when the cat has gone through a window (`DS:0551` non-zero) it rolls a
+die, and either takes `[0x421 + (skill & 3) * 4 + (roll & 3)]` - a three-by-four table, one row per skill -
+or one of the five at `0x42D` (`1 3 4 5 6`), refusing anything that matches the last two rooms it remembers
+at `0x41D` and `0x41F`. `DS:0418` set means the finale instead. `DS:0552` is "this room is over" and
+`DS:0551`, `0553`, `041B` and `041C` are the other ways out; every room loop tests them.
+
+`tools/sweep.gd` uses all of that rather than trying to jump the cat onto a bin, up a clothesline and
+through an open window with scripted keys: it writes the room it wants into both tables, forgets the last
+two, and holds `0x551` up until the alley loop takes it. That is how every room's artwork got into the
+catalogue, and it is repeatable: a sprite nobody has seen is one more room, or one more thing to do in it.
+
 ## Putting your own artwork in
 
 `AlleyCatArt` draws replacement pictures over the game's own sprites, sprite for sprite. It listens to
@@ -429,8 +458,8 @@ reach the framebuffer and whether this node paints over the top of them. That is
 **Art** row switches, and it is why it needs no restart. Set it to `false` in the inspector to ship with
 the 1984 picture and offer the remaster from the menu.
 
-`resources/artwork.tres` has a slot for **every** sprite the game draws - 106 of them, counting the fourteen
-letters the addon draws for it - and each one carries the game's own picture in `original`. That is what makes the thing usable: an address is not a
+`resources/artwork.tres` has a slot for **every** sprite the game draws - 194 of them across the alley and
+all seven rooms, counting the fourteen letters the addon draws for it - and each one carries the game's own picture in `original`. That is what makes the thing usable: an address is not a
 name, and nobody can draw a replacement for a sprite they cannot look at. Open the resource, scroll to a
 sprite, see what it is, drop a texture into its `texture` and that sprite is replaced and nothing else.
 
@@ -497,13 +526,18 @@ the mice) leaves the background wherever it is white, a *keyed* one (the dog) wh
 *plain* one nowhere. The exported picture carries that as alpha, so what the catalogue shows is what the
 screen shows, and a replacement drawn on transparency lands the same way.
 
-**The edges.** The game clips the cat and the dog at the side of the screen by lifting a column out of the
-sprite into a scratch buffer and drawing that. `get_sprites()` reports such a draw as the sprite it came
-from plus a `stride`, and `AlleyCatArt` draws the matching column of the replacement - so a replacement cat
-walks off the edge the way the game's own does, and nothing has to be drawn for the clipped cases. Rows for
-them do not exist in the catalogue, and should not: a narrower entry starting inside a wider one of the
-same height is the clip, not a sprite, and the builder leaves them out along with the buffers the game
-saves backgrounds in.
+**Parts of a sprite.** The game does not always draw a sprite from its first byte. It clips the cat and the
+dog at the side of the screen by lifting a column out of the artwork into a scratch buffer and drawing that,
+and it has things rise out of and sink into their surroundings by drawing the lower rows only, the source
+walking down the artwork a row at a time. `get_sprites()` reports the first as the sprite it came from plus
+a `stride`; the second simply reports the address it started at. Either way `AlleyCatArtwork.locate()` says
+where that address falls inside a replaced sprite - which row, which column - and `AlleyCatArt` draws that
+part of the replacement, so a replacement cat walks off the edge and a replacement mouse climbs out of the
+cheese the way the game's own do, and nothing has to be drawn for the partial cases. Rows for them do not
+exist in the catalogue, and should not: an entry that starts inside another's artwork and ends inside it too
+is a part, not a sprite, and the exporter leaves them out along with the buffers the game saves backgrounds
+in. The game is told the size of each replaced sprite as well as its address, so the partial draws are
+hidden along with the whole.
 
 Rebuilding the catalogue, when a new screen turns up sprites nobody has seen:
 
