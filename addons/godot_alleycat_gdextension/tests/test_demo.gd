@@ -45,7 +45,7 @@ func test_the_game_fills_the_screen_and_the_hud_shows() -> void:
 ##
 ## Rewind is the exception and is deliberate. It is the host's, not the game's - Alley Cat has no idea
 ## it is happening - but it earns a slot because a player has no other way to find out it exists.
-const HOST_ACTIONS: Array[String] = ["alleycat_rewind"]
+const HOST_ACTIONS: Array[String] = ["alleycat_rewind", "alleycat_fullscreen"]
 
 func test_every_slot_names_an_input_the_game_listens_for() -> void:
 	var expected: PackedStringArray = AlleyCat.get_expected_inputs()
@@ -99,9 +99,10 @@ func test_the_hud_picks_from_the_list_the_game_published() -> void:
 
 
 ## A blank slot is a button the game does not use, and the addon hides it. Alley Cat is a one-stick
-## game with nothing on the shoulders, the triggers or the right stick.
+## game with nothing on the sticks' buttons, the left shoulder or the right stick; the triggers and the
+## right shoulder carry the host's own controls.
 func test_the_buttons_the_game_does_not_use_are_left_blank() -> void:
-	for slot: String in ["button_1", "button_7", "button_8", "button_9", "button_10",
+	for slot: String in ["button_1", "button_7", "button_8", "button_9",
 			"look_up", "look_down", "look_left", "look_right"]:
 		assert_eq(String(demo.controls.get(&"action_" + slot)), "", "%s is not a button here" % slot)
 
@@ -456,7 +457,7 @@ func test_only_the_sprites_with_a_replacement_are_drawn_over() -> void:
 		if sprite.texture == null:
 			without += 1
 			assert_null(artwork.texture_for(sprite.source), "0x%05X is left as the game drew it" % sprite.source)
-	assert_gt(without, 100, "Almost all of them are the game's own")
+	assert_gt(without, artwork.sprites.size() * 3 / 4, "Most of them are the game's own")
 
 
 ## What is drawn is held until the game draws it somewhere else or repaints the screen, not timed out. The
@@ -539,3 +540,107 @@ func test_the_art_row_is_hidden_where_there_is_no_artwork_to_switch() -> void:
 	assert_false(remaster._art_row.visible, "and the row is hidden rather than offered dead")
 	remaster.set_remastered_art(true)
 	assert_false(remaster.is_remastered_art(), "asking for it changes nothing and errors at nobody")
+
+
+## Fullscreen is on the right shoulder and F, and grows the picture to fill the window without changing its
+## shape: the game draws 320x200 and the screen is an aspect ratio container, so it fills the height and
+## centres, or the width and centres, and never stretches.
+func test_fullscreen_is_on_the_right_shoulder_and_keeps_the_picture_s_shape() -> void:
+	assert_eq(String(demo.controls.action_button_10), "alleycat_fullscreen")
+	assert_eq(demo.controls.joypad_button_10_label.text, "Fullscreen", "and says so")
+	var seen: Dictionary = {"key": false, "pad": false}
+	for event: InputEvent in InputMap.action_get_events(&"alleycat_fullscreen"):
+		if event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_F:
+			seen["key"] = true
+		if event is InputEventJoypadButton and (event as InputEventJoypadButton).button_index == JOY_BUTTON_RIGHT_SHOULDER:
+			seen["pad"] = true
+	assert_true(seen["key"], "F on the keyboard")
+	assert_true(seen["pad"], "the right shoulder on a pad")
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+
+	var before: Rect2 = demo.screen.get_rect()
+	assert_false(demo.is_fullscreen(), "the demo opens inside the HUD's margins")
+	demo.set_fullscreen(true)
+	await wait_process_frames(2)
+	assert_true(demo.is_fullscreen())
+	assert_eq(demo.screen.get_rect(), demo.get_rect(), "the screen fills the whole window")
+	var picture: Vector2 = demo.game.size
+	assert_almost_eq(picture.x / picture.y, 4.0 / 3.0, 0.01, "and the game keeps its shape inside it")
+	assert_gt(picture.y, before.size.y, "so it is bigger than it was")
+	demo.set_fullscreen(false)
+	await wait_process_frames(2)
+	assert_eq(demo.screen.get_rect(), before, "and goes back exactly where it was")
+
+
+## The game clips the cat and the dog at the screen edge by lifting a column out of the sprite, and reports
+## such a draw as the sprite with a stride. The replacement for it is the same column of the replacement,
+## found from the sprite the column starts inside.
+func test_a_clipped_sprite_draws_the_matching_slice_of_its_replacement() -> void:
+	var artwork: AlleyCatArtwork = AlleyCatArtwork.new()
+	var frame: AlleyCatSprite = AlleyCatSprite.new()
+	frame.source = 0x10EE2
+	frame.texture = PlaceholderTexture2D.new()
+	artwork.sprites.append(frame)
+	assert_true(artwork.slice_for(0x10EE2, 0).is_empty(), "no stride, no slice: that is an ordinary draw")
+	assert_true(artwork.slice_for(0x10E00, 24).is_empty(), "a column from somewhere unreplaced is nobody's")
+	var slice: Dictionary = artwork.slice_for(0x10EE2 + 2, 24)
+	assert_eq(slice.get("texture"), frame.texture, "one word into frame 3 is frame 3")
+	assert_eq(int(slice.get("column")), 8, "starting eight pixels in")
+	assert_eq(int(slice.get("width")), 24, "of a sprite twenty-four wide")
+	assert_true(artwork.slice_for(0x10EE2 + 6, 24).is_empty(), "a row's width on is the next sprite, not this one")
+
+	var art: AlleyCatArt = demo.art
+	var was: AlleyCatArtwork = art.artwork
+	art.artwork = artwork
+	assert_eq(art._replacement_for({"source": 0x10EE2 + 4, "stride": 24}), frame.texture,
+			"so a clipped draw of frame 3 is one of ours")
+	assert_null(art._replacement_for({"source": 0x10EE2 + 4, "stride": 0}), "and the same address unclipped is not")
+	# The region drawn is the same column of the replacement, whatever size the replacement was drawn at.
+	var big: Image = Image.create(48, 22, false, Image.FORMAT_RGBA8)
+	frame.texture = ImageTexture.create_from_image(big)
+	var region: Rect2 = art._region_of({"source": 0x10EE2 + 4, "stride": 24, "width": 8, "height": 11}, frame.texture)
+	assert_eq(region, Rect2(32.0, 0.0, 16.0, 22.0), "the last eight of twenty-four pixels is the last third")
+	art.artwork = was
+
+
+## The game draws some artwork a row taller each tick, and every one of those draws is the top so many
+## rows of one picture. So a replacement is one picture too, and a draw shorter than the original is the
+## top of the replacement, not the whole of it squashed.
+func test_a_partly_drawn_sprite_draws_the_top_of_its_replacement() -> void:
+	var artwork: AlleyCatArtwork = AlleyCatArtwork.new()
+	var creature: AlleyCatSprite = AlleyCatSprite.new()
+	creature.source = 0x11DF0
+	creature.original = ImageTexture.create_from_image(Image.create(16, 13, false, Image.FORMAT_RGBA8))
+	creature.texture = ImageTexture.create_from_image(Image.create(64, 52, false, Image.FORMAT_RGBA8))
+	artwork.sprites.append(creature)
+	assert_eq(artwork.height_for(0x11DF0), 13, "the original is thirteen rows")
+	assert_eq(artwork.height_for(0x12345), 0, "and something uncatalogued has no height to speak of")
+	var art: AlleyCatArt = demo.art
+	var was: AlleyCatArtwork = art.artwork
+	art.artwork = artwork
+	var whole: Rect2 = art._region_of({"source": 0x11DF0, "stride": 0, "width": 16, "height": 13}, creature.texture)
+	assert_eq(whole, Rect2(0.0, 0.0, 64.0, 52.0), "all thirteen rows is all of the replacement")
+	var top: Rect2 = art._region_of({"source": 0x11DF0, "stride": 0, "width": 16, "height": 4}, creature.texture)
+	assert_eq(top, Rect2(0.0, 0.0, 64.0, 16.0), "four rows of thirteen is the top four thirteenths of it")
+	art.artwork = was
+
+
+## The report says which routine drew each sprite and whether it was a clipped column, which is what the
+## catalogue needs to know which colour is see-through and what the overlay needs to draw the right slice.
+func test_the_report_says_how_each_sprite_was_drawn() -> void:
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	demo.game.set(&"reports_sprites", true)
+	var report: Array = []
+	for i: int in 600:
+		await wait_process_frames(1)
+		report = demo.game.call(&"get_sprites")
+		if not report.is_empty():
+			break
+	assert_false(report.is_empty(), "the title screen draws something within a few seconds")
+	for sprite: Dictionary in report:
+		assert_true(["plain", "masked", "keyed"].has(str(sprite.get("kind"))), "%X says how it was drawn" % int(sprite["source"]))
+		assert_true(sprite.has("stride"), "and whether it was a column of something wider")

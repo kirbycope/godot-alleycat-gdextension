@@ -36,6 +36,9 @@ const BINDINGS: Dictionary = {
 	# walking down the alley would be turning the sound on and off the whole way. V is free and is the one
 	# letter on a keyboard that already means volume.
 	"axis_5_plus": {"keys": [KEY_V]},
+	# Fullscreen is the host's as well, on the right shoulder. F is free - the addon's WASD stops at D -
+	# and is the letter the word starts with.
+	"button_10": {"keys": [KEY_F]},
 	"button_11": {"keys": [KEY_K]},
 	"button_12": {"keys": [KEY_H]},
 	"button_13": {"keys": [KEY_T]},
@@ -61,6 +64,7 @@ const SETUP_LABELS: Dictionary = {
 	# set_labels is not told about is cleared, which is how it lost it.
 	"axis_4_plus": "Rewind",
 	"axis_5_plus": "",
+	"button_10": "Fullscreen",
 	"button_11": "Kitten",
 	"button_12": "House Cat",
 	"button_13": "Tomcat",
@@ -81,6 +85,7 @@ const START_LABELS: Dictionary = {
 	"button_6": "",
 	"axis_4_plus": "Rewind",
 	"axis_5_plus": "",
+	"button_10": "Fullscreen",
 	"button_11": "",
 	"button_12": "",
 	"button_13": "",
@@ -98,6 +103,7 @@ const LABEL_PROPERTIES: Dictionary = {
 	"button_6": "joypad_button_6_label",
 	"axis_4_plus": "joypad_axis_4_plus_label",
 	"axis_5_plus": "joypad_axis_5_plus_label",
+	"button_10": "joypad_button_10_label",
 	"button_11": "joypad_button_11_label",
 	"button_12": "joypad_button_12_label",
 	"button_13": "joypad_button_13_label",

@@ -94,6 +94,13 @@ button fires them; nothing else reaches the game.
 `get_missing_inputs()` returns the ones nothing has registered, so a host can say what is unbound
 rather than leaving the player with a game that ignores them.
 
+Four more actions in the demo are the host's, not the game's - Alley Cat has no idea any of them happened:
+`alleycat_look` (F6) cycles the looks, `alleycat_rewind` (Backspace, the left trigger) winds time back,
+`alleycat_fullscreen` (F, the right shoulder) grows the picture to fill the window, and `alleycat_esc` opens
+the paws menu in place of the game's own paws mode. Fullscreen keeps the game's shape: the screen is an
+`AspectRatioContainer`, so the 320x200 picture fills the height or the width, whichever runs out first, and
+the HUD draws over it the way it already does on a phone.
+
 **Nothing is bound for you.** A project registers these actions itself, or installs the controls
 addon and lets it do it. That is the whole contract: bind `alleycat_up` to whatever you like and the
 cat walks.
@@ -317,9 +324,21 @@ Those are the game's sprite blitters:
 
 | Routine | What it does |
 | --- | --- |
-| `sub_09FCD` | `rep movsw` straight into the screen: the plain blit |
-| `sub_09F65` | reads the background first, saves it at `[bp]`, then ANDs the sprite over it |
-| `sub_09FA0` | a blit that walks its source by a stride, for a taller strip |
+| `sub_09FCD` | `rep movsw` straight into the screen: the plain copy. The scenery, the title, the font, and every saved background going back |
+| `sub_09F65` | reads the background first, saves it at `[bp]`, then ANDs the sprite into it. White leaves the background alone and black is ink: the cat, the mice on the lines |
+| `sub_09EFC` | saves the background the same way, then lays the sprite over it with black as the key, working the mask out from the pixels as it goes. The dog, the thing that comes up out of the bins, the three sprites in the table at `0x1F5F` |
+| `sub_09FA0` | never touches the screen. Lifts a column out of a wider sprite into the scratch buffer at `DS:000E`, walking its source by `AL` words a row; a blit *from* the buffer is what reaches the screen. That is how the game clips the cat and the dog at the edge |
+| `sub_09FFA` | the other way round: screen into a buffer, the background saved before a plain copy goes over it |
+
+The first reading of this file hooked three of them and missed `sub_09EFC` altogether, so nothing it drew was
+ever reported and the dog was in the catalogue only as its own background. It also took `sub_09FA0`'s copies
+for sprites and reported them at a place on the screen they never went - `x=56, y=0`, the buffer's offset read
+as a screen offset - which is what the rows named `0x10FA8 8x11` and the like were. `get_sprites()` now says
+which routine drew each sprite as `kind` ("plain", "masked" or "keyed"), and reports a blit from the scratch
+buffer as the sprite it was lifted out of, with `stride` giving that sprite's full width so a host can tell
+which column it is looking at. Every one of the 90 distinct draws seen in a game, compared pixel for pixel
+against the bytes at the address it reports, matches; the only two that do not are backgrounds the game
+drew over in the same tick.
 
 They write the CGA window the way the hardware wants it - 80 bytes a row, even rows at `0xB8000` and odd
 rows `0x2000` further on, `xor di, 0x2000` to change bank - which is why the picture cannot simply be
@@ -410,8 +429,8 @@ reach the framebuffer and whether this node paints over the top of them. That is
 **Art** row switches, and it is why it needs no restart. Set it to `false` in the inspector to ship with
 the 1984 picture and offer the remaster from the menu.
 
-`resources/artwork.tres` has a slot for **every** sprite the game was seen to draw - 134 of them - and each
-one carries the game's own picture in `original`. That is what makes the thing usable: an address is not a
+`resources/artwork.tres` has a slot for **every** sprite the game draws - 106 of them, counting the fourteen
+letters the addon draws for it - and each one carries the game's own picture in `original`. That is what makes the thing usable: an address is not a
 name, and nobody can draw a replacement for a sprite they cannot look at. Open the resource, scroll to a
 sprite, see what it is, drop a texture into its `texture` and that sprite is replaced and nothing else.
 
@@ -467,31 +486,41 @@ sheets existed. Names typed into the panel live in `artwork.tres`, and `build_ar
 that file from nothing rather than reading the old one, so a name that has to survive a rebuild goes in the
 `KNOWN` dictionary at the top of the script - which is where the cat's twelve frames are.
 
-**Blanks are left out.** Thirty-two of the 134 addresses the game blits from are not pictures: runs of
-identical bytes used to clear a strip, and a few where the size the report gave does not belong to the
-address. They decode to a rectangle of one flat colour, so the builder drops them and the catalogue is 102
-entries of real artwork.
+**Blanks are left out.** An address the game blits from that decodes to a rectangle of one flat colour is
+not a picture - a run of identical bytes used to clear a strip - and the builder drops it. So are the
+buffers and the clipped columns, at the exporter, so what is left is entries of real artwork and nothing else.
 
 Two things the catalogue records are worth reading before drawing anything. `draws` says how often the
-sprite was drawn, which separates the cat and the scenery from the rarities. And where `masked_draws` is
-most of `draws`, that artwork is a *mask* - a solid shape ANDed into the background to punch a hole for a
-sprite - rather than a picture, so replacing it paints over the hole rather than over a drawing.
+sprite was drawn, which separates the cat and the scenery from the rarities. And the note says which of the
+game's routines draws it, because that is what says which colour is see-through: an *ANDed* sprite (the cat,
+the mice) leaves the background wherever it is white, a *keyed* one (the dog) wherever it is black, and a
+*plain* one nowhere. The exported picture carries that as alpha, so what the catalogue shows is what the
+screen shows, and a replacement drawn on transparency lands the same way.
+
+**The edges.** The game clips the cat and the dog at the side of the screen by lifting a column out of the
+sprite into a scratch buffer and drawing that. `get_sprites()` reports such a draw as the sprite it came
+from plus a `stride`, and `AlleyCatArt` draws the matching column of the replacement - so a replacement cat
+walks off the edge the way the game's own does, and nothing has to be drawn for the clipped cases. Rows for
+them do not exist in the catalogue, and should not: a narrower entry starting inside a wider one of the
+same height is the clip, not a sprite, and the builder leaves them out along with the buffers the game
+saves backgrounds in.
 
 Rebuilding the catalogue, when a new screen turns up sprites nobody has seen:
 
 ```bash
-# with the demo running and reports_sprites on, save the catalogue from the game, then
+# run tools/sweep.gd against the demo (the Godot MCP's run_script), save what it returns, then
 python tools/export_sprites.py <catalogue.json>      # CAT.EXE -> assets/artwork/original/*.png
 python tools/build_artwork_resource.py               # -> resources/artwork.tres
 ```
 
 `export_sprites.py` reads the artwork straight out of `CAT.EXE`: the image was loaded at `0x10000` and the
 file has a 512 byte header, so a sprite's bytes are at `(source - 0x10000) + 512`. CGA mode 4 packs four
-pixels to a byte, two bits each, and **all four indices are written out opaque, index 0 included**. That
-looks wrong and is not: index 0 in this palette is black, and Alley Cat draws its black sprites by ANDing a
-shape into the background rather than by leaving a hole. Exporting index 0 transparent renders every black
-sprite - the player's cat among them - as an empty picture, which is a good way to spend an afternoon
-replacing the wrong thing.
+pixels to a byte, two bits each, and which of the four is see-through is not in the bytes at all - it is
+which routine drew the sprite, so the sweep records that and the exporter writes white transparent for an
+ANDed sprite, black for a keyed one, and nothing for a plain copy. It also throws away what is not artwork:
+the buffers the game saves backgrounds in (what the file holds at those offsets is nothing), anything the
+sweep saw change while the game ran (the same thing found the other way round), and the clipped columns.
+Files for anything no longer catalogued are removed, so a mistaken export cannot linger.
 
 What it buys is resolution, not position: the replacement is drawn where the original was and at the same
 size, so the game plays exactly as it did. The game's own sprite is eight pixels by five, or thirty-two by

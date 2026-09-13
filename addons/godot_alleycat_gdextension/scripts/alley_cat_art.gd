@@ -107,7 +107,7 @@ func _process(_delta: float) -> void:
 
 	var mine: Array = []
 	for sprite: Dictionary in report:
-		if artwork.texture_for(int(sprite["source"])) != null:
+		if _replacement_for(sprite) != null:
 			mine.append(sprite)
 	# A report with one of ours in it replaces what is up, wholesale. The game draws one frame of an
 	# animation at a time, so keeping the old one alongside would paint two cats a step apart.
@@ -158,12 +158,41 @@ func _draw() -> void:
 		return
 	var scale: Vector2 = picture.size / GAME_SIZE
 	for sprite: Dictionary in _showing:
-		var texture: Texture2D = artwork.texture_for(int(sprite["source"]))
+		var texture: Texture2D = _replacement_for(sprite)
 		if texture == null:
 			continue
 		var at: Vector2 = picture.position + Vector2(float(sprite["x"]), float(sprite["y"])) * scale
 		var wide: Vector2 = Vector2(float(sprite["width"]), float(sprite["height"])) * scale
-		draw_texture_rect(texture, Rect2(at, wide), false)
+		draw_texture_rect_region(texture, Rect2(at, wide), _region_of(sprite, texture))
+
+
+## The part of [param texture] that stands for the part of the original the game drew, in the texture's
+## own pixels. The whole of it, usually. A column of it where the game clipped the sprite at the screen
+## edge, which the report says with a stride; the top of it where the game drew the original only so many
+## rows tall, which is how the thing in the bin comes up. The replacement's width stands for the sprite's
+## full width and its height for the full height, whatever resolution it was drawn at.
+func _region_of(sprite: Dictionary, texture: Texture2D) -> Rect2:
+	var region: Rect2 = Rect2(0.0, 0.0, float(texture.get_width()), float(texture.get_height()))
+	var stride: int = int(sprite.get("stride", 0))
+	if stride > 0:
+		var slice: Dictionary = artwork.slice_for(int(sprite["source"]), stride)
+		var across: float = texture.get_width() / float(slice["width"])
+		region.position.x = float(slice["column"]) * across
+		region.size.x = float(sprite["width"]) * across
+	var full: int = artwork.height_for(int(sprite["source"]))
+	if full > int(sprite["height"]):
+		region.size.y = texture.get_height() * float(sprite["height"]) / float(full)
+	return region
+
+
+## The replacement for what one entry of the report says was drawn: the sprite's own, or, where the game
+## drew a column lifted out of a wider sprite, that sprite's. Null where there is none.
+func _replacement_for(sprite: Dictionary) -> Texture2D:
+	var stride: int = int(sprite.get("stride", 0))
+	if stride == 0:
+		return artwork.texture_for(int(sprite["source"]))
+	var slice: Dictionary = artwork.slice_for(int(sprite["source"]), stride)
+	return slice.get("texture", null)
 
 
 ## Finds the game, and asks it to report what it draws. Asked for here rather than in [method _ready],

@@ -32,9 +32,9 @@ CAT_WALK_LEFT = [0x10E5E, 0x10EA0, 0x10EE2, 0x10F24, 0x10F66, 0x10FA8]
 CAT_WALK_RIGHT = [0x10CD2, 0x10D14, 0x10D56, 0x10D98, 0x10DDA, 0x10E1C]
 EXAMPLES = {}
 for _frame, _source in enumerate(CAT_WALK_LEFT, start=1):
-    EXAMPLES[_source] = "cat_walk_left_%d.png" % _frame
+    EXAMPLES[_source] = "cat_walk_left_%02d.png" % _frame
 for _frame, _source in enumerate(CAT_WALK_RIGHT, start=1):
-    EXAMPLES[_source] = "cat_walk_right_%d.png" % _frame
+    EXAMPLES[_source] = "cat_walk_right_%02d.png" % _frame
 
 # Names for the ones that are known, so the list can be read down rather than clicked through. Anything not
 # named here gets its address, size and draw count instead, which is enough to find it on a contact sheet.
@@ -146,10 +146,13 @@ def main() -> int:
     ]
     next_id = 3
     overrides = {}
-    # The worked example, plus every replacement anybody has since dropped on a sprite themselves.
+    # The worked example, plus every replacement anybody has since dropped on a sprite themselves. Only
+    # from rows that are still here: a row on its way out - a clipped column mistaken for a sprite, say -
+    # sits at the same address as the real one, and its texture must not land on the survivor.
+    surviving = {"S_%05X_%dx%d" % (e["source"], e["width"], e["height"]) for e in index}
     replacements = dict(EXAMPLES)
     for ident, entry in kept.items():
-        if "texture" in entry:
+        if "texture" in entry and ident in surviving:
             found = re.match(r"S_([0-9A-F]+)_", ident)
             if found is not None:
                 replacements[int(found.group(1), 16)] = entry["texture"]
@@ -167,10 +170,13 @@ def main() -> int:
         where: str = entry["file"] if "/" in entry["file"] else "original/" + entry["file"]
         ext.append(TEXTURE % (where, original_id))
         name = "S_%05X_%dx%d" % (entry["source"], entry["width"], entry["height"])
-        mask = entry["masked"] >= max(1, entry["times"]) * 0.5
+        # Which routine draws it says which colour the game leaves see-through, and so what a replacement's
+        # transparency should follow. The exported picture already has that as alpha; this says why.
+        drawn = {"masked": "ANDed into the background, so white is see-through and black is ink",
+                 "keyed": "laid over the background with black see-through",
+                 "plain": "copied whole, nothing see-through"}.get(entry.get("kind", ""), "")
         note = entry.get("note") or "%dx%d, drawn %d times%s" % (
-            entry["width"], entry["height"], entry["times"],
-            ", a mask rather than a picture" if mask else "")
+            entry["width"], entry["height"], entry["times"], ("; " + drawn) if drawn else "")
         # What a person typed wins over anything this script would have called it, and is used exactly as
         # they left it. Adding anything to it would be added again on the next run, and the run after that.
         mine = kept.get(name, {})

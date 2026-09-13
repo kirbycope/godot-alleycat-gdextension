@@ -1,161 +1,12 @@
 [
   {
-    "source": 65806,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_1010E_8x11.png",
-    "times": 68,
-    "masked": 68,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 65806,
-    "width": 8,
-    "height": 15,
-    "file": "sprite_1010E_8x15.png",
-    "times": 130,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 65806,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_1010E_16x11.png",
-    "times": 90,
-    "masked": 90,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 65806,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_1010E_16x15.png",
-    "times": 130,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 65806,
-    "width": 24,
-    "height": 15,
-    "file": "sprite_1010E_24x15.png",
-    "times": 132,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 65806,
-    "width": 40,
-    "height": 18,
-    "file": "sprite_1010E_40x18.png",
-    "times": 0,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 65806,
-    "width": 48,
-    "height": 8,
-    "file": "sprite_1010E_48x8.png",
-    "times": 0,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 65806,
-    "width": 256,
-    "height": 16,
-    "file": "sprite_1010E_256x16.png",
-    "times": 0,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 67031,
-    "width": 16,
-    "height": 16,
-    "file": "sprite_105D7_16x16.png",
-    "times": 3270,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 67322,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_106FA_8x11.png",
-    "times": 42,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 67322,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_106FA_16x11.png",
-    "times": 69,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 67322,
-    "width": 16,
-    "height": 12,
-    "file": "sprite_106FA_16x12.png",
-    "times": 108,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 67322,
-    "width": 24,
-    "height": 10,
-    "file": "sprite_106FA_24x10.png",
-    "times": 276,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 67322,
-    "width": 24,
-    "height": 11,
-    "file": "sprite_106FA_24x11.png",
-    "times": 151,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 67322,
-    "width": 24,
-    "height": 13,
-    "file": "sprite_106FA_24x13.png",
-    "times": 704,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
     "source": 67406,
     "width": 24,
     "height": 5,
     "file": "sprite_1074E_24x5.png",
     "times": 0,
     "masked": 0,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -164,8 +15,9 @@
     "width": 24,
     "height": 13,
     "file": "sprite_10B2E_24x13.png",
-    "times": 855,
-    "masked": 855,
+    "times": 5022,
+    "masked": 5022,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -174,8 +26,9 @@
     "width": 24,
     "height": 13,
     "file": "sprite_10B7C_24x13.png",
-    "times": 265,
-    "masked": 265,
+    "times": 276,
+    "masked": 276,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -186,6 +39,7 @@
     "file": "sprite_10C96_24x10.png",
     "times": 262,
     "masked": 262,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -194,18 +48,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10CD2_24x11.png",
-    "times": 33,
-    "masked": 33,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 68822,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_10CD6_8x11.png",
-    "times": 14,
-    "masked": 0,
+    "times": 522,
+    "masked": 522,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -214,28 +59,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10D14_24x11.png",
-    "times": 7,
-    "masked": 7,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 68886,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_10D16_16x11.png",
-    "times": 27,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 68888,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_10D18_8x11.png",
-    "times": 39,
-    "masked": 0,
+    "times": 506,
+    "masked": 506,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -244,28 +70,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10D56_24x11.png",
-    "times": 66,
-    "masked": 66,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 68952,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_10D58_16x11.png",
-    "times": 1,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 68954,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_10D5A_8x11.png",
-    "times": 16,
-    "masked": 0,
+    "times": 494,
+    "masked": 494,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -274,28 +81,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10D98_24x11.png",
-    "times": 26,
-    "masked": 26,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69018,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_10D9A_16x11.png",
-    "times": 14,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69020,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_10D9C_8x11.png",
-    "times": 17,
-    "masked": 0,
+    "times": 561,
+    "masked": 561,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -304,28 +92,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10DDA_24x11.png",
-    "times": 24,
-    "masked": 24,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69084,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_10DDC_16x11.png",
-    "times": 1,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69086,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_10DDE_8x11.png",
-    "times": 32,
-    "masked": 0,
+    "times": 635,
+    "masked": 635,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -334,28 +103,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10E1C_24x11.png",
-    "times": 52,
-    "masked": 52,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69150,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_10E1E_16x11.png",
-    "times": 28,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69214,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_10E5E_16x11.png",
-    "times": 1,
-    "masked": 0,
+    "times": 494,
+    "masked": 494,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -364,18 +114,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10E5E_24x11.png",
-    "times": 13,
-    "masked": 13,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69280,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_10EA0_8x11.png",
-    "times": 16,
-    "masked": 0,
+    "times": 565,
+    "masked": 565,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -384,8 +125,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10EA0_24x11.png",
-    "times": 2,
-    "masked": 2,
+    "times": 329,
+    "masked": 329,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -394,18 +136,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10EE2_24x11.png",
-    "times": 85,
-    "masked": 85,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69412,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_10F24_16x11.png",
-    "times": 1,
-    "masked": 0,
+    "times": 333,
+    "masked": 333,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -414,18 +147,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10F24_24x11.png",
-    "times": 14,
-    "masked": 14,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69478,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_10F66_8x11.png",
-    "times": 14,
-    "masked": 0,
+    "times": 545,
+    "masked": 545,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -434,28 +158,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10F66_24x11.png",
-    "times": 92,
-    "masked": 92,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69544,
-    "width": 8,
-    "height": 11,
-    "file": "sprite_10FA8_8x11.png",
-    "times": 16,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 69544,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_10FA8_16x11.png",
-    "times": 1,
-    "masked": 0,
+    "times": 536,
+    "masked": 536,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -464,8 +169,9 @@
     "width": 24,
     "height": 11,
     "file": "sprite_10FA8_24x11.png",
-    "times": 96,
-    "masked": 96,
+    "times": 320,
+    "masked": 320,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -474,8 +180,9 @@
     "width": 16,
     "height": 6,
     "file": "sprite_10FEA_16x6.png",
-    "times": 84,
-    "masked": 84,
+    "times": 247,
+    "masked": 247,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -484,8 +191,9 @@
     "width": 16,
     "height": 6,
     "file": "sprite_11002_16x6.png",
-    "times": 36,
-    "masked": 36,
+    "times": 192,
+    "masked": 192,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -494,8 +202,9 @@
     "width": 16,
     "height": 6,
     "file": "sprite_1101A_16x6.png",
-    "times": 184,
-    "masked": 184,
+    "times": 72,
+    "masked": 72,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -504,8 +213,9 @@
     "width": 16,
     "height": 6,
     "file": "sprite_11032_16x6.png",
-    "times": 50,
-    "masked": 50,
+    "times": 52,
+    "masked": 52,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -514,8 +224,9 @@
     "width": 16,
     "height": 6,
     "file": "sprite_1104A_16x6.png",
-    "times": 48,
-    "masked": 48,
+    "times": 44,
+    "masked": 44,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -524,38 +235,9 @@
     "width": 16,
     "height": 6,
     "file": "sprite_11062_16x6.png",
-    "times": 19,
-    "masked": 19,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70528,
-    "width": 8,
-    "height": 15,
-    "file": "sprite_11380_8x15.png",
-    "times": 50,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70528,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_11380_16x15.png",
-    "times": 26,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70528,
-    "width": 24,
-    "height": 15,
-    "file": "sprite_11380_24x15.png",
-    "times": 1,
-    "masked": 0,
+    "times": 398,
+    "masked": 398,
+    "kind": "masked",
     "group": "",
     "index": -1
   },
@@ -564,180 +246,55 @@
     "width": 32,
     "height": 15,
     "file": "sprite_11380_32x15.png",
-    "times": 1177,
+    "times": 228,
     "masked": 0,
+    "kind": "keyed",
     "group": "",
-    "index": -1
-  },
-  {
-    "source": 70530,
-    "width": 24,
-    "height": 15,
-    "file": "sprite_11382_24x15.png",
-    "times": 69,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70532,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_11384_16x15.png",
-    "times": 1,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70648,
-    "width": 8,
-    "height": 15,
-    "file": "sprite_113F8_8x15.png",
-    "times": 24,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70648,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_113F8_16x15.png",
-    "times": 22,
-    "masked": 0,
-    "group": "",
-    "index": -1
+    "index": 0
   },
   {
     "source": 70648,
     "width": 32,
     "height": 15,
     "file": "sprite_113F8_32x15.png",
-    "times": 598,
+    "times": 139,
     "masked": 0,
+    "kind": "keyed",
     "group": "",
-    "index": -1
-  },
-  {
-    "source": 70654,
-    "width": 8,
-    "height": 15,
-    "file": "sprite_113FE_8x15.png",
-    "times": 25,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70768,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_11470_16x15.png",
-    "times": 1,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70768,
-    "width": 24,
-    "height": 15,
-    "file": "sprite_11470_24x15.png",
-    "times": 48,
-    "masked": 0,
-    "group": "",
-    "index": -1
+    "index": 1
   },
   {
     "source": 70768,
     "width": 32,
     "height": 15,
     "file": "sprite_11470_32x15.png",
-    "times": 563,
+    "times": 90,
     "masked": 0,
+    "kind": "keyed",
     "group": "",
-    "index": -1
-  },
-  {
-    "source": 70772,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_11474_16x15.png",
-    "times": 41,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70774,
-    "width": 8,
-    "height": 15,
-    "file": "sprite_11476_8x15.png",
-    "times": 44,
-    "masked": 0,
-    "group": "",
-    "index": -1
+    "index": 2
   },
   {
     "source": 70888,
-    "width": 8,
+    "width": 32,
     "height": 15,
-    "file": "sprite_114E8_8x15.png",
-    "times": 27,
+    "file": "sprite_114E8_32x15.png",
+    "times": 173,
     "masked": 0,
+    "kind": "keyed",
     "group": "",
-    "index": -1
-  },
-  {
-    "source": 70888,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_114E8_16x15.png",
-    "times": 47,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 70888,
-    "width": 24,
-    "height": 15,
-    "file": "sprite_114E8_24x15.png",
-    "times": 27,
-    "masked": 0,
-    "group": "",
-    "index": -1
+    "index": 3
   },
   {
     "source": 71008,
-    "width": 8,
+    "width": 32,
     "height": 15,
-    "file": "sprite_11560_8x15.png",
-    "times": 45,
+    "file": "sprite_11560_32x15.png",
+    "times": 159,
     "masked": 0,
+    "kind": "keyed",
     "group": "",
-    "index": -1
-  },
-  {
-    "source": 71008,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_11560_16x15.png",
-    "times": 23,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 71008,
-    "width": 24,
-    "height": 15,
-    "file": "sprite_11560_24x15.png",
-    "times": 51,
-    "masked": 0,
-    "group": "",
-    "index": -1
+    "index": 4
   },
   {
     "source": 71130,
@@ -746,26 +303,7 @@
     "file": "sprite_115DA_24x15.png",
     "times": 1,
     "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 71132,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_115DC_16x15.png",
-    "times": 47,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 71134,
-    "width": 8,
-    "height": 15,
-    "file": "sprite_115DE_8x15.png",
-    "times": 13,
-    "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -776,196 +314,73 @@
     "file": "sprite_11652_24x15.png",
     "times": 70,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
   {
-    "source": 71252,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_11654_16x15.png",
-    "times": 24,
+    "source": 71545,
+    "width": 40,
+    "height": 18,
+    "file": "sprite_11779_40x18.png",
+    "times": 0,
     "masked": 0,
+    "kind": "keyed",
     "group": "",
     "index": -1
   },
   {
-    "source": 71254,
-    "width": 8,
-    "height": 15,
-    "file": "sprite_11656_8x15.png",
-    "times": 42,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73024,
-    "width": 8,
-    "height": 15,
-    "file": "sprite_11D40_8x15.png",
-    "times": 47,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73024,
-    "width": 16,
-    "height": 15,
-    "file": "sprite_11D40_16x15.png",
-    "times": 51,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73024,
-    "width": 24,
-    "height": 15,
-    "file": "sprite_11D40_24x15.png",
-    "times": 43,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73024,
-    "width": 32,
-    "height": 15,
-    "file": "sprite_11D40_32x15.png",
-    "times": 67,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 1,
-    "file": "sprite_11E24_16x1.png",
-    "times": 47,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 2,
-    "file": "sprite_11E24_16x2.png",
-    "times": 26,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 3,
-    "file": "sprite_11E24_16x3.png",
-    "times": 53,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 4,
-    "file": "sprite_11E24_16x4.png",
-    "times": 24,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 5,
-    "file": "sprite_11E24_16x5.png",
-    "times": 38,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 6,
-    "file": "sprite_11E24_16x6.png",
-    "times": 1,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 7,
-    "file": "sprite_11E24_16x7.png",
-    "times": 22,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 8,
-    "file": "sprite_11E24_16x8.png",
-    "times": 20,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 9,
-    "file": "sprite_11E24_16x9.png",
-    "times": 25,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 10,
-    "file": "sprite_11E24_16x10.png",
-    "times": 27,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 11,
-    "file": "sprite_11E24_16x11.png",
-    "times": 14,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
-    "width": 16,
-    "height": 12,
-    "file": "sprite_11E24_16x12.png",
-    "times": 9,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73252,
+    "source": 73200,
     "width": 16,
     "height": 13,
-    "file": "sprite_11E24_16x13.png",
-    "times": 26,
+    "file": "sprite_11DF0_16x13.png",
+    "times": 3826,
     "masked": 0,
+    "kind": "keyed",
+    "group": "",
+    "index": -1
+  },
+  {
+    "source": 73328,
+    "width": 48,
+    "height": 8,
+    "file": "sprite_11E70_48x8.png",
+    "times": 0,
+    "masked": 0,
+    "kind": "keyed",
+    "group": "",
+    "index": -1
+  },
+  {
+    "source": 73424,
+    "width": 16,
+    "height": 8,
+    "file": "sprite_11ED0_16x8.png",
+    "times": 0,
+    "masked": 0,
+    "kind": "keyed",
+    "group": "",
+    "index": -1
+  },
+  {
+    "source": 73456,
+    "width": 16,
+    "height": 8,
+    "file": "sprite_11EF0_16x8.png",
+    "times": 0,
+    "masked": 0,
+    "kind": "keyed",
+    "group": "",
+    "index": -1
+  },
+  {
+    "source": 73488,
+    "width": 16,
+    "height": 8,
+    "file": "sprite_11F10_16x8.png",
+    "times": 0,
+    "masked": 0,
+    "kind": "keyed",
     "group": "",
     "index": -1
   },
@@ -974,88 +389,64 @@
     "width": 16,
     "height": 8,
     "file": "sprite_11F30_16x8.png",
-    "times": 199,
-    "masked": 199,
+    "times": 932,
+    "masked": 932,
+    "kind": "masked",
     "group": "",
-    "index": -1
+    "index": 0
   },
   {
     "source": 73552,
     "width": 16,
     "height": 8,
     "file": "sprite_11F50_16x8.png",
-    "times": 43,
-    "masked": 43,
+    "times": 415,
+    "masked": 415,
+    "kind": "masked",
     "group": "",
-    "index": -1
+    "index": 1
   },
   {
     "source": 73584,
     "width": 16,
     "height": 8,
     "file": "sprite_11F70_16x8.png",
-    "times": 35,
-    "masked": 35,
+    "times": 462,
+    "masked": 462,
+    "kind": "masked",
     "group": "",
-    "index": -1
+    "index": 2
   },
   {
     "source": 73616,
     "width": 16,
     "height": 8,
     "file": "sprite_11F90_16x8.png",
-    "times": 760,
-    "masked": 760,
+    "times": 1936,
+    "masked": 1936,
+    "kind": "masked",
     "group": "",
-    "index": -1
+    "index": 3
   },
   {
     "source": 73648,
     "width": 16,
     "height": 8,
     "file": "sprite_11FB0_16x8.png",
-    "times": 697,
-    "masked": 697,
+    "times": 1954,
+    "masked": 1954,
+    "kind": "masked",
     "group": "",
-    "index": -1
-  },
-  {
-    "source": 73680,
-    "width": 16,
-    "height": 8,
-    "file": "sprite_11FD0_16x8.png",
-    "times": 487,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73712,
-    "width": 16,
-    "height": 8,
-    "file": "sprite_11FF0_16x8.png",
-    "times": 553,
-    "masked": 0,
-    "group": "",
-    "index": -1
-  },
-  {
-    "source": 73744,
-    "width": 16,
-    "height": 8,
-    "file": "sprite_12010_16x8.png",
-    "times": 439,
-    "masked": 0,
-    "group": "",
-    "index": -1
+    "index": 4
   },
   {
     "source": 75648,
     "width": 40,
     "height": 16,
     "file": "sprite_12780_40x16.png",
-    "times": 575,
+    "times": 298,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1064,8 +455,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12820_8x8.png",
-    "times": 566,
+    "times": 214,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 0
   },
@@ -1076,6 +468,7 @@
     "file": "sprite_12830_8x8.png",
     "times": 45,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 1
   },
@@ -1084,8 +477,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12840_8x8.png",
-    "times": 65,
+    "times": 49,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 2
   },
@@ -1094,8 +488,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12850_8x8.png",
-    "times": 26,
+    "times": 52,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 3
   },
@@ -1104,8 +499,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12860_8x8.png",
-    "times": 66,
+    "times": 29,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 4
   },
@@ -1116,6 +512,7 @@
     "file": "sprite_12870_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 5
   },
@@ -1124,8 +521,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12880_8x8.png",
-    "times": 61,
+    "times": 24,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 6
   },
@@ -1136,6 +534,7 @@
     "file": "sprite_12890_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 7
   },
@@ -1146,6 +545,7 @@
     "file": "sprite_128A0_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 8
   },
@@ -1154,8 +554,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_128B0_8x8.png",
-    "times": 59,
+    "times": 23,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 9
   },
@@ -1166,6 +567,7 @@
     "file": "sprite_128C0_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 10
   },
@@ -1176,6 +578,7 @@
     "file": "sprite_128D0_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 11
   },
@@ -1184,9 +587,10 @@
     "width": 8,
     "height": 8,
     "file": "sprite_128E0_8x8.png",
-    "times": 1,
+    "times": 17,
     "masked": 0,
-    "group": "",
+    "kind": "plain",
+    "group": "Font",
     "index": -1
   },
   {
@@ -1196,6 +600,7 @@
     "file": "sprite_128F0_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 13
   },
@@ -1206,6 +611,7 @@
     "file": "sprite_12900_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 14
   },
@@ -1214,9 +620,10 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12910_8x8.png",
-    "times": 23,
+    "times": 16,
     "masked": 0,
-    "group": "",
+    "kind": "plain",
+    "group": "Font",
     "index": -1
   },
   {
@@ -1226,7 +633,8 @@
     "file": "sprite_12920_8x8.png",
     "times": 25,
     "masked": 0,
-    "group": "",
+    "kind": "plain",
+    "group": "Font",
     "index": -1
   },
   {
@@ -1236,6 +644,7 @@
     "file": "sprite_12930_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 17
   },
@@ -1246,6 +655,7 @@
     "file": "sprite_12940_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 18
   },
@@ -1256,6 +666,7 @@
     "file": "sprite_12950_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 19
   },
@@ -1266,6 +677,7 @@
     "file": "sprite_12960_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 20
   },
@@ -1276,6 +688,7 @@
     "file": "sprite_12970_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 21
   },
@@ -1286,6 +699,7 @@
     "file": "sprite_12980_8x8.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "Font",
     "index": 22
   },
@@ -1294,9 +708,10 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12990_8x8.png",
-    "times": 1,
+    "times": 21,
     "masked": 0,
-    "group": "",
+    "kind": "plain",
+    "group": "Font",
     "index": -1
   },
   {
@@ -1304,8 +719,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12A04_8x8.png",
-    "times": 368,
+    "times": 337,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1314,8 +730,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12A14_8x8.png",
-    "times": 592,
+    "times": 616,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1324,8 +741,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12A24_8x8.png",
-    "times": 634,
+    "times": 601,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1334,8 +752,9 @@
     "width": 8,
     "height": 8,
     "file": "sprite_12A34_8x8.png",
-    "times": 360,
+    "times": 332,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1344,8 +763,9 @@
     "width": 8,
     "height": 5,
     "file": "sprite_12A44_8x5.png",
-    "times": 690,
+    "times": 292,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1354,8 +774,9 @@
     "width": 8,
     "height": 5,
     "file": "sprite_12A4E_8x5.png",
-    "times": 592,
+    "times": 217,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1364,8 +785,9 @@
     "width": 8,
     "height": 5,
     "file": "sprite_12A58_8x5.png",
-    "times": 495,
+    "times": 144,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1374,8 +796,9 @@
     "width": 8,
     "height": 5,
     "file": "sprite_12A62_8x5.png",
-    "times": 399,
+    "times": 98,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1384,8 +807,9 @@
     "width": 8,
     "height": 5,
     "file": "sprite_12A6C_8x5.png",
-    "times": 177,
+    "times": 268,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1394,8 +818,9 @@
     "width": 40,
     "height": 12,
     "file": "sprite_12A76_40x12.png",
-    "times": 342,
+    "times": 192,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1404,8 +829,9 @@
     "width": 32,
     "height": 8,
     "file": "sprite_12AEE_32x8.png",
-    "times": 923,
+    "times": 436,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1414,8 +840,9 @@
     "width": 32,
     "height": 11,
     "file": "sprite_12B2E_32x11.png",
-    "times": 367,
+    "times": 173,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1426,6 +853,7 @@
     "file": "sprite_13450_40x18.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1436,6 +864,7 @@
     "file": "sprite_13504_16x2.png",
     "times": 0,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1444,8 +873,9 @@
     "width": 24,
     "height": 18,
     "file": "sprite_157E0_24x18.png",
-    "times": 37,
+    "times": 25,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1454,8 +884,9 @@
     "width": 24,
     "height": 8,
     "file": "sprite_1584C_24x8.png",
-    "times": 81,
+    "times": 51,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1464,8 +895,9 @@
     "width": 16,
     "height": 10,
     "file": "sprite_1587C_16x10.png",
-    "times": 80,
+    "times": 11,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1476,6 +908,7 @@
     "file": "sprite_158A4_16x15.png",
     "times": 18,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1484,8 +917,9 @@
     "width": 16,
     "height": 12,
     "file": "sprite_158E0_16x12.png",
-    "times": 43,
+    "times": 19,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1494,8 +928,9 @@
     "width": 16,
     "height": 15,
     "file": "sprite_15910_16x15.png",
-    "times": 22,
+    "times": 17,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1506,6 +941,7 @@
     "file": "sprite_16252_88x29.png",
     "times": 51,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1516,6 +952,7 @@
     "file": "sprite_164D0_112x22.png",
     "times": 48,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1526,6 +963,7 @@
     "file": "sprite_16738_24x12.png",
     "times": 46,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1536,6 +974,7 @@
     "file": "sprite_16780_112x8.png",
     "times": 45,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1546,6 +985,7 @@
     "file": "sprite_16860_96x11.png",
     "times": 44,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1556,6 +996,7 @@
     "file": "sprite_16968_32x8.png",
     "times": 44,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1566,6 +1007,7 @@
     "file": "sprite_169A8_80x12.png",
     "times": 57,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   },
@@ -1576,6 +1018,7 @@
     "file": "sprite_16A98_80x12.png",
     "times": 73,
     "masked": 0,
+    "kind": "plain",
     "group": "",
     "index": -1
   }

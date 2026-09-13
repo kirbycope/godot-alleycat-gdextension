@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3]
+[gd_scene load_steps=42 format=3]
 
 [ext_resource type="PackedScene" path="res://addons/controls/controls.tscn" id="1_controls"]
 [ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_controls.gd" id="2_script"]
@@ -11,6 +11,8 @@
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_alt.svg" id="4_alt_pressed"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_v_outline.svg" id="5_sound_normal"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_v.svg" id="6_sound_pressed"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_f_outline.svg" id="60_full_normal"]
+[ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_f.svg" id="61_full_pressed"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_t_outline.svg" id="7_t_normal"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_t.svg" id="8_t_pressed"]
 [ext_resource type="Texture2D" path="res://addons/controls/assets/kenney_nl/Icons/Input Prompts/Keyboard & Mouse/Vector/keyboard_a_outline.svg" id="9_a_normal"]
@@ -49,7 +51,7 @@ action_button_1 = &""
 action_button_2 = &"alleycat_no"
 action_button_3 = &"alleycat_yes"
 action_button_9 = &""
-action_button_10 = &""
+action_button_10 = &"alleycat_fullscreen"
 action_axis_4_plus = &"alleycat_rewind"
 action_axis_5_plus = &"alleycat_sound"
 action_button_7 = &""
@@ -76,6 +78,8 @@ keyboard_mouse_axis_4_plus_normal = ExtResource("42_back_normal")
 keyboard_mouse_axis_4_plus_pressed = ExtResource("43_back_pressed")
 keyboard_mouse_axis_5_plus_normal = ExtResource("5_sound_normal")
 keyboard_mouse_axis_5_plus_pressed = ExtResource("6_sound_pressed")
+keyboard_mouse_button_10_normal = ExtResource("60_full_normal")
+keyboard_mouse_button_10_pressed = ExtResource("61_full_pressed")
 keyboard_mouse_button_9_normal = ExtResource("3_alt_normal")
 keyboard_mouse_button_9_pressed = ExtResource("4_alt_pressed")
 keyboard_mouse_button_2_normal = ExtResource("33_answer_n_outline")
@@ -156,7 +160,7 @@ text = "Menu"
 text = ""
 
 [node name="Label" parent="TopRight/JoypadButton10" index="0"]
-text = ""
+text = "Fullscreen"
 
 [node name="Label" parent="TopLeft/JoypadAxis4Plus" index="0"]
 text = "Rewind"

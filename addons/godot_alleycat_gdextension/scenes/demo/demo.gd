@@ -44,6 +44,8 @@ var _answering: bool = false ## Whether the demo is holding the answer to the jo
 var _pressing_on: bool = false ## Whether the demo is holding the action key to get past a wait.
 var _can_rewind: bool = false ## Whether the library on this platform has been built with rewind in it.
 var _failed: bool = false ## Whether the game could not start, so the screen is an explanation rather than a game.
+var _fullscreen: bool = false ## Whether the picture has been grown to fill the window.
+var _windowed: Array[float] = [] ## The screen's own margins from the scene, to put back afterwards.
 
 
 func _ready() -> void:
@@ -94,7 +96,11 @@ func _ready() -> void:
 		# Rewind is the host's, not the game's - Alley Cat has no idea it is happening - so it is
 		# registered here beside F6 rather than sitting on a slot of the HUD.
 		"alleycat_rewind": {"keys": [KEY_BACKSPACE], "axes": [[JOY_AXIS_TRIGGER_LEFT, 1.0]]},
+		# Fullscreen is the host's too: the game draws 320x200 whatever the window does. The right
+		# shoulder, across from where Alt sits, and F on the keyboard.
+		"alleycat_fullscreen": {"keys": [KEY_F], "buttons": [JOY_BUTTON_RIGHT_SHOULDER]},
 	})
+	_windowed = [screen.offset_left, screen.offset_top, screen.offset_right, screen.offset_bottom]
 	# The node loads on its own _ready, which has now been and gone, so ask rather than wait for a
 	# signal that has already fired.
 	if game.call(&"is_loaded"):
@@ -118,6 +124,31 @@ func _on_load_failed(reason: String) -> void:
 	prompt.text = "Alley Cat could not start.\n\n%s" % reason
 	prompt.show()
 	controls.hide()
+
+
+## Whether the picture has been grown to fill the window.
+func is_fullscreen() -> bool:
+	return _fullscreen
+
+
+## Grows the picture to fill the window, or puts it back inside the HUD's margins. The game's 320x200 keeps
+## its shape either way: the screen is an [AspectRatioContainer], so filling the window means filling the
+## height or the width, whichever the window's shape runs out of first, and centring in the other. The HUD
+## stays where it is and draws over the picture, the way it already does on a phone.
+func set_fullscreen(value: bool) -> void:
+	_fullscreen = value
+	if not is_instance_valid(screen) or _windowed.size() != 4:
+		return
+	if value:
+		screen.offset_left = 0.0
+		screen.offset_top = 0.0
+		screen.offset_right = 0.0
+		screen.offset_bottom = 0.0
+	else:
+		screen.offset_left = _windowed[0]
+		screen.offset_top = _windowed[1]
+		screen.offset_right = _windowed[2]
+		screen.offset_bottom = _windowed[3]
 
 
 ## F6 swaps the look. It says which one it landed on, because eight of them cycle past quickly and a
@@ -147,6 +178,10 @@ func _process(_delta: float) -> void:
 	# the label with the game's text would take that away again.
 	if _failed or game == null:
 		return
+	# Polled rather than listened for, for the same reason the paws menu polls its key: the HUD's own
+	# button is a TouchScreenButton, and those press their action without ever sending an event.
+	if InputMap.has_action(&"alleycat_fullscreen") and Input.is_action_just_pressed(&"alleycat_fullscreen"):
+		set_fullscreen(not _fullscreen)
 	# The game asks its setup questions through BIOS teletype rather than drawing them, so they
 	# arrive as text and not as pixels. Without this the player sees a black screen and no reason
 	# for it: the joystick question and the skill menu are both invisible.

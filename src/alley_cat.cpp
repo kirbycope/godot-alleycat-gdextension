@@ -557,8 +557,8 @@ TypedArray<Dictionary> AlleyCat::get_sprites() const {
 	TypedArray<Dictionary> out;
 	int n = alleycat_sprite_count();
 	for (int i = 0; i < n; i++) {
-		unsigned int source = 0, at = 0, size = 0, kind = 0;
-		if (!alleycat_sprite(i, &source, &at, &size, &kind)) {
+		unsigned int source = 0, at = 0, size = 0, kind = 0, stride = 0;
+		if (!alleycat_sprite(i, &source, &at, &size, &kind, &stride)) {
 			continue;
 		}
 		unsigned int bank = (at & 0x2000u) ? 1u : 0u;
@@ -572,6 +572,14 @@ TypedArray<Dictionary> AlleyCat::get_sprites() const {
 		sprite["width"] = (int)((size & 0xFFu) * 8u);
 		sprite["height"] = (int)((size >> 8) & 0xFFu);
 		sprite["masked"] = kind == ALLEYCAT_BLIT_MASKED;
+		// Which routine drew it, because that is what says which colour is see-through: "masked" ANDs the
+		// sprite into the background, so white is transparent and black is ink; "keyed" lays it over the
+		// background with black transparent; "plain" copies every pixel.
+		sprite["kind"] = kind == ALLEYCAT_BLIT_MASKED ? "masked" : (kind == ALLEYCAT_BLIT_KEYED ? "keyed" : "plain");
+		// Non-zero when the game drew a column lifted out of a wider sprite, which is the cat half off the
+		// edge of the screen. Then source is where inside that sprite the column starts and this is the
+		// sprite's full width in pixels, so a host can find which sprite it is and draw that slice of it.
+		sprite["stride"] = (int)(stride * 8u);
 		out.push_back(sprite);
 	}
 	return out;

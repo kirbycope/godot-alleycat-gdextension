@@ -8,7 +8,7 @@ extends Resource
 ## [method AlleyCat.get_sprites] reports the address of everything drawn, which is how one is found.
 
 ## What this sprite is, once somebody has worked it out - "Cat walk left 1 of 6" and so on. It is also what
-## the inspector calls this entry in the list, so naming one is how a catalogue of 134 addresses turns into
+## the inspector calls this entry in the list, so naming one is how a catalogue of a hundred addresses turns into
 ## something that can be read down rather than clicked through. Until it is named it says the address, the
 ## size and how often the game drew it, which is enough to find it on the contact sheets.
 ##
