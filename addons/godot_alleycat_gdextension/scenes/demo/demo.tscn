@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://addons/godot_alleycat_gdextension/scenes/alley_cat_controls.tscn" id="2_controls"]
 [ext_resource type="PackedScene" uid="uid://chjilytjv5cic" path="res://addons/godot_alleycat_gdextension/scenes/alley_cat_remaster.tscn" id="3_remaster"]
 [ext_resource type="Script" uid="uid://sf47kg4nc8at" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_art.gd" id="4_art"]
-[ext_resource type="Resource" path="res://addons/godot_alleycat_gdextension/resources/artwork.tres" id="5_artwork"]
+[ext_resource type="Resource" uid="uid://c6l5ey1bq5ptp" path="res://addons/godot_alleycat_gdextension/resources/artwork.tres" id="5_artwork"]
 [ext_resource type="Resource" path="res://addons/godot_alleycat_gdextension/resources/sounds.tres" id="6_sounds"]
 [ext_resource type="Resource" uid="uid://bwg0b3sist50s" path="res://addons/godot_alleycat_gdextension/resources/start.tres" id="7_start"]
 
