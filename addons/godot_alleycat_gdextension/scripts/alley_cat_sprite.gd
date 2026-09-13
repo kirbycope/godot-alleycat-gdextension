@@ -7,6 +7,24 @@ extends Resource
 ## the mice are all one piece of artwork drawn in four places, and replacing it replaces all of them at once.
 ## [method AlleyCat.get_sprites] reports the address of everything drawn, which is how one is found.
 
+## What this sprite is, once somebody has worked it out - "Cat walk left 1 of 6" and so on. It is also what
+## the inspector calls this entry in the list, so naming one is how a catalogue of 134 addresses turns into
+## something that can be read down rather than clicked through. Until it is named it says the address, the
+## size and how often the game drew it, which is enough to find it on the contact sheets.
+##
+## Writing it through [member Resource.resource_name] is what puts it on the row: an array of resources is
+## labelled by that, and nothing else in a resource shows without opening it.
+@export var label: String = "":
+	set(value):
+		label = value
+		resource_name = value
+
+## What this sprite belongs to - "Cat", "Dog", "Mouse", "Broom". Most of the game's artwork comes in
+## families: a thing that walks is six frames each way, and a thing that is drawn at three sizes is three
+## entries, so the useful unit when replacing artwork is the family rather than the sprite. The browser
+## filters the sheet by this, which is how twelve cat frames are found among a hundred sprites.
+@export var group: String = ""
+
 ## The address the game copies this sprite's artwork from, as [method AlleyCat.get_sprites] reports it. It is
 ## a physical address rather than an offset, and it does not move between runs.
 @export var source: int = 0
@@ -29,5 +47,6 @@ extends Resource
 @export var draws: int = 0
 @export var masked_draws: int = 0
 
-## What this is, for whoever reads the resource later. The game has no names for its own artwork.
+## The facts about this sprite, written by [code]tools/build_artwork_resource.py[/code] rather than by hand:
+## its size and how often the game was seen to draw it. [member label] is the one to write in.
 @export var note: String = ""

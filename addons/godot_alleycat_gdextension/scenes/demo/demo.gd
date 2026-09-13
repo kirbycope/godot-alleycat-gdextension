@@ -30,7 +30,6 @@ const SCREEN_SHADER: Shader = preload("res://addons/godot_alleycat_gdextension/s
 
 @onready var screen: AspectRatioContainer = $Screen
 @onready var art: AlleyCatArt = $Screen/Art
-@onready var missing: Label = $Missing
 @onready var prompt: Label = $Prompt
 @onready var look_name: Label = $LookName
 @onready var remaster: AlleyCatRemaster = $Remaster
@@ -44,6 +43,7 @@ var _look_shown_until: float = 0.0 ## When to take the name of the look back off
 var _answering: bool = false ## Whether the demo is holding the answer to the joystick question down.
 var _pressing_on: bool = false ## Whether the demo is holding the action key to get past a wait.
 var _can_rewind: bool = false ## Whether the library on this platform has been built with rewind in it.
+var _failed: bool = false ## Whether the game could not start, so the screen is an explanation rather than a game.
 
 
 func _ready() -> void:
@@ -77,6 +77,8 @@ func _ready() -> void:
 	# The artwork draws over the game's own sprites, so it needs to know which node is doing the drawing.
 	art.game = game.get_path()
 	remaster.screen = game.get_path()
+	# ...and the menu needs to know which node is doing the replacing, for its Art row.
+	remaster.art = art.get_path()
 	remaster.looks = PackedStringArray(LOOKS)
 	remaster.look_changed.connect(_on_look_changed)
 	remaster.set_look(0)
@@ -102,15 +104,20 @@ func _ready() -> void:
 
 
 func _on_loaded() -> void:
-	missing.hide()
+	_failed = false
+	prompt.hide()
 	controls.show()
 
 
+## Says why there is no game, on the same label the game's own text goes on. There is no second label for
+## it, because the only two ways this happens are a platform the library has not been built for and a
+## CAT.EXE that is not where the node was told to look. Neither of them is "Alley Cat is not included with
+## this addon": the game is committed in this repository and ships with it.
 func _on_load_failed(reason: String) -> void:
-	missing.text = "Alley Cat could not start.\n\n%s" % reason
-	missing.show()
+	_failed = true
+	prompt.text = "Alley Cat could not start.\n\n%s" % reason
+	prompt.show()
 	controls.hide()
-	prompt.hide()
 
 
 ## F6 swaps the look. It says which one it landed on, because eight of them cycle past quickly and a
@@ -136,7 +143,9 @@ func _process(_delta: float) -> void:
 	if look_name.visible and Time.get_ticks_msec() / 1000.0 > _look_shown_until:
 		look_name.hide()
 
-	if game == null:
+	# Nothing to drive and nothing to read: the screen is the reason it could not start, and overwriting
+	# the label with the game's text would take that away again.
+	if _failed or game == null:
 		return
 	# The game asks its setup questions through BIOS teletype rather than drawing them, so they
 	# arrive as text and not as pixels. Without this the player sees a black screen and no reason
@@ -157,7 +166,12 @@ func _process(_delta: float) -> void:
 		return
 
 	var asking: bool = game.call(&"get_screen_painted") < PAINTED
-	var text: String = game.call(&"get_text")
+	# What the cursor has passed over, not the whole text screen. The screen is persistent and Alley Cat's
+	# Ctrl-M reprints its menu over the page already there, so the buffer still ends in "Press any key to
+	# start" from the *last* time through before the game has printed a word of this one. Reading that was
+	# how pressing Menu in the middle of a game gave a black screen: the demo decided the game was waiting
+	# to be told to go and held a key down against a question it had not asked yet.
+	var text: String = game.call(&"get_printed_text")
 
 	# The same buttons mean different things on each of the game's screens, and most of them mean
 	# nothing at all on two of the three, so the HUD is told which screen is up rather than just

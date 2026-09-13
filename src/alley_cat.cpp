@@ -20,6 +20,7 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_ready"), &AlleyCat::is_ready);
 	ClassDB::bind_method(D_METHOD("get_frame"), &AlleyCat::get_frame);
 	ClassDB::bind_method(D_METHOD("get_text"), &AlleyCat::get_text);
+	ClassDB::bind_method(D_METHOD("get_printed_text"), &AlleyCat::get_printed_text);
 	ClassDB::bind_method(D_METHOD("get_screen_painted"), &AlleyCat::get_screen_painted);
 	ClassDB::bind_method(D_METHOD("get_speaker_hz"), &AlleyCat::get_speaker_hz);
 	ClassDB::bind_method(D_METHOD("is_speaker_on"), &AlleyCat::is_speaker_on);
@@ -75,6 +76,7 @@ void AlleyCat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_reports_sprites", "value"), &AlleyCat::set_reports_sprites);
 	ClassDB::bind_method(D_METHOD("get_reports_sprites"), &AlleyCat::get_reports_sprites);
 	ClassDB::bind_method(D_METHOD("get_sprites"), &AlleyCat::get_sprites);
+	ClassDB::bind_method(D_METHOD("set_hidden_sprites", "sources"), &AlleyCat::set_hidden_sprites);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "reports_sprites"), "set_reports_sprites", "get_reports_sprites");
 	ClassDB::bind_method(D_METHOD("watch", "from", "to"), &AlleyCat::watch);
 	ClassDB::bind_method(D_METHOD("get_watch_writers"), &AlleyCat::get_watch_writers);
@@ -393,6 +395,30 @@ String AlleyCat::get_text() const {
 	}
 	return out;
 }
+
+// The same screen, cut off at the cursor. The text screen is persistent and the program prints over
+// whatever is already on it, so a page that replaces a longer one leaves the old tail sitting underneath -
+// Alley Cat's Ctrl-M menu does exactly that, and a host reading the whole buffer is told the game is
+// waiting to be told to go before it has printed a word. What the cursor has passed over is the page as it
+// stands now; anything below it may belong to a page that is over.
+String AlleyCat::get_printed_text() const {
+	int row = 0;
+	int col = 0;
+	alleycat_cursor(&row, &col);
+	String out;
+	for (int i = 0; i <= row && i < alleycat_text_rows(); i++) {
+		String line = String(alleycat_text_row(i));
+		if (i == row) {
+			line = line.substr(0, col);
+		}
+		line = line.strip_edges(false, true);
+		if (!line.is_empty()) {
+			out += line + "\n";
+		}
+	}
+	return out;
+}
+
 int AlleyCat::get_screen_painted() const { return alleycat_screen_painted(); }
 int AlleyCat::get_speaker_hz() const { return alleycat_speaker_hz(); }
 bool AlleyCat::is_speaker_on() const { return alleycat_speaker_on() != 0; }
@@ -492,6 +518,22 @@ Dictionary AlleyCat::get_machine_state() const {
 	out["keys_queued"] = queued;
 	return out;
 }
+
+// The artwork this node is to stop drawing, because the host is putting its own picture in the same place.
+// The blit still runs and the game is none the wiser - its saved backgrounds and its erases are untouched -
+// but nothing it writes reaches the screen, so the replacement sits on the alley rather than on the game's
+// blocky version of the same thing showing through every gap in it.
+void AlleyCat::set_hidden_sprites(const PackedInt32Array &sources) {
+	// A fixed buffer rather than an allocation: the library keeps at most ALLEYCAT_HIDDEN_MAX of them and
+	// this is called whenever a set of artwork is swapped, not every frame.
+	unsigned int list[ALLEYCAT_HIDDEN_MAX];
+	int count = 0;
+	for (int i = 0; i < sources.size() && count < ALLEYCAT_HIDDEN_MAX; i++) {
+		list[count++] = (unsigned int)sources[i];
+	}
+	alleycat_hide_sprites(list, count);
+}
+
 
 // Writes into the machine's memory, and answers how many bytes went in. The other half of what carrying a
 // high score across runs needs: one read out at the end of a game has to be put back at the start of the

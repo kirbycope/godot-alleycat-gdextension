@@ -1,9 +1,9 @@
 {
   "controls": {
-    "commit": "88900e9dda5ea1ef8b3bac6652ad68bd5fadfb55",
+    "commit": "941c2a9040d0808e40d5721fe94cf6861ea2f9c2",
     "pulled": "2026-09-11T23:40:21Z",
     "ref": "main",
     "repo": "https://github.com/kirbycope/godot-controls.git",
-    "subject": "Keep both slots' events when two of them name one action"
+    "subject": "Offer arrow keys instead of the touch joystick for movement"
   }
 }

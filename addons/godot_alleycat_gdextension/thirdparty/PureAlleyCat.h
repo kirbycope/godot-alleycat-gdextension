@@ -89,6 +89,10 @@ int alleycat_ready(void);
    them, so a host must show these rows or the player sees nothing and assumes it has hung. */
 const char *alleycat_text_row(int row);
 int alleycat_text_rows(void);
+/* Where the cursor is on that screen. The text screen is persistent and Alley Cat reprints its menu over
+   whatever page is already on it, so the characters alone cannot say how far the program has got through
+   printing the page in front of the player - everything below the cursor may be the tail of an older one. */
+void alleycat_cursor(int *row, int *col);
 
 /* How many of the 16384 framebuffer bytes are non-zero. The game blanks the graphics screen while
    it asks a setup question and paints it while playing, so this is how a host decides whether to
@@ -185,6 +189,16 @@ unsigned int alleycat_watch_hits(void);
 /* The routines that called the writers. The writer is nearly always a shared blitter, so it is the caller
    that says what was being drawn. */
 int alleycat_watch_callers(unsigned int *into, int max);
+/* The artwork the host is replacing with its own. A blit from one of these addresses still runs in full -
+   the game's own bookkeeping, its saved backgrounds and its erases are all untouched - but none of what it
+   writes reaches the screen. That is what a replacement needs: artwork drawn over the game's own shows the
+   game's version of the same thing through every gap in it, and the background the host wants behind its
+   picture is the alley, not a flat colour it would have to guess at.
+
+   Addresses are as alleycat_sprite reports them. Passing a count of zero turns hiding off. */
+#define ALLEYCAT_HIDDEN_MAX 64
+void alleycat_hide_sprites(const unsigned int *sources, int count);
+
 void alleycat_set_voice_volume(int voice, float volume);
 
 /* Where the machine is and whether it is in a state to take a key. A game that has stopped responding
@@ -389,6 +403,14 @@ static uint16_t SPRITE_SIZE[ALLEYCAT_SPRITES_MAX];
 static uint16_t SPRITE_KIND[ALLEYCAT_SPRITES_MAX];
 static int      SPRITE_COUNT = 0;
 static int      SPRITE_MISSED = 0;
+
+/* The artwork a host is drawing over, and whether a blit of one of those is running right now. See
+   alleycat_hide_sprites. HIDING_SP is the stack as it stood when that blit was called, which is how the end
+   of it is recognised: the routine is reached by a near call, so the stack comes back above that on return. */
+static uint32_t HIDDEN[ALLEYCAT_HIDDEN_MAX];
+static int      HIDDEN_COUNT = 0;
+static int      HIDING = 0;
+static uint16_t HIDING_SP = 0;
 #define IN_VIDEO(at) ((at) >= ((uint32_t)VIDEO_SEG << 4) && (at) < (((uint32_t)VIDEO_SEG << 4) + 0x4000u))
 
 static void note_watch(uint32_t at);
@@ -397,7 +419,13 @@ static void note_sprite(void);
 
 static void     wr8(uint16_t seg, uint16_t off, uint8_t v) {
     uint32_t at = phys(seg, off);
-    if (IN_VIDEO(at)) { VIDEO_WRITES++; }
+    if (IN_VIDEO(at)) {
+        VIDEO_WRITES++;
+        /* Counted and then dropped. The count is how a host tells a moved sprite from a repainted screen,
+           and the game did draw; it is only the pixels that are not wanted, because the host is putting its
+           own picture in the same place and the game's would show through the gaps in it. */
+        if (HIDING) { return; }
+    }
     if (WATCH_TO > WATCH_FROM && at >= WATCH_FROM && at < WATCH_TO) { note_watch(at); note_caller(); }
     MEM[at] = v;
 }
@@ -476,20 +504,34 @@ static void note_caller(void)
    up - SI the artwork, DI the place on screen, CX the size - because nothing has run yet. */
 static void note_sprite(void)
 {
-    uint32_t where;
-    if (!SPRITES_REPORTED) {
+    uint32_t where, source;
+    int i;
+    if (!SPRITES_REPORTED && HIDDEN_COUNT == 0) {
         return;
     }
     where = (((uint32_t)S[sCS] << 4) + IP) - ((uint32_t)LOAD_SEG << 4);
     if (where != ALLEYCAT_BLIT_PLAIN && where != ALLEYCAT_BLIT_MASKED && where != ALLEYCAT_BLIT_STRIDED) {
         return;
     }
+    /* The source as an address rather than an offset, so a host can read the artwork with alleycat_peek. */
+    source = ((uint32_t)S[sDS] << 4) + R[rSI];
+    if (!HIDING) {
+        for (i = 0; i < HIDDEN_COUNT; i++) {
+            if (HIDDEN[i] == source) {
+                HIDING = 1;
+                HIDING_SP = R[rSP];
+                break;
+            }
+        }
+    }
+    if (!SPRITES_REPORTED) {
+        return;
+    }
     if (SPRITE_COUNT >= ALLEYCAT_SPRITES_MAX) {
         SPRITE_MISSED++;
         return;
     }
-    /* The source as an address rather than an offset, so a host can read the artwork with alleycat_peek. */
-    SPRITE_SOURCE[SPRITE_COUNT] = ((uint32_t)S[sDS] << 4) + R[rSI];
+    SPRITE_SOURCE[SPRITE_COUNT] = source;
     SPRITE_AT[SPRITE_COUNT] = R[rDI];
     SPRITE_SIZE[SPRITE_COUNT] = R[rCX];
     SPRITE_KIND[SPRITE_COUNT] = (uint16_t)where;
@@ -1278,6 +1320,12 @@ static void step(void)
 {
     int seg_override = -1, rep = 0;
     uint8_t op;
+    /* The end of a hidden blit. It is reached by a near call, so the stack is back above where it stood when
+       the call was made as soon as the routine has returned - and every instruction inside it, nested calls
+       included, leaves the stack at or below that. */
+    if (HIDING && R[rSP] > HIDING_SP) {
+        HIDING = 0;
+    }
     for (;;) {
         op = fetch8();
         if (op == 0x26) { seg_override = sES; continue; }
@@ -1314,6 +1362,7 @@ int alleycat_init(const void *exe_bytes, int exe_size)
     memset(S, 0, sizeof S);
     FLAGS = 0x0002; IP = 0; ICOUNT = 0; VIDEO_MODE = -1; STOPPED = 0;
     SCANCODE = 0; PORT61 = 0; RETRACE = 0; KEYQ_HEAD = KEYQ_TAIL = 0;
+    HIDING = 0; HIDING_SP = 0;
     VOICE = VOICE_WRITER = ALLEYCAT_VOICE_NONE; SPEAKER_WAS_ON = 0;
     PIT2_DIVISOR = 0; PIT2_HIGH_BYTE_NEXT = 0;
     PIT0_LATCH = 0; PIT0_HIGH_BYTE_NEXT = 0;
@@ -1433,6 +1482,12 @@ const char *alleycat_text_row(int row)
 
 int alleycat_text_rows(void) { return TEXT_ROWS; }
 
+void alleycat_cursor(int *row, int *col)
+{
+    if (row) *row = CUR_ROW;
+    if (col) *col = CUR_COL;
+}
+
 int alleycat_screen_painted(void)
 {
     int i, n = 0;
@@ -1540,6 +1595,20 @@ void alleycat_report_sprites(int on) { SPRITES_REPORTED = on; alleycat_sprites_b
    afterwards is what was drawn in that frame and nothing older. */
 void alleycat_sprites_begin(void) { SPRITE_COUNT = 0; SPRITE_MISSED = 0; }
 
+void alleycat_hide_sprites(const unsigned int *sources, int count)
+{
+    int i;
+    if (sources == 0 || count < 0) { count = 0; }
+    if (count > ALLEYCAT_HIDDEN_MAX) { count = ALLEYCAT_HIDDEN_MAX; }
+    for (i = 0; i < count; i++) {
+        HIDDEN[i] = (uint32_t)sources[i];
+    }
+    HIDDEN_COUNT = count;
+    /* Whatever was being hidden a moment ago may not be on the new list, and a blit already running would
+       otherwise stay hidden to the end of itself. */
+    HIDING = 0;
+}
+
 int alleycat_sprite_count(void) { return SPRITE_COUNT; }
 
 int alleycat_sprite(int index, unsigned int *source, unsigned int *at, unsigned int *size, unsigned int *kind)
@@ -1595,7 +1664,7 @@ void alleycat_set_voice_volume(int voice, float volume)
    PARITY is not here because it is a lookup table built from nothing, identical every run. The
    audio ring is not here because it belongs to the host, not the machine: rewinding should not
    push samples back at a host that has already played them. */
-#define ALLEYCAT_STATE_FIELDS(X) 	X(MEM) X(R) X(S) X(IP) X(FLAGS) X(ICOUNT) 	X(VIDEO_MODE) X(STATUS) X(FRAME) 	X(TEXT) X(CUR_ROW) X(CUR_COL) 	X(SCANCODE) X(PORT61) X(KEYQ) X(KEYQ_HEAD) X(KEYQ_TAIL) 	X(AUDIO_ACC) X(SQUARE_PHASE) X(SQUARE_LEVEL) 	X(PIT2_DIVISOR) X(PIT2_HIGH_BYTE_NEXT) X(VOICE) X(VOICE_WRITER) X(SPEAKER_WAS_ON) 	X(PIT0_LATCH) X(PIT0_HIGH_BYTE_NEXT) X(RETRACE) 	X(JOY_PRESENT) X(JOY_X) X(JOY_Y) X(JOY_BUTTON1) X(JOY_BUTTON2) 	X(JOY_FIRED) X(JOY_TIMING) 	X(STOPPED) X(BAD_OP) X(BAD_CS) X(BAD_IP)
+#define ALLEYCAT_STATE_FIELDS(X) 	X(MEM) X(R) X(S) X(IP) X(FLAGS) X(ICOUNT) 	X(VIDEO_MODE) X(STATUS) X(FRAME) 	X(TEXT) X(CUR_ROW) X(CUR_COL) 	X(SCANCODE) X(PORT61) X(KEYQ) X(KEYQ_HEAD) X(KEYQ_TAIL) 	X(AUDIO_ACC) X(SQUARE_PHASE) X(SQUARE_LEVEL) 	X(PIT2_DIVISOR) X(PIT2_HIGH_BYTE_NEXT) X(VOICE) X(VOICE_WRITER) X(SPEAKER_WAS_ON) 	X(PIT0_LATCH) X(PIT0_HIGH_BYTE_NEXT) X(RETRACE) 	X(JOY_PRESENT) X(JOY_X) X(JOY_Y) X(JOY_BUTTON1) X(JOY_BUTTON2) 	X(JOY_FIRED) X(JOY_TIMING) 	X(STOPPED) X(BAD_OP) X(BAD_CS) X(BAD_IP) 	X(HIDING) X(HIDING_SP)
 
 size_t alleycat_state_size(void)
 {

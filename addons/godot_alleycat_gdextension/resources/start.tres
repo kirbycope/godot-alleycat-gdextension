@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="AlleyCatStart" format=3 uid="uid://bwg0b3sist50s"]
+
+[ext_resource type="Script" uid="uid://c5e6wh4swgx6k" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_start.gd" id="1_start"]
+
+[resource]
+script = ExtResource("1_start")
+title_them = "YOU"
+title_mousies = "JESSI"
+alley_them = "YOU"
+alley_mousies = "JESSICA"

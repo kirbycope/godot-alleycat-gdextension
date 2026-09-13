@@ -24,7 +24,6 @@ const BINDINGS: Dictionary = {
 	# Jump is the bottom face button and the space bar wherever Godot is concerned, and in Alley Cat
 	# jumping is pushing up, so the slot is on alleycat_up and the key over it is Space.
 	"button_0": {"keys": [KEY_SPACE]},
-	"button_1": {"keys": [KEY_S]},
 	"button_2": {"keys": [KEY_N]},
 	"button_3": {"keys": [KEY_Y]},
 	"button_4": {"keys": [KEY_ESCAPE]},
@@ -32,6 +31,11 @@ const BINDINGS: Dictionary = {
 	# Rewind is the host's, not the game's, but it earns a place on the HUD because a player has no
 	# other way to find out it exists.
 	"axis_4_plus": {"keys": [KEY_BACKSPACE]},
+	# Sound sits on the other trigger, across from rewind. The game calls it Ctrl-S and the obvious key for
+	# it would be S, but the addon binds S to moving down as well - it is the S of WASD - so a player
+	# walking down the alley would be turning the sound on and off the whole way. V is free and is the one
+	# letter on a keyboard that already means volume.
+	"axis_5_plus": {"keys": [KEY_V]},
 	"button_11": {"keys": [KEY_K]},
 	"button_12": {"keys": [KEY_H]},
 	"button_13": {"keys": [KEY_T]},
@@ -56,6 +60,7 @@ const SETUP_LABELS: Dictionary = {
 	# Rewinding works on the setup screens as well as in play, so it keeps its name there. Anything
 	# set_labels is not told about is cleared, which is how it lost it.
 	"axis_4_plus": "Rewind",
+	"axis_5_plus": "",
 	"button_11": "Kitten",
 	"button_12": "House Cat",
 	"button_13": "Tomcat",
@@ -75,6 +80,7 @@ const START_LABELS: Dictionary = {
 	"button_4": "",
 	"button_6": "",
 	"axis_4_plus": "Rewind",
+	"axis_5_plus": "",
 	"button_11": "",
 	"button_12": "",
 	"button_13": "",
@@ -91,6 +97,7 @@ const LABEL_PROPERTIES: Dictionary = {
 	"button_4": "joypad_button_4_label",
 	"button_6": "joypad_button_6_label",
 	"axis_4_plus": "joypad_axis_4_plus_label",
+	"axis_5_plus": "joypad_axis_5_plus_label",
 	"button_11": "joypad_button_11_label",
 	"button_12": "joypad_button_12_label",
 	"button_13": "joypad_button_13_label",

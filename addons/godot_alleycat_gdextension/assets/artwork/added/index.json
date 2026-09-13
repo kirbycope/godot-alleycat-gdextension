@@ -1,0 +1,156 @@
+[
+  {
+    "source": 121088,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D900_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter B",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D900"
+  },
+  {
+    "source": 121104,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D910_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter D",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D910"
+  },
+  {
+    "source": 121120,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D920_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter F",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D920"
+  },
+  {
+    "source": 121136,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D930_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter G",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D930"
+  },
+  {
+    "source": 121152,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D940_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter J",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D940"
+  },
+  {
+    "source": 121168,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D950_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter N",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D950"
+  },
+  {
+    "source": 121184,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D960_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter O",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D960"
+  },
+  {
+    "source": 121200,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D970_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter P",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D970"
+  },
+  {
+    "source": 121216,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D980_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter Q",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D980"
+  },
+  {
+    "source": 121232,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D990_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter R",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D990"
+  },
+  {
+    "source": 121248,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D9A0_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter W",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D9A0"
+  },
+  {
+    "source": 121264,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D9B0_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter X",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D9B0"
+  },
+  {
+    "source": 121280,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D9C0_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter Y",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D9C0"
+  },
+  {
+    "source": 121296,
+    "width": 8,
+    "height": 8,
+    "file": "added/sprite_1D9D0_8x8.png",
+    "times": 0,
+    "masked": 0,
+    "group": "Font",
+    "label": "Letter Z",
+    "note": "8x8, drawn rather than found: written into the machine at 0x1D9D0"
+  }
+]

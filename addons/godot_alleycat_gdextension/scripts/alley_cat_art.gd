@@ -20,7 +20,31 @@ extends Control
 		_resolve()
 
 ## The replacements. Without one this node does nothing at all.
-@export var artwork: AlleyCatArtwork
+@export var artwork: AlleyCatArtwork:
+	set(value):
+		artwork = value
+		_tell_the_game_what_is_replaced()
+
+## Whether the replacements are drawn. Turn it off and the game is exactly as it shipped: its own sprites
+## stop being hidden and nothing is painted over them. This is what the paws menu's Art row switches, and
+## it can be switched at any moment, mid-jump included.
+##
+## A switch of its own rather than clearing [member artwork], because the set has to still be there to come
+## back to, and because reloading a catalogue of a hundred textures to turn the overlay on is absurd.
+##
+## Nothing in the machine changes either way. The game has been drawing its own sprites all along - hiding
+## one only throws away the bytes on their way to the framebuffer - so there is no state to put back and no
+## moment when switching is unsafe.
+@export var enabled: bool = true:
+	set(value):
+		if enabled == value:
+			return
+		enabled = value
+		# Whatever is up belongs to the old answer, and the game has been redrawing underneath it the whole
+		# time, so dropping it uncovers a picture that is already right.
+		_showing = []
+		_tell_the_game_what_is_replaced()
+		queue_redraw()
 
 ## The picture the game draws, which everything is positioned in.
 const GAME_SIZE: Vector2 = Vector2(320.0, 200.0)
@@ -42,6 +66,15 @@ const REDRAW_BYTES: int = 12000
 var _showing: Array = []
 var _video_writes: int = -1
 
+## The report grows as a game tick runs and starts again from nothing on the next one, and a tick is spread
+## over dozens of host frames. So a half-built report is half the picture: at the start of a tick the only
+## thing in it is the game rubbing out where the sprite was, and reading that on its own says the sprite has
+## gone when it is about to be drawn again a few hundred instructions later. Deciding to *show* something
+## can be done the moment it is reported, but deciding to take something away waits for the whole tick.
+var _tick: Array = [] ## The report as it stood when the last tick ended.
+var _reported: int = 0 ## How much of this tick's report has arrived, to notice the next one starting.
+var _drawn_this_tick: bool = false ## Whether any of ours has been reported since the last tick ended.
+
 
 func _ready() -> void:
 	# Drawn over the game rather than under it. The game node is added to the scene at runtime, so it would
@@ -54,7 +87,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if Engine.is_editor_hint() or artwork == null:
+	if Engine.is_editor_hint() or artwork == null or not enabled:
 		return
 	if not is_instance_valid(_game) or not _game.has_method(&"get_sprites"):
 		return
@@ -66,19 +99,59 @@ func _process(_delta: float) -> void:
 			queue_redraw()
 		_video_writes = writes
 
+	var report: Array = _game.call(&"get_sprites")
+	if report.size() < _reported:
+		_end_of_tick()
+	_reported = report.size()
+	_tick = report
+
 	var mine: Array = []
-	for sprite: Dictionary in _game.call(&"get_sprites"):
+	for sprite: Dictionary in report:
 		if artwork.texture_for(int(sprite["source"])) != null:
 			mine.append(sprite)
 	# A report with one of ours in it replaces what is up, wholesale. The game draws one frame of an
 	# animation at a time, so keeping the old one alongside would paint two cats a step apart.
 	if not mine.is_empty():
 		_showing = mine
+		_drawn_this_tick = true
 		queue_redraw()
 
 
+## A whole game tick has gone by. If none of ours was drawn in it, anything the game drew over one of them
+## has taken that place back: the cat has stopped and the game is drawing the standing pose there, or it has
+## turned into something there is no replacement for. Held replacements are still kept while the game draws
+## nothing at all where they are, which is what a sprite nobody has disturbed looks like from the report.
+func _end_of_tick() -> void:
+	if _drawn_this_tick:
+		_drawn_this_tick = false
+		return
+	var kept: Array = []
+	for held: Dictionary in _showing:
+		if not _drawn_over(held, _tick):
+			kept.append(held)
+	if kept.size() != _showing.size():
+		_showing = kept
+		queue_redraw()
+
+
+## Whether the game drew anything over [param held] in [param report], in the game's own 320x200 pixels.
+## The report says what was blitted and where, so an overlap is the game painting that patch of screen
+## itself - which is exactly when a replacement hung over it has stopped being true.
+func _drawn_over(held: Dictionary, report: Array) -> bool:
+	var box: Rect2 = _rect_of(held)
+	for sprite: Dictionary in report:
+		if box.intersects(_rect_of(sprite)):
+			return true
+	return false
+
+
+## One entry of a sprite report as a rectangle in the game's own pixels.
+func _rect_of(sprite: Dictionary) -> Rect2:
+	return Rect2(float(sprite["x"]), float(sprite["y"]), float(sprite["width"]), float(sprite["height"]))
+
+
 func _draw() -> void:
-	if artwork == null or not is_instance_valid(_game) or not _game.has_method(&"get_sprites"):
+	if artwork == null or not enabled or not is_instance_valid(_game) or not _game.has_method(&"get_sprites"):
 		return
 	var picture: Rect2 = picture_rect()
 	if picture.size.x <= 0.0:
@@ -103,6 +176,34 @@ func _resolve() -> void:
 	if is_instance_valid(_game) and _game.has_method(&"get_sprites"):
 		# Reporting costs nothing until someone asks for it, so it is asked for rather than left on.
 		_game.set(&"reports_sprites", true)
+		_tell_the_game_what_is_replaced()
+
+
+## Names the artwork the game should stop drawing, because this node is putting its own picture in the same
+## place. Without it the game's own sprite is still on the screen underneath, showing through every gap in
+## the replacement - and a replacement is a shape on transparency, so there are a lot of gaps. Painting over
+## it here instead would mean guessing at what is behind the sprite, which is the alley rather than any one
+## colour.
+##
+## By address, not by entry: the game blits some artwork at more than one size and each size is its own
+## entry, while a replacement for it is the same picture and the same address.
+func _tell_the_game_what_is_replaced() -> void:
+	if not is_instance_valid(_game) or not _game.has_method(&"set_hidden_sprites"):
+		return
+	_game.call(&"set_hidden_sprites", replaced_sources())
+
+
+## The addresses the game should stop drawing: every sprite with a replacement, once each. Empty while
+## [member enabled] is off, which is the whole of turning the overlay off as far as the machine is
+## concerned - the game goes back to drawing its own.
+func replaced_sources() -> PackedInt32Array:
+	var sources: PackedInt32Array = PackedInt32Array()
+	if artwork == null or not enabled:
+		return sources
+	for sprite: AlleyCatSprite in artwork.sprites:
+		if sprite.texture != null and not sources.has(sprite.source):
+			sources.append(sprite.source)
+	return sources
 
 
 ## Where the game's picture actually is inside this rect. The game is drawn centred and letterboxed, keeping

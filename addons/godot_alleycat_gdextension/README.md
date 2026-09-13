@@ -135,6 +135,12 @@ The keyboard art names Alley Cat's own keys throughout rather than the addon's d
 `keyboard_mouse_*` texture per slot set in the inherited scene, so a key drawn on the HUD is a key
 the game answers to.
 
+On a touchscreen the movement control is the four arrow buttons, not the virtual stick: the scene sets the
+addon's `touch_movement` to `BUTTONS`. Alley Cat reads four directions and nothing in between, so an
+analogue stick works against the player - a finger a fraction off the axis is a direction the game has no
+way to express, and it reads as the control being finicky. The buttons are the movement slots, which already
+carry the arrow art this scene gives them for its keyboard players.
+
 ### The HUD follows the game's screens
 
 Alley Cat asks its setup in text rather than drawing it, and the same buttons answer different things on
@@ -398,26 +404,73 @@ The artwork is a resource - `AlleyCatArtwork`, a list of `AlleyCatSprite`, each 
 with a texture - so a set is a file that can be swapped whole, and anything not named in it is left exactly
 as the game drew it. A set can be finished one sprite at a time.
 
+`enabled` turns the whole overlay on and off, at any moment, mid-jump included. Nothing in the machine
+moves either way: the game draws its own artwork all along, and the only difference is whether those bytes
+reach the framebuffer and whether this node paints over the top of them. That is what the paws menu's
+**Art** row switches, and it is why it needs no restart. Set it to `false` in the inspector to ship with
+the 1984 picture and offer the remaster from the menu.
+
 `resources/artwork.tres` has a slot for **every** sprite the game was seen to draw - 134 of them - and each
 one carries the game's own picture in `original`. That is what makes the thing usable: an address is not a
 name, and nobody can draw a replacement for a sprite they cannot look at. Open the resource, scroll to a
 sprite, see what it is, drop a texture into its `texture` and that sprite is replaced and nothing else.
 
-Every slot ships empty except the worked example, which covers the five frames at `0x10E5E`, `0x10EA0`,
-`0x10EE2`, `0x10F24` and `0x10FA8`. That it takes five and not one is the first thing to know before
-replacing anything. A sprite that animates is several pieces of artwork, and covering one of them puts the
-replacement on screen only for the fraction of the time that frame is up, which reads as a flicker rather
-than as artwork. Where a sprite is drawn through a mask, the mask goes down whatever pose the thing is in,
-so it is the slot that keeps a replacement on screen.
+Every slot ships empty except the worked example, which is the player's cat. It takes **twelve** slots, and
+that is the first thing to know before replacing anything:
+
+| | Frames |
+| --- | --- |
+| Walking left | `0x10E5E` `0x10EA0` `0x10EE2` `0x10F24` `0x10F66` `0x10FA8` |
+| Walking right | `0x10CD2` `0x10D14` `0x10D56` `0x10D98` `0x10DDA` `0x10E1C` |
+| Standing still | the mask at `0x106FA`, not covered - see below |
+
+A sprite that animates is several pieces of artwork, and a thing that faces both ways is two animations.
+Covering one frame puts the replacement on screen only for the sixth of the time that frame is up, which
+reads as a flicker; covering one direction puts it there only while the player walks that way. Both were
+tried and both look broken. Note also that the art is drawn facing one way and mirrored for the other, and
+that getting the mirror backwards makes the cat moonwalk.
+
+Standing still is deliberately left as the game drew it. When the cat stops, the game stops drawing a walk
+frame and draws the mask at `0x106FA` in its place - a plain black box it shares with other things on the
+screen - so a replacement hung on that address would follow those about as well. Finding these twelve is
+five minutes of work with the report: hold left in a real game and list what `get_sprites()` names, hold
+right and list that, and the two sets are the two directions.
 
 ### Which sprite is which
 
-An address is not a name, so the exported artwork is also laid out to be looked at.
-`assets/artwork/sprite_sheet_1.png`, `_2` and `_3` are contact sheets of all 134 sprites on a mid grey,
-each labelled with its source address and size, and `tools/sprite_sheet.py` rebuilds them from
-`assets/artwork/original/`. Find the thing you want to redraw on a sheet, read its address off the label,
-and that is the slot to drop a texture into. It beats guessing: three separate guesses at which sprite was
-the player's cat were all wrong before the sheets existed.
+An address is not a name, so there is a contact sheet, and it is a live one.
+
+**The Alley Cat Artwork panel.** `plugin.cfg` registers an editor plugin that puts the catalogue in the
+bottom panel as a sheet: every sprite at once, blown up on a mid grey so the black ones can be seen, the
+name under each, and the ones that already have a replacement named in green. Click a sprite and its details
+are on the right - the game's own picture beside the replacement, the name to type in, and a resource slot
+to drag a texture onto from the FileSystem dock. Both are written straight into the `.tres`.
+
+That panel exists because the inspector cannot do this job. An `AlleyCatArtwork` is a hundred sprites in a
+flat array, and the inspector draws an array of resources as a hundred rows with a name on each: finding one
+means opening a row, looking at the picture inside, and closing it again. The filter box takes a name or an
+address, and "Replaced only" says how much of a set is finished.
+
+**Groups.** Most of the game's artwork comes in families - a thing that walks is six frames each way, and a
+thing drawn at three sizes is three entries - so the useful unit when replacing artwork is the family rather
+than the sprite. Each sprite has a `group`, typed into the details panel or chosen from the dropdown beside
+it, and the dropdown in the bar narrows the sheet to one. A group exists because a sprite says it is in one;
+there is nothing to declare. "Ungrouped" is the list still to be worked through, which is the one to sort
+from. The cat's twelve frames ship in a group called Cat.
+
+**Still pictures.** `assets/artwork/sprite_sheet_1.png`, `_2` and `_3` are the same thing as flat images,
+rebuilt from `assets/artwork/original/` by `tools/sprite_sheet.py`. They are worth keeping for reading away
+from the editor, and for pasting into a conversation about which sprite is which.
+
+Naming beats guessing: three separate guesses at which sprite was the player's cat were all wrong before the
+sheets existed. Names typed into the panel live in `artwork.tres`, and `build_artwork_resource.py` rewrites
+that file from nothing rather than reading the old one, so a name that has to survive a rebuild goes in the
+`KNOWN` dictionary at the top of the script - which is where the cat's twelve frames are.
+
+**Blanks are left out.** Thirty-two of the 134 addresses the game blits from are not pictures: runs of
+identical bytes used to clear a strip, and a few where the size the report gave does not belong to the
+address. They decode to a rectangle of one flat colour, so the builder drops them and the catalogue is 102
+entries of real artwork.
 
 Two things the catalogue records are worth reading before drawing anything. `draws` says how often the
 sprite was drawn, which separates the cat and the scenery from the rarities. And where `masked_draws` is
@@ -452,9 +505,15 @@ spread across dozens of frames - clearing per frame hands back a fragment of a t
 
 And the report is what the game *just drew*, which is not what is on the screen. It only redraws what moved,
 so a cat standing still is absent from every report while plainly still there. Whatever you draw from it has
-to be held until the game draws that sprite somewhere else or repaints the screen - not timed out, or it
-blinks off whenever the player stops moving. Measured at 60 frames a second, holding it properly is the
-difference between the replacement being on screen 9% of the time and 88%.
+to be held rather than timed out, or it blinks off whenever the player stops moving. Measured at 60 frames a
+second, holding it properly is the difference between the replacement being on screen 9% of the time and
+88%.
+
+Held, but not held forever. A replacement is dropped as soon as the game draws anything *over* it, which is
+the other half of the same rule: the cat turns round and walks off as a sprite there is no replacement for,
+and without that check the old picture is left standing where the cat used to be. Overlap is the test,
+because the report gives the rectangle the game blitted into and the game repainting that patch is exactly
+what makes a replacement over it untrue.
 
 ## Keeping a high score
 
@@ -485,6 +544,11 @@ completely: the same measured game reported 9, 3, 2, 1, 9 and fired exactly thre
 node, hand it a list of `looks`, and it takes `Esc` - Alley Cat's own paws key - before the game sees
 it and puts its own menu up instead.
 
+The menu offers the look, the replacement artwork, the skill, the two volumes and how much rewind to
+keep. The **Art** row appears only where the node's `art` has been pointed at an `AlleyCatArt`; a project
+with no replacements gets no row rather than a dead one. It reads `Remastered` or `Original`, either arrow
+lands on the other, and `is_remastered_art()` / `set_remastered_art()` are the same switch from code.
+
 It does not try to detect the game's paws mode, and does not need to. A host that owns the key can
 simply stop running the machine, which is a truer pause than the game's own: Alley Cat has no idea it
 happened, so it has no opinions about what the player may do next. Rewind already works the same way.
@@ -512,13 +576,33 @@ the game sounds as it shipped. Copy it into your own project - examples in the a
 project's files - fill in `music` to replace the tune, and the named effect slots as they become
 attributable. Giving it a `music` stream silences the game's own tune; clearing it gives it back.
 
+Replacement sound obeys the game's own Sound switch. Ctrl-S is Alley Cat's, printed on its own menu and
+sent by the HUD's Sound button, and a player who presses it wants quiet - a tune and a meow coming out of
+Godot instead of the PC speaker are still the game making a noise as far as they are concerned. So the
+remaster reads the switch out of the machine at `SOUND_AT`, `0x0000` from `get_data_address()`, and follows
+it: the tune is turned down rather than stopped, so it keeps its place and turning the sound back on does
+not restart the piece, and an effect asked for while the sound is off is simply not started. An effect part
+way through is cut, because there is nothing to keep its place for.
+
+It is read rather than counted. Watching for presses of the Sound action would work until the first restart,
+rewind or trip through the game's own menu, none of which this layer is told about; the byte is right across
+all three because it is the game's own.
+
+Finding it was a differential scan, which is the technique that failed on the score and works here because
+the value is a switch rather than a number: snapshot sixteen kilobytes of the data segment, press Ctrl-S,
+snapshot, press it again, snapshot, and keep only the bytes that changed and then came home. Exactly one
+does. Non-zero is on, and the confirmation is that the speaker goes quiet with it - five effects over ten
+seconds of play with it on, none over the same play with it off.
+
 ## Licence
 
 The code here is MIT and is original work: the node, the HUD mapping and the build. `assets/CAT.EXE` is not covered by it and is not ours to license - see **The game** above.
 
 | Asset | What it is | From | Licence |
 | --- | --- | --- | --- |
-| `assets/artwork/cat.png`, `assets/artwork/mouse.png` | sample replacement sprites, drawn for this addon | original work | MIT, with the rest of the code |
+| `assets/artwork/cat_walk_*.png`, `assets/artwork/mouse.png` | sample replacement sprites, drawn for this addon | original work | MIT, with the rest of the code |
+| `assets/artwork/added/*.png`, `assets/artwork/extra_font.png` | the fourteen letters Alley Cat does not carry, drawn for this addon by `tools/make_font.py` | original work | MIT, with the rest of the code |
+| `assets/artwork/original/*.png`, `assets/artwork/sprite_sheet_*.png` | Alley Cat's own artwork, sliced out of `CAT.EXE` so each sprite can be looked at | the game | not ours to license - see **The game** |
 | `assets/cat_meow.ogg` | the sound the cat makes on being caught | Gravity Sound, Animal SFX | see the pack's own terms |
 
 See [PureAlleyCat](https://github.com/kirbycope/PureAlleyCat) for what the library is and how it was

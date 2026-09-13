@@ -133,6 +133,7 @@ public:
 	// The BIOS text screen. The game prints its setup questions through teletype rather
 	// than drawing them, so a host that ignores this shows the player a blank screen.
 	String get_text() const;
+	String get_printed_text() const;
 	// Non-zero framebuffer bytes. The game blanks the screen to ask a question and paints
 	// it while playing, so a host uses this to decide whether to overlay get_text().
 	int get_screen_painted() const;
@@ -185,6 +186,7 @@ public:
 	int get_load_address() const;
 	int get_data_address() const;
 	Dictionary get_machine_state() const;
+	void set_hidden_sprites(const PackedInt32Array &sources);
 	int poke(int at, const PackedByteArray &bytes);
 	void set_reports_sprites(bool value);
 	bool get_reports_sprites() const;

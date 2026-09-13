@@ -24,8 +24,8 @@ func test_the_demo_opens_without_the_library_and_says_why() -> void:
 		pass_test("AlleyCat is built for this platform")
 		return
 	assert_null(demo.game)
-	assert_true(demo.missing.visible, "the demo says what is missing rather than failing to open")
-	assert_string_contains(demo.missing.text, "not built for this platform")
+	assert_true(demo.prompt.visible, "the demo says what is missing rather than failing to open")
+	assert_string_contains(demo.prompt.text, "not built for this platform")
 	assert_false(demo.controls.visible, "and the HUD is no use with nothing to control")
 
 
@@ -36,7 +36,7 @@ func test_the_game_fills_the_screen_and_the_hud_shows() -> void:
 	assert_not_null(demo.game)
 	assert_eq(demo.game.get_parent(), demo.screen, "the game belongs in the aspect ratio container")
 	assert_true(demo.game.call(&"is_loaded"), "CAT.EXE ships with the addon")
-	assert_false(demo.missing.visible)
+	assert_false(demo._failed, "so there is nothing to explain")
 	assert_true(demo.controls.visible, "the HUD shows around the screen")
 
 
@@ -101,8 +101,8 @@ func test_the_hud_picks_from_the_list_the_game_published() -> void:
 ## A blank slot is a button the game does not use, and the addon hides it. Alley Cat is a one-stick
 ## game with nothing on the shoulders, the triggers or the right stick.
 func test_the_buttons_the_game_does_not_use_are_left_blank() -> void:
-	for slot: String in ["button_7", "button_8", "button_9", "button_10",
-			"axis_5_plus", "look_up", "look_down", "look_left", "look_right"]:
+	for slot: String in ["button_1", "button_7", "button_8", "button_9", "button_10",
+			"look_up", "look_down", "look_left", "look_right"]:
 		assert_eq(String(demo.controls.get(&"action_" + slot)), "", "%s is not a button here" % slot)
 
 
@@ -130,10 +130,17 @@ func _pad_button(button: JoyButton) -> InputEventJoypadButton:
 
 func test_the_slots_are_labelled_with_what_the_game_does() -> void:
 	assert_eq(demo.controls.joypad_button_0_label.text, "Jump")
-	assert_eq(demo.controls.joypad_button_1_label.text, "Sound")
 	assert_eq(demo.controls.joypad_button_4_label.text, "Paws")
 	assert_eq(demo.controls.joypad_button_6_label.text, "Menu")
 	assert_eq(demo.controls.left_joystick_label.text, "Move")
+	# Sound is on the right trigger, across from rewind on the left, and not on a face button: the game
+	# calls it Ctrl-S and the face button had S on it, but S is also the S of WASD and walks the cat down
+	# the alley, so a player heading downwards was turning the sound on and off the whole way.
+	assert_eq(demo.controls.joypad_axis_5_plus_label.text, "Sound")
+	assert_eq(String(demo.controls.action_axis_5_plus), "alleycat_sound")
+	assert_false(InputMap.action_get_events(&"alleycat_down").any(
+			func(e: InputEvent) -> bool: return e.is_match(_key(KEY_V))),
+			"and V, which moved there with it, is not a way of walking")
 
 
 ## The game asks its questions in text and a pad has no letters, so the face buttons stand in for
@@ -147,7 +154,7 @@ func test_the_labels_swap_for_the_setup_questions_and_back() -> void:
 
 	demo.controls.set_setting_up(false)
 	assert_eq(demo.controls.joypad_button_0_label.text, "Jump", "the scene's own words come back")
-	assert_eq(demo.controls.joypad_button_1_label.text, "Sound")
+	assert_eq(demo.controls.joypad_axis_5_plus_label.text, "Sound")
 
 
 ## Ctrl-M brings the player back to the setup, and the one thing there worth putting to the player is the
@@ -210,12 +217,18 @@ func test_the_hud_follows_the_game_onto_its_setup_screen() -> void:
 	assert_true(demo.controls.joypad_button_11.visible, "with the d-pad that answers it")
 
 
+## There is no second label for this and no "Alley Cat is not included" message: the game is committed in
+## this repository and ships with the addon, so the only two ways it does not start are a platform the
+## library has not been built for and a CAT.EXE that is not where the node was told to look. The reason goes
+## on the same label the game's own text goes on, and nothing overwrites it afterwards.
 func test_a_missing_game_is_explained_rather_than_blank() -> void:
 	demo._on_load_failed("Copy your own CAT.EXE to somewhere")
-	assert_true(demo.missing.visible)
-	assert_string_contains(demo.missing.text, "CAT.EXE")
+	assert_true(demo.prompt.visible)
+	assert_string_contains(demo.prompt.text, "CAT.EXE")
 	assert_false(demo.controls.visible, "the HUD is no use with nothing to control")
-	assert_false(demo.prompt.visible)
+	await wait_process_frames(10)
+	assert_string_contains(demo.prompt.text, "CAT.EXE", "and the reason stays up rather than being painted over")
+	demo._on_loaded()
 
 
 ## The paws menu is the host's, not the game's. Opening it stops the machine outright, which is a
@@ -356,15 +369,24 @@ func test_every_sprite_has_a_slot_and_the_game_s_own_picture_in_it() -> void:
 		return
 	var artwork: AlleyCatArtwork = demo.art.artwork
 	assert_not_null(artwork, "The demo ships a set of artwork")
-	assert_gt(artwork.sprites.size(), 100, "which lists every sprite the game was seen to draw")
+	assert_gt(artwork.sprites.size(), 100, "which lists what the game draws and what it keeps in tables")
 	# By address, not by entry: the game blits some artwork at more than one size, and each size is its own
 	# entry while the replacement for it is the same picture.
 	var overridden: Dictionary = {}
+	var ever_drawn: int = 0
 	for sprite: AlleyCatSprite in artwork.sprites:
 		assert_not_null(sprite.original, "0x%05X should carry the game's own picture" % sprite.source)
-		assert_gt(sprite.draws, 0, "and how often it was drawn, so the scenery is told from the rarities")
+		assert_false(sprite.label.is_empty(), "0x%05X should be named on its row" % sprite.source)
+		if sprite.draws > 0:
+			ever_drawn += 1
 		if sprite.texture != null:
 			overridden[sprite.source] = sprite.texture
+	# Most of the catalogue was recorded from the game drawing it, and that count is what separates the
+	# scenery from the rarities. Not all of it, though: artwork read out of a table is in the catalogue
+	# whether the game ever drew it or not, which is the only way to get at the screens nobody has reached
+	# and at the glyphs that never got printed.
+	assert_gt(ever_drawn, 50, "Most of the catalogue is artwork the game was seen to draw")
+	assert_lt(ever_drawn, artwork.sprites.size(), "and some of it was read out of the file instead")
 
 	# One sprite is filled in, as a worked example. The rest are empty, so the game looks as it shipped
 	# until someone puts a picture in a slot.
@@ -376,6 +398,51 @@ func test_every_sprite_has_a_slot_and_the_game_s_own_picture_in_it() -> void:
 	for example: int in overridden:
 		assert_eq(artwork.texture_for(example), overridden[example], "0x%05X is found by address" % example)
 	assert_null(artwork.texture_for(0), "An address with no replacement gives nothing rather than erroring")
+
+
+## Ctrl-S is the game's own sound switch, printed on its own menu and sent by the HUD's Sound button, and a
+## replacement tune or meow playing through Godot is still the game making a noise as far as the player is
+## concerned. So the replacement follows the switch: the tune pauses rather than stops, so turning the sound
+## back on carries on from where it went quiet, and an effect asked for while the sound is off is not played.
+##
+## The switch is poked here rather than played for, because what the key does to that byte is the game's
+## behaviour and was established separately: it is the only byte in sixteen kilobytes of the data segment
+## that changes when Ctrl-S is pressed and changes back when it is pressed again.
+func test_the_replacement_sound_follows_the_game_s_own_sound_switch() -> void:
+	if demo.game == null or not demo.game.has_method(&"poke"):
+		pass_test("AlleyCat is not built for this platform")
+		return
+	var r: AlleyCatRemaster = demo.remaster
+	await wait_seconds(1.0)
+	assert_true(r.is_sound_on(), "The game starts with its sound on")
+
+	# Asked for after the machine has booted, not before: the data segment is nowhere until the program is
+	# loaded, and an address taken early is an offset from zero, which is the interrupt table.
+	var at: int = int(demo.game.call(&"get_data_address")) + AlleyCatRemaster.SOUND_AT
+	assert_gt(at, 0, "and its data segment is somewhere real")
+	# Stopped while the switch is poked, so the game cannot set it back between the poke and the read.
+	demo.game.call(&"stop")
+	await wait_process_frames(2)
+	var loud: float = linear_to_db(maxf(r.sounds.music_volume, 0.0001))
+
+	demo.game.call(&"poke", at, PackedByteArray([0]))
+	await wait_process_frames(4)
+	assert_false(r.is_sound_on(), "Turning the game's sound off")
+	assert_lt(r._music_player.volume_db, -60.0, "takes the replacement tune down with it")
+	r._effect_player.stream = null
+	r._play_effect(r.sounds.caught)
+	assert_null(r._effect_player.stream, "and nothing new is started over the quiet")
+
+	demo.game.call(&"poke", at, PackedByteArray([0xFF]))
+	await wait_process_frames(4)
+	assert_true(r.is_sound_on(), "Turning it back on")
+	assert_almost_eq(r._music_player.volume_db, loud, 0.01, "puts the tune back at the level it asked for")
+	r._play_effect(r.sounds.caught)
+	assert_eq(r._effect_player.stream, r.sounds.caught, "and effects are heard again")
+
+	r._effect_player.stop()
+	r._effect_player.stream = null
+	demo.game.call(&"start")
 
 
 ## The override is what draws, and only where there is one. A set with one picture in it replaces one sprite.
@@ -401,7 +468,74 @@ func test_a_replacement_is_held_while_the_game_leaves_the_sprite_alone() -> void
 		return
 	var art: AlleyCatArt = demo.art
 	await wait_seconds(2.0)
-	# Stand something of ours on screen, then let many frames pass with no report of it at all.
+	# The machine is stopped so it draws nothing at all, which is the state this is about: a sprite the
+	# game has stopped mentioning has not stopped being on the screen.
+	demo.game.call(&"stop")
+	await wait_process_frames(2)
 	art._showing = [{"source": 0, "x": 10, "y": 10, "width": 8, "height": 8, "at": 0, "masked": false}]
 	await wait_process_frames(240)
 	assert_false(art._showing.is_empty(), "Still on screen, because the game never took it off")
+	demo.game.call(&"start")
+
+
+## The other half of that rule. A replacement is held while the game leaves the place alone, and dropped the
+## moment the game paints over it - which is what happens when the cat turns round and walks off as a sprite
+## there is no replacement for. Without this the old picture is left standing where the cat used to be.
+func test_a_replacement_is_dropped_once_the_game_draws_over_it() -> void:
+	var art: AlleyCatArt = demo.art
+	var held: Dictionary = {"source": 0, "x": 100, "y": 100, "width": 24, "height": 11}
+	assert_false(art._drawn_over(held, []), "nothing drawn there, so it is still true")
+	assert_false(art._drawn_over(held, [{"source": 1, "x": 200, "y": 100, "width": 24, "height": 11}]),
+			"and something drawn elsewhere leaves it alone")
+	assert_true(art._drawn_over(held, [{"source": 1, "x": 110, "y": 104, "width": 24, "height": 11}]),
+			"but the game painting that patch itself takes the place back")
+
+
+## The paws menu's Art row. The replacements can be turned off while the game is running, which is what the
+## row is for: a player who wants the 1984 picture back should not have to restart anything to see it.
+func test_the_art_row_switches_the_replacements_while_the_game_runs() -> void:
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	var art: AlleyCatArt = demo.art
+	var remaster: AlleyCatRemaster = demo.remaster
+	assert_true(art.enabled, "the demo ships with the replacements on")
+	assert_true(remaster.is_remastered_art(), "and the menu agrees with the node rather than guessing")
+	assert_true(remaster._art_row.visible, "so the row is offered")
+	assert_eq(remaster._art_name.text, "Remastered")
+
+	remaster._on_next_art_pressed()
+	assert_false(art.enabled, "the arrow turns the overlay off")
+	assert_eq(remaster._art_name.text, "Original")
+	# There are two answers, so either arrow lands on the other one.
+	remaster._on_previous_art_pressed()
+	assert_true(art.enabled)
+	assert_eq(remaster._art_name.text, "Remastered")
+
+
+## Turning it off has to give the game its own sprites back. They are hidden on their way to the
+## framebuffer while a replacement is drawn over them, and leaving them hidden with nothing painted on top
+## would put a cat-shaped hole in the alley rather than the cat the game shipped with.
+func test_turning_the_art_off_stops_hiding_the_game_s_own_sprites() -> void:
+	if demo.game == null:
+		pass_test("AlleyCat is not built for this platform")
+		return
+	var art: AlleyCatArt = demo.art
+	art.enabled = true
+	assert_false(art.replaced_sources().is_empty(), "the example cat is replaced, so it is hidden")
+	art.enabled = false
+	assert_true(art.replaced_sources().is_empty(), "and with the overlay off nothing is hidden at all")
+	assert_true(art._showing.is_empty(), "nor is anything left painted over the top")
+	art.enabled = true
+
+
+## A host with no artwork node has nothing to switch, so the row is not there to be switched.
+func test_the_art_row_is_hidden_where_there_is_no_artwork_to_switch() -> void:
+	var scene: PackedScene = load("res://addons/godot_alleycat_gdextension/scenes/alley_cat_remaster.tscn")
+	var remaster: AlleyCatRemaster = scene.instantiate()
+	add_child_autofree(remaster)
+	await wait_process_frames(1)
+	assert_false(remaster.is_remastered_art(), "nothing to draw, so nothing is being drawn")
+	assert_false(remaster._art_row.visible, "and the row is hidden rather than offered dead")
+	remaster.set_remastered_art(true)
+	assert_false(remaster.is_remastered_art(), "asking for it changes nothing and errors at nobody")

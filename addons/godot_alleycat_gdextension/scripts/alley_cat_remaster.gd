@@ -14,6 +14,7 @@ extends CanvasLayer
 
 signal closed ## The menu has been dismissed and the game is running again.
 signal look_changed(index: int) ## A different look is on the screen, whoever asked for it.
+signal art_changed(remastered: bool) ## The replacement artwork has been turned on or off.
 
 @onready var _panel: Control = $Dim
 @onready var _look_name: Label = %LookName
@@ -22,6 +23,8 @@ signal look_changed(index: int) ## A different look is on the screen, whoever as
 @onready var _rewind_slider: HSlider = %RewindSlider
 @onready var _rewind_value: Label = %RewindValue
 @onready var _difficulty_name: Label = %DifficultyName
+@onready var _art_row: Control = %ArtRow
+@onready var _art_name: Label = %ArtName
 
 ## The [AlleyCat] node this is the menu for. Resolved when it is set rather than only in
 ## [method Node._ready], because a child is ready before whatever owns it: a host that builds the
@@ -36,6 +39,17 @@ signal look_changed(index: int) ## A different look is on the screen, whoever as
 	set(value):
 		screen = value
 		_resolve()
+
+## The [AlleyCatArt] node drawing the replacement artwork, if the host has one. Leave it empty and the Art
+## row is not shown at all: a project with no replacements has nothing to switch between.
+@export var art: NodePath:
+	set(value):
+		art = value
+		_resolve()
+
+## How the game should be when the player arrives: the fence's message, the lives, the skill, the sound and
+## the high score to beat. Leave it empty and the game is exactly as it shipped.
+@export var start: AlleyCatStart
 
 ## Sound to play over the game's own. Leave it empty and the game sounds exactly as it shipped.
 @export var sounds: AlleyCatSounds:
@@ -112,12 +126,112 @@ const SCORE_DIGITS: int = 7
 ## already on the fence, which is why setting 0x1f80 is enough to make the game repaint it.
 const LIVES_AT: int = 0x1f80
 
+## Where the game keeps its own sound switch. Ctrl-S flips it - the HUD's Sound button sends that chord - and
+## it is the only byte in sixteen kilobytes of the data segment that changes with the key and changes back
+## again, found by toggling the sound three times over and keeping whatever came home each time. Non-zero is
+## on, and the game makes no sound at all while it is zero: five speaker effects over ten seconds of play
+## with it on, none over the same play with it off.
+const SOUND_AT: int = 0x0000
+
 ## How long the lives count has to read the same before it is believed. Polled every frame it does not: the
 ## true count and zero come back alternately while a game is on, and the game's own code writes only 3, 9 and
 ## a decrement, so the zero is something this has not explained rather than something the game means. Waiting
 ## for the reading to settle steps over it. In seconds rather than frames, because the demo runs at about 480
 ## of them a second and a frame count would mean something different on every machine.
 const LIVES_STEADY_TIME: float = 0.2
+
+## How much of the framebuffer has to be painted before the game counts as playing rather than asking a
+## question, and how many frames to keep insisting on the opening lives once a game has begun. The demo
+## uses the same figure for the first of these; they are the same measurement.
+const PLAYING_PAINTED: int = 512
+const LIVES_FRAMES: int = 120
+
+## Where the graffiti on the fence is kept, as an offset from [method AlleyCat.get_data_address]: a size
+## word, then a pair of words for each letter - which glyph, and where on the screen - ending in 0xFFFF.
+## sub_09D54 walks it. It sits immediately after the font, which is what says the font is exactly 24 glyphs.
+const GRAFFITI_AT: int = 0x28A0
+
+## The game's own graffiti, read out of its list: each tag's name, and the place each of its letters goes in
+## the game's own 320x200 pixels. The fence is scrawled on rather than typed on, so a tag is a path rather
+## than a line - HI' climbs to the right, LOVE and THEM run downhill, MOUSIES arcs - and a tag keeps its path
+## whatever is written along it.
+const TAGS: Array[Dictionary] = [
+	{"name": &"hi", "at": [Vector2i(16, 120), Vector2i(24, 116), Vector2i(32, 112)]},
+	{"name": &"cat", "at": [Vector2i(272, 112), Vector2i(280, 112), Vector2i(288, 112)]},
+	{"name": &"them", "at": [Vector2i(160, 112), Vector2i(168, 116), Vector2i(176, 124), Vector2i(184, 132)]},
+	{"name": &"love", "at": [Vector2i(120, 128), Vector2i(128, 132), Vector2i(136, 140), Vector2i(144, 144)]},
+	{"name": &"mousies", "at": [Vector2i(208, 152), Vector2i(216, 148), Vector2i(224, 144), Vector2i(232, 144),
+			Vector2i(240, 148), Vector2i(248, 152), Vector2i(256, 160)]},
+]
+
+## What is left exactly as the game has it. The two hyphens are what make 004-2069 read as a score rather
+## than as seven loose digits, and the L is a lone letter in the bottom corner of the fence.
+const FIXED: Array[Dictionary] = [
+	{"letter": "-", "at": Vector2i(64, 120)},
+	{"letter": "-", "at": Vector2i(264, 128)},
+	{"letter": "L", "at": Vector2i(16, 160)},
+]
+
+## Where the font is, from the same reading. sub_09969 indexes it by shifting a digit left by four, so a
+## glyph is sixteen bytes, and the pairs in the graffiti list name their glyph by its address here.
+const FONT_AT: int = 0x2720
+
+## The letters the game has, in the order its font holds them. There is no alphabet in Alley Cat: it carries
+## the dozen letters it prints on the fence and nothing else, which is why there is no O in here and why the
+## game's own LOVE is spelt with a zero.
+const ALPHABET: String = "0123456789I'H-CATLVEMUSK"
+
+## Where the drawn letters go: an offset in the data segment past the end of the load image, so past everything the
+## program itself holds. Measured rather than hoped for - after a full play session every one of the 11,237
+## bytes from the end of the image to the top of the segment is still zero, and a font needs 224 of them.
+##
+## Nothing has to be patched to make the game read them. Each letter of the fence's graffiti list carries the
+## address of its own artwork, so a glyph does not have to live in the font table, or anywhere near it.
+const EXTRA_GLYPHS_AT: int = 0xD800
+
+## How many letters a message may have. Nothing in the machine imposes it - the list is moved somewhere with
+## room rather than written over in place - but a line of more than this runs off the side of a 320 pixel
+## screen. Spaces do not count: they move the next letter along without needing a place in the list.
+const MESSAGE_LIMIT: int = 34
+
+## Where the message's own copy of the graffiti list goes, and the instruction that says where the game
+## looks for it. The game's list is 24 pairs with its own data butted up against the end, so a message
+## cannot be added to it in place; it is copied somewhere with room instead, the message added to the copy,
+## and the one instruction that names the list pointed at the copy.
+##
+## sub_09C98's caller loads it as an immediate - `mov bx, 0x28a0` at image offset 0x9C4B - so the address to
+## change is the two bytes after that opcode. Everything else about the game is left alone.
+## The two fences, each as a place to put a list and the instruction that has to be pointed at it.
+##
+## The game paints its fence from two places - 0x09C30 for the alley you play in and 0x09C60 for the attract
+## screen it opens on - and each loads the list address as its own immediate. That is what lets one fence be
+## two: give each routine a list of its own and they can say different things. Repointing one and not the
+## other is why, the first time, the message was in the game and the title screen said what it always had.
+##
+## The lists are 512 apart, which is twice what the longest one can be: 24 tags and a 34 letter message is
+## 58 pairs of two words each, plus the size word and the end marker.
+const FENCES: Array[Dictionary] = [
+	{"prefix": "alley_", "list": 0xDA00, "pointer": 0x9C4C},
+	{"prefix": "title_", "list": 0xDC00, "pointer": 0x9C7C},
+]
+
+## Where the program's data segment begins, as an offset from the load address.
+##
+## [method AlleyCat.get_data_address] asks the machine where DS is pointing, which is the right answer only
+## once the program has run the instructions that set it. The fence is written before the machine has run
+## anything at all - that is the whole point of writing it then - and at that moment DS is still the program
+## segment prefix DOS handed it. Writing a list against that address puts it nowhere the game will look, and
+## the fence comes up bare. This is the value the program sets, so it is right at either moment.
+const DATA_SEGMENT_AT: int = 0x100
+
+## Where a message is written on the fence, in the game's own 320x200 pixels, and how far apart the letters
+## go. The clear band on the fence is narrow: the two scores are painted across it, and the bins stand in
+## front of everything below them - a line put lower reads fine until the game draws the bins over the
+## middle of it. This sits along the top of the fence, above the scores and above the bins.
+##
+## The game's own graffiti is scattered about in tags rather than set in lines, so a message written into
+## its places would read in whatever order the list happens to hold rather than left to right; the places
+## are written as well as the letters. See [member message_at].
 
 ## Where the high score is kept between runs. The game has no idea any of this is happening: it is read out
 ## of its memory while it plays and put back the next time it starts.
@@ -136,6 +250,7 @@ var _since_effect: float = 0.0 ## Seconds since the colour last moved for a soun
 
 var _look: int = 0
 var _game: Node = null
+var _art: AlleyCatArt = null
 var _screen: CanvasItem = null
 var _music_player: AudioStreamPlayer = null
 var _effect_player: AudioStreamPlayer = null
@@ -144,6 +259,11 @@ var _lives_candidate: int = -1 ## The count being read now, which is not believe
 var _lives_steady: float = 0.0 ## How long it has held.
 var _saved_high: PackedByteArray = PackedByteArray() ## The best score seen, as the game's own digits.
 var _restored: bool = false ## Whether the saved high score has been put into the machine yet.
+var _wrote_message: bool = false ## Whether the message has been put on the fence yet this run.
+var _opened: bool = false ## Whether the once-per-run part of the opening state has been applied.
+var _was_setting_up: bool = true ## Whether the game was on a setup screen last frame, to catch a game beginning.
+var _handing_out_lives: int = 0 ## Frames left in which to keep setting the lives, while the game sets its own.
+var _sound_on: bool = true ## The game's own sound switch as last read, so a change is acted on once.
 
 
 func _ready() -> void:
@@ -187,6 +307,9 @@ func _process(_delta: float) -> void:
 	if not _open:
 		_watch_the_game()
 		_keep_the_high_score()
+		_open_the_game()
+		_write_the_message()
+		_follow_the_sound_switch()
 
 
 ## Puts what the menu says back in step with what is actually set.
@@ -194,6 +317,10 @@ func _refresh() -> void:
 	_look_name.text = looks[_look] if _look < looks.size() else "-"
 	_difficulty_name.text = DIFFICULTIES[_difficulty]
 	_rewind_value.text = "%.0f s" % _rewind_slider.value
+	# Hidden rather than greyed out where there is no artwork node: an Art row that cannot be moved is a
+	# worse answer than no Art row.
+	_art_row.visible = is_instance_valid(_art)
+	_art_name.text = "Remastered" if is_remastered_art() else "Original"
 
 
 ## Finds the game and the screen from the paths given, as far as they can be found right now.
@@ -201,9 +328,17 @@ func _resolve() -> void:
 	if not is_inside_tree():
 		return
 	_game = get_node_or_null(game)
+	# The fence is written the moment the game node is handed over, which is after it has loaded the program
+	# and before it has run a single instruction of it: the machine only advances in _process. Waiting for
+	# the layer's own _process is a few frames too late - the game paints its title screen in the first of
+	# them, and the message would turn up only on the next screen after that.
+	_write_the_message()
 	_screen = get_node_or_null(screen) as CanvasItem
 	if _screen == null:
 		_screen = _game as CanvasItem
+	_art = get_node_or_null(art) as AlleyCatArt
+	if is_node_ready():
+		_refresh()
 
 
 ## Whether the menu is up. While it is, the game is not running.
@@ -278,17 +413,47 @@ func _apply_sounds() -> void:
 	var stream: AudioStream = sounds.music if sounds != null else null
 	_music_player.stream = stream
 	if stream != null:
-		_music_player.volume_db = linear_to_db(maxf(sounds.music_volume, 0.0001))
 		_music_player.play()
 		set_music_volume(0.0)
 	else:
 		_music_player.stop()
 		set_music_volume(1.0)
+	# The level is set in one place, so a tune put in while the game's sound is off starts silent rather
+	# than announcing itself.
+	_apply_the_sound_switch()
 
 
 func _on_music_finished() -> void:
 	if sounds != null and sounds.music_loops and _music_player.stream != null:
 		_music_player.play()
+
+
+## Whether the replacement artwork is being drawn. False where the host has not given this node one.
+func is_remastered_art() -> bool:
+	return is_instance_valid(_art) and bool(_art.enabled)
+
+
+## Draws the replacement artwork, or puts the game's own sprites back.
+##
+## Nothing in the machine moves either way, which is why this can sit in a menu and be flipped mid-game: the
+## game draws its own artwork all along and the only difference is whether those bytes reach the screen and
+## whether this addon paints over the top of them.
+func set_remastered_art(value: bool) -> void:
+	if not is_instance_valid(_art) or bool(_art.enabled) == value:
+		return
+	_art.enabled = value
+	if is_node_ready():
+		_refresh()
+	art_changed.emit(value)
+
+
+## There are two answers, so either arrow lands on the other one.
+func _on_previous_art_pressed() -> void:
+	set_remastered_art(not is_remastered_art())
+
+
+func _on_next_art_pressed() -> void:
+	set_remastered_art(not is_remastered_art())
 
 
 func _on_previous_look_pressed() -> void:
@@ -494,8 +659,9 @@ func _keep_the_high_score() -> void:
 	var at: int = int(_game.call(&"get_data_address")) + HIGH_SCORE_AT
 	if not _restored:
 		_restored = true
-		if _saved_high.size() == SCORE_DIGITS:
-			_game.call(&"poke", at, _saved_high)
+		var opening: PackedByteArray = _opening_high_score()
+		if opening.size() == SCORE_DIGITS:
+			_game.call(&"poke", at, opening)
 			return
 	var live: PackedByteArray = _game.call(&"peek", at, SCORE_DIGITS)
 	if live.size() != SCORE_DIGITS or not _is_digits(live):
@@ -503,6 +669,193 @@ func _keep_the_high_score() -> void:
 	if _compare_scores(live, _saved_high) > 0:
 		_saved_high = live
 		_write_saved_high_score(live)
+
+
+## Puts the opening state into the machine, once, after the program is loaded: the lives, the sound switch
+## and the skill. The high score is handled with the saved one, because the two are the same byte.
+##
+## Everything here is written where the game keeps it rather than drawn over the top, so it is all there in
+## a plain play session. Each setting has a "leave it alone" value, and that is what a fresh resource holds.
+func _open_the_game() -> void:
+	if start == null:
+		return
+	if not is_instance_valid(_game) or not _game.has_method(&"poke"):
+		return
+	if not bool(_game.call(&"is_ready")):
+		return
+	var data: int = int(_game.call(&"get_data_address"))
+	if not _opened:
+		_opened = true
+		if start.sound != AlleyCatStart.Sound.AS_THE_GAME_LEAVES_IT:
+			_game.call(&"poke", data + SOUND_AT,
+					PackedByteArray([0xFF if start.sound == AlleyCatStart.Sound.ON else 0]))
+		if start.skill != AlleyCatStart.Skill.AS_THE_GAME_ASKS:
+			# The skill is not a byte anywhere: the game asks it on its own menu, so it is answered there.
+			set_difficulty(start.skill - 1)
+
+	# The lives are set each time a game begins rather than once at load, because the game sets its own
+	# three every time it starts one - through its menu, after a death, after Ctrl-R - and a count poked in
+	# before that is simply overwritten. The game blanks the screen to ask its questions and paints it to
+	# play, so the moment it paints is the moment a game has begun.
+	var setting_up: bool = int(_game.call(&"get_screen_painted")) < PLAYING_PAINTED
+	if _was_setting_up and not setting_up:
+		# Held for a while rather than set once: the game writes its own count somewhere in the first frames
+		# of a game and whichever of the two goes last wins, so this keeps saying it until it sticks.
+		_handing_out_lives = LIVES_FRAMES
+	_was_setting_up = setting_up
+	if _handing_out_lives > 0 and start.lives > 0:
+		_handing_out_lives -= 1
+		if int(_game.call(&"peek_u8", data + LIVES_AT)) != start.lives:
+			_game.call(&"poke", data + LIVES_AT, PackedByteArray([start.lives]))
+
+
+## The high score to put up as the one to beat: the seven digits the opening state asks for, or the best
+## score saved from an earlier run where it asks for nothing.
+func _opening_high_score() -> PackedByteArray:
+	if start == null or start.high_score.strip_edges().is_empty():
+		return _saved_high
+	var digits: PackedByteArray = PackedByteArray()
+	# Padded on the left, because a score is read most significant digit first: "2069" is 0042069.
+	for letter: String in start.high_score.strip_edges().lpad(SCORE_DIGITS, "0").right(SCORE_DIGITS):
+		if not letter.is_valid_int():
+			return _saved_high
+		digits.append(int(letter))
+	return digits
+
+
+## What is wrong with [param text] as a fence message, or "" where nothing is. The rules are on
+## [member AlleyCatStart.message]; this is where they are applied.
+##
+## Public because a project that collects a message from a player wants to tell them why it was refused
+## while they are still typing it, rather than finding out when nothing appears on the fence.
+func fault_in_message(text: String) -> String:
+	var wanted: String = text.strip_edges().to_upper()
+	if wanted.is_empty():
+		return ""
+	var letters: int = 0
+	for i: int in wanted.length():
+		var letter: String = wanted[i]
+		if letter == " ":
+			continue
+		if _glyph_for(letter) < 0:
+			return "There is no %s to write with. A to Z, 0 to 9, an apostrophe, a hyphen and spaces." % wanted[i]
+		letters += 1
+	if letters > MESSAGE_LIMIT:
+		return "A line fits %d letters on a 320 pixel screen and that is %d." % [MESSAGE_LIMIT, letters]
+	return ""
+
+
+## [param text] as it will be written: upper case, and nothing else changed. The game spells its own LOVE
+## with a zero because it has no O; there is an O now, so a written one is an O.
+func _as_the_game_spells_it(text: String) -> String:
+	return text.strip_edges().to_upper()
+
+
+## Where the artwork for [param letter] sits in the data segment, or -1 where there is none. The game's own
+## glyphs are in its font table and the drawn ones are past the end of the image; the graffiti list carries
+## an address per letter, so a letter does not care which it is.
+func _glyph_for(letter: String) -> int:
+	var found: int = ALPHABET.find(letter)
+	if found >= 0:
+		return FONT_AT + found * 16
+	found = AlleyCatExtraFont.letters().find(letter)
+	if found >= 0:
+		return EXTRA_GLYPHS_AT + found * 16
+	return -1
+
+
+## Writes the message over the game's own graffiti, once, after the program is in memory.
+##
+## The fence is a list of pairs - which glyph, and where it goes - so the message is written by changing the
+## glyph of each pair and leaving the place alone: the letters land exactly where the game's own words sat,
+## spread along the fence, which is what makes it look like it was always there. A message shorter than the
+## graffiti ends the list early with the 0xFFFF the game itself terminates on, so the rest is simply not
+## drawn rather than left half replaced.
+func _write_the_message() -> void:
+	if _wrote_message or start == null:
+		return
+	if not is_instance_valid(_game) or not _game.has_method(&"poke"):
+		return
+	# Loaded rather than ready: ready means the program has set a video mode, and by then it has already
+	# painted its title screen. The fence has to be written before the machine runs a frame or the first
+	# thing the player sees is the graffiti as it shipped, with the message arriving only once the screen
+	# is painted again.
+	if not bool(_game.call(&"is_loaded")):
+		return
+	var fault: String = ""
+	for fence: Dictionary in FENCES:
+		var prefix: String = fence["prefix"]
+		for field: String in ["message", "hi", "cat", "love", "them", "mousies"]:
+			fault = fault_in_message(String(start.get(prefix + field)))
+			if not fault.is_empty():
+				fault = "%s%s: %s" % [prefix, field, fault]
+				break
+		if not fault.is_empty():
+			break
+	if not fault.is_empty():
+		# Said rather than swallowed: without the button there was to check with, a refused message would
+		# otherwise just not appear, and nothing would say why.
+		push_warning("Alley Cat: the message was not written. %s" % fault)
+		return
+	_wrote_message = true
+	var data: int = int(_game.call(&"get_load_address")) + DATA_SEGMENT_AT
+	# The drawn letters go in first, because the list about to be written points at them.
+	var drawn: Array[PackedByteArray] = AlleyCatExtraFont.glyphs()
+	for i: int in drawn.size():
+		_game.call(&"poke", data + EXTRA_GLYPHS_AT + i * 16, drawn[i])
+
+	# A list each, and each routine pointed at its own. The size word at the front is the game's own.
+	var size: PackedByteArray = _game.call(&"peek", data + GRAFFITI_AT, 2)
+	var image: int = data - DATA_SEGMENT_AT
+	for fence: Dictionary in FENCES:
+		var pairs: PackedByteArray = size.duplicate()
+		var prefix: String = fence["prefix"]
+		for tag: Dictionary in TAGS:
+			pairs.append_array(_tag_pairs(_as_the_game_spells_it(start.get(prefix + tag["name"])), tag["at"]))
+		for held: Dictionary in FIXED:
+			pairs.append_array(_pair(held["letter"], held["at"]))
+		var place: Vector2i = start.get(prefix + "message_at")
+		var spacing: int = start.get(prefix + "message_spacing")
+		var x: int = place.x
+		for letter: String in _as_the_game_spells_it(start.get(prefix + "message")):
+			if letter != " ":
+				pairs.append_array(_pair(letter, Vector2i(x, place.y)))
+			x += spacing
+		# 0xFFFF is what the game's own list ends with, and what sub_09D54 stops on.
+		pairs.append_array(PackedByteArray([0xFF, 0xFF]))
+		_game.call(&"poke", data + int(fence["list"]), pairs)
+		_game.call(&"poke", image + int(fence["pointer"]),
+				PackedByteArray([int(fence["list"]) & 0xFF, int(fence["list"]) >> 8]))
+
+
+## One tag's letters, each at the place the game put its own. A word shorter than the tag uses the first few
+## places; a longer one carries on from the last two in the same direction and spacing, which keeps a
+## downhill tag going downhill.
+func _tag_pairs(text: String, path: Array) -> PackedByteArray:
+	var out: PackedByteArray = PackedByteArray()
+	var step: Vector2i = Vector2i(8, 0) if path.size() < 2 else path[path.size() - 1] - path[path.size() - 2]
+	for i: int in text.length():
+		if text[i] == " ":
+			continue
+		var where: Vector2i = path[i] if i < path.size() else path[path.size() - 1] + step * (i - path.size() + 1)
+		out.append_array(_pair(text[i], where))
+	return out
+
+
+## One entry of the game's list: which glyph, and where it goes. Two words, little end first.
+func _pair(letter: String, at: Vector2i) -> PackedByteArray:
+	var artwork: int = _glyph_for(letter)
+	if artwork < 0:
+		return PackedByteArray()
+	var where: int = _screen_offset(at.x, at.y)
+	return PackedByteArray([artwork & 0xFF, artwork >> 8, where & 0xFF, where >> 8])
+
+
+## Where [param x], [param y] lands in the CGA window, which is not a plain row times width: the card keeps
+## the even scanlines in one half of its 16K and the odd ones 0x2000 further on, and the blitter walks the
+## two by flipping that bit. Eighty bytes to a row, four pixels to a byte.
+func _screen_offset(x: int, y: int) -> int:
+	return (y / 2) * 80 + x / 4 + (0x2000 if y % 2 == 1 else 0)
 
 
 ## The game's high score as a number, for a host that wants to show it somewhere of its own.
@@ -615,10 +968,44 @@ func get_lives() -> int:
 	return value if value >= 0 and value <= 9 else -1
 
 
+## Whether the game's own sound is turned on. Ctrl-S is the game's switch and the HUD's Sound button sends
+## that chord, so this is the player asking for quiet - and a replacement tune or a replacement meow is still
+## the game making a noise as far as they are concerned. Reading it out of the machine rather than counting
+## the key presses here keeps the two in step across a restart, a rewind and the game's own menu, none of
+## which this layer is told about.
+func is_sound_on() -> bool:
+	if not is_instance_valid(_game) or not _game.has_method(&"peek_u8"):
+		return true
+	if not bool(_game.call(&"is_ready")):
+		return true
+	return int(_game.call(&"peek_u8", int(_game.call(&"get_data_address")) + SOUND_AT)) != 0
+
+
+## Silences the replacement sound along with the game's own, or gives it back.
+func _follow_the_sound_switch() -> void:
+	var on: bool = is_sound_on()
+	if on == _sound_on:
+		return
+	_sound_on = on
+	_apply_the_sound_switch()
+
+
+## Sets the level of the replacement tune: what the artwork asks for, or silence. The tune is turned down
+## rather than stopped, so it keeps its place and turning the sound back on does not restart the piece. An
+## effect part way through is cut instead, because that is a noise the player has just asked to stop hearing
+## and there is nothing to keep its place for.
+func _apply_the_sound_switch() -> void:
+	if is_instance_valid(_music_player):
+		var wanted: float = sounds.music_volume if sounds != null and _sound_on else 0.0
+		_music_player.volume_db = linear_to_db(maxf(wanted, 0.0001))
+	if is_instance_valid(_effect_player) and not _sound_on:
+		_effect_player.stop()
+
+
 ## Plays one of the replacement sounds, if there is one for what just happened. The game's own sound is left
 ## alone: it is a 1984 PC speaker and silencing it to layer over it is the host's choice, not this one's.
 func _play_effect(stream: AudioStream) -> void:
-	if stream == null or not is_instance_valid(_effect_player):
+	if stream == null or not is_instance_valid(_effect_player) or not is_sound_on():
 		return
 	_effect_player.stream = stream
 	_effect_player.volume_db = linear_to_db(maxf(get_effects_volume(), 0.0001))

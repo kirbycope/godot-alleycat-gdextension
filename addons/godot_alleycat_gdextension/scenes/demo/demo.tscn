@@ -2,13 +2,11 @@
 
 [ext_resource type="Script" uid="uid://bdnmfc52kqj8f" path="res://addons/godot_alleycat_gdextension/scenes/demo/demo.gd" id="1_demo"]
 [ext_resource type="PackedScene" path="res://addons/godot_alleycat_gdextension/scenes/alley_cat_controls.tscn" id="2_controls"]
-[ext_resource type="PackedScene" path="res://addons/godot_alleycat_gdextension/scenes/alley_cat_remaster.tscn" id="3_remaster"]
-[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_art.gd" id="4_art"]
+[ext_resource type="PackedScene" uid="uid://chjilytjv5cic" path="res://addons/godot_alleycat_gdextension/scenes/alley_cat_remaster.tscn" id="3_remaster"]
+[ext_resource type="Script" uid="uid://sf47kg4nc8at" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_art.gd" id="4_art"]
 [ext_resource type="Resource" path="res://addons/godot_alleycat_gdextension/resources/artwork.tres" id="5_artwork"]
 [ext_resource type="Resource" path="res://addons/godot_alleycat_gdextension/resources/sounds.tres" id="6_sounds"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_missing"]
-font_size = 22
+[ext_resource type="Resource" uid="uid://bwg0b3sist50s" path="res://addons/godot_alleycat_gdextension/resources/start.tres" id="7_start"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_prompt"]
 font_size = 18
@@ -47,23 +45,12 @@ grow_horizontal = 2
 grow_vertical = 2
 ratio = 1.3333333
 
-[node name="Art" type="Control" parent="Screen"]
+[node name="Art" type="Control" parent="Screen" unique_id=1864866390]
+z_index = 1
 layout_mode = 2
+mouse_filter = 2
 script = ExtResource("4_art")
 artwork = ExtResource("5_artwork")
-
-[node name="Missing" type="Label" parent="." unique_id=1393781249]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Alley Cat is not included with this addon."
-label_settings = SubResource("LabelSettings_missing")
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
 
 [node name="Prompt" type="Label" parent="." unique_id=1388312918]
 layout_mode = 1
@@ -79,7 +66,7 @@ grow_vertical = 2
 label_settings = SubResource("LabelSettings_prompt")
 vertical_alignment = 1
 
-[node name="LookName" type="Label" parent="."]
+[node name="LookName" type="Label" parent="." unique_id=1121820209]
 visible = false
 layout_mode = 1
 anchors_preset = 2
@@ -94,5 +81,6 @@ label_settings = SubResource("LabelSettings_prompt")
 
 [node name="Controls" parent="." unique_id=1750851534 instance=ExtResource("2_controls")]
 
-[node name="Remaster" parent="." instance=ExtResource("3_remaster")]
+[node name="Remaster" parent="." unique_id=1113110304 instance=ExtResource("3_remaster")]
+start = ExtResource("7_start")
 sounds = ExtResource("6_sounds")

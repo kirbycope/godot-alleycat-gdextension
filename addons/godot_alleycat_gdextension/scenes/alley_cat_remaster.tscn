@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://chjilytjv5cic"]
 
-[ext_resource type="Script" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_remaster.gd" id="1_remaster"]
+[ext_resource type="Script" uid="uid://qv1osf83dcy" path="res://addons/godot_alleycat_gdextension/scripts/alley_cat_remaster.gd" id="1_remaster"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.05, 0.05, 0.07, 0.97)
@@ -10,11 +10,12 @@ border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.85, 0.85, 0.9, 1)
 
-[node name="Remaster" type="CanvasLayer"]
+[node name="Remaster" type="CanvasLayer" unique_id=470921504]
 layer = 10
 script = ExtResource("1_remaster")
+looks = PackedStringArray()
 
-[node name="Dim" type="ColorRect" parent="."]
+[node name="Dim" type="ColorRect" parent="." unique_id=952897082]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,8 +24,8 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.72)
 
-[node name="Panel" type="PanelContainer" parent="Dim"]
-custom_minimum_size = Vector2(420, 386)
+[node name="Panel" type="PanelContainer" parent="Dim" unique_id=1328601999]
+custom_minimum_size = Vector2(420, 431)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -32,43 +33,43 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -210.0
-offset_top = -193.0
+offset_top = -215.5
 offset_right = 210.0
-offset_bottom = 193.0
+offset_bottom = 215.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="Margin" type="MarginContainer" parent="Dim/Panel"]
+[node name="Margin" type="MarginContainer" parent="Dim/Panel" unique_id=924269155]
 layout_mode = 2
 theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 20
 
-[node name="Rows" type="VBoxContainer" parent="Dim/Panel/Margin"]
+[node name="Rows" type="VBoxContainer" parent="Dim/Panel/Margin" unique_id=1522256331]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="Title" type="Label" parent="Dim/Panel/Margin/Rows"]
+[node name="Title" type="Label" parent="Dim/Panel/Margin/Rows" unique_id=2124572956]
 layout_mode = 2
 text = "PAWS"
 horizontal_alignment = 1
 
-[node name="LookRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows"]
+[node name="LookRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows" unique_id=981580864]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/LookRow"]
+[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/LookRow" unique_id=274104406]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Look"
 
-[node name="Previous" type="Button" parent="Dim/Panel/Margin/Rows/LookRow"]
+[node name="Previous" type="Button" parent="Dim/Panel/Margin/Rows/LookRow" unique_id=747704712]
 custom_minimum_size = Vector2(36, 0)
 layout_mode = 2
 text = "<"
 
-[node name="LookName" type="Label" parent="Dim/Panel/Margin/Rows/LookRow"]
+[node name="LookName" type="Label" parent="Dim/Panel/Margin/Rows/LookRow" unique_id=370913691]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -76,25 +77,52 @@ text = "-"
 horizontal_alignment = 1
 clip_text = true
 
-[node name="Next" type="Button" parent="Dim/Panel/Margin/Rows/LookRow"]
+[node name="Next" type="Button" parent="Dim/Panel/Margin/Rows/LookRow" unique_id=1220152614]
 custom_minimum_size = Vector2(36, 0)
 layout_mode = 2
 text = ">"
 
-[node name="DifficultyRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows"]
+[node name="ArtRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows" unique_id=1770454310]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/DifficultyRow"]
+[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/ArtRow" unique_id=1770454311]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
-text = "Difficulty"
+text = "Art"
 
-[node name="Previous" type="Button" parent="Dim/Panel/Margin/Rows/DifficultyRow"]
+[node name="Previous" type="Button" parent="Dim/Panel/Margin/Rows/ArtRow" unique_id=1770454312]
 custom_minimum_size = Vector2(36, 0)
 layout_mode = 2
 text = "<"
 
-[node name="DifficultyName" type="Label" parent="Dim/Panel/Margin/Rows/DifficultyRow"]
+[node name="ArtName" type="Label" parent="Dim/Panel/Margin/Rows/ArtRow" unique_id=1770454313]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Remastered"
+horizontal_alignment = 1
+clip_text = true
+
+[node name="Next" type="Button" parent="Dim/Panel/Margin/Rows/ArtRow" unique_id=1770454314]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+text = ">"
+
+[node name="DifficultyRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows" unique_id=2118089268]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/DifficultyRow" unique_id=2075702]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Difficulty"
+
+[node name="Previous" type="Button" parent="Dim/Panel/Margin/Rows/DifficultyRow" unique_id=616963074]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+text = "<"
+
+[node name="DifficultyName" type="Label" parent="Dim/Panel/Margin/Rows/DifficultyRow" unique_id=761807082]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -102,20 +130,20 @@ text = "Alley Cat"
 horizontal_alignment = 1
 clip_text = true
 
-[node name="Next" type="Button" parent="Dim/Panel/Margin/Rows/DifficultyRow"]
+[node name="Next" type="Button" parent="Dim/Panel/Margin/Rows/DifficultyRow" unique_id=981141426]
 custom_minimum_size = Vector2(36, 0)
 layout_mode = 2
 text = ">"
 
-[node name="MusicRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows"]
+[node name="MusicRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows" unique_id=77881500]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/MusicRow"]
+[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/MusicRow" unique_id=183247739]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Music"
 
-[node name="MusicSlider" type="HSlider" parent="Dim/Panel/Margin/Rows/MusicRow"]
+[node name="MusicSlider" type="HSlider" parent="Dim/Panel/Margin/Rows/MusicRow" unique_id=1465618591]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -124,15 +152,15 @@ max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="EffectsRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows"]
+[node name="EffectsRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows" unique_id=1315445621]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/EffectsRow"]
+[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/EffectsRow" unique_id=774390696]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Effects"
 
-[node name="EffectsSlider" type="HSlider" parent="Dim/Panel/Margin/Rows/EffectsRow"]
+[node name="EffectsSlider" type="HSlider" parent="Dim/Panel/Margin/Rows/EffectsRow" unique_id=2010207552]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -141,48 +169,49 @@ max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="RewindRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows"]
+[node name="RewindRow" type="HBoxContainer" parent="Dim/Panel/Margin/Rows" unique_id=139263096]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/RewindRow"]
+[node name="Label" type="Label" parent="Dim/Panel/Margin/Rows/RewindRow" unique_id=2028089039]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Rewind"
 
-[node name="RewindSlider" type="HSlider" parent="Dim/Panel/Margin/Rows/RewindRow"]
+[node name="RewindSlider" type="HSlider" parent="Dim/Panel/Margin/Rows/RewindRow" unique_id=977718330]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 max_value = 30.0
-step = 1.0
 value = 6.0
 
-[node name="RewindValue" type="Label" parent="Dim/Panel/Margin/Rows/RewindRow"]
+[node name="RewindValue" type="Label" parent="Dim/Panel/Margin/Rows/RewindRow" unique_id=1763392101]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 text = "6 s"
 horizontal_alignment = 2
 
-[node name="Spacer" type="Control" parent="Dim/Panel/Margin/Rows"]
+[node name="Spacer" type="Control" parent="Dim/Panel/Margin/Rows" unique_id=424318532]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Resume" type="Button" parent="Dim/Panel/Margin/Rows"]
+[node name="Resume" type="Button" parent="Dim/Panel/Margin/Rows" unique_id=825520288]
 layout_mode = 2
 text = "Resume"
 
-[node name="Hint" type="Label" parent="Dim/Panel/Margin/Rows"]
+[node name="Hint" type="Label" parent="Dim/Panel/Margin/Rows" unique_id=1988275250]
 layout_mode = 2
 text = "Esc closes  -  F6 cycles looks  -  difficulty starts a new game"
 horizontal_alignment = 1
 
 [connection signal="pressed" from="Dim/Panel/Margin/Rows/LookRow/Previous" to="." method="_on_previous_look_pressed"]
 [connection signal="pressed" from="Dim/Panel/Margin/Rows/LookRow/Next" to="." method="_on_next_look_pressed"]
+[connection signal="pressed" from="Dim/Panel/Margin/Rows/ArtRow/Previous" to="." method="_on_previous_art_pressed"]
+[connection signal="pressed" from="Dim/Panel/Margin/Rows/ArtRow/Next" to="." method="_on_next_art_pressed"]
+[connection signal="pressed" from="Dim/Panel/Margin/Rows/DifficultyRow/Previous" to="." method="_on_previous_difficulty_pressed"]
+[connection signal="pressed" from="Dim/Panel/Margin/Rows/DifficultyRow/Next" to="." method="_on_next_difficulty_pressed"]
 [connection signal="value_changed" from="Dim/Panel/Margin/Rows/MusicRow/MusicSlider" to="." method="_on_music_slider_value_changed"]
 [connection signal="value_changed" from="Dim/Panel/Margin/Rows/EffectsRow/EffectsSlider" to="." method="_on_effects_slider_value_changed"]
 [connection signal="value_changed" from="Dim/Panel/Margin/Rows/RewindRow/RewindSlider" to="." method="_on_rewind_slider_value_changed"]
 [connection signal="pressed" from="Dim/Panel/Margin/Rows/Resume" to="." method="_on_resume_pressed"]
-[connection signal="pressed" from="Dim/Panel/Margin/Rows/DifficultyRow/Previous" to="." method="_on_previous_difficulty_pressed"]
-[connection signal="pressed" from="Dim/Panel/Margin/Rows/DifficultyRow/Next" to="." method="_on_next_difficulty_pressed"]
