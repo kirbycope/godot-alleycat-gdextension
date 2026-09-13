@@ -318,8 +318,8 @@ static uint32_t SQUARE_PHASE;   /* square wave phase, scaled by AUDIO_RATE */
 static int      SQUARE_LEVEL;
 /* Which routine last programmed the tone, and how loud each is wanted. The music player's writes to
    the timer are at these image offsets; everything else that makes a sound is an effect. Found by
-   reading the disassembly in alley-decomp: the player at 00C5F5 walks a note table at 0x538C with a
-   cursor at 0x5320 and looks each note's divisor up at 0x5324. */
+   reading the disassembly: the player at 00C5F5 walks a note table at 0x538C with a cursor at 0x5320
+   and looks each note's divisor up at 0x5324. */
 #define MUSIC_OUT_LOW  0xC619u
 #define MUSIC_OUT_HIGH 0xC61Du
 static int   VOICE = ALLEYCAT_VOICE_NONE;        /* Who is sounding right now, NONE while the speaker is quiet. */

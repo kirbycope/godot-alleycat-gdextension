@@ -683,4 +683,4 @@ The code here is MIT and is original work: the node, the HUD mapping and the bui
 | `assets/cat_meow.ogg` | the sound the cat makes on being caught | Gravity Sound, Animal SFX | see the pack's own terms |
 
 See [PureAlleyCat](https://github.com/kirbycope/PureAlleyCat) for what the library is and how it was
-verified, and `alley-decomp` for the reverse engineering that established the graphics format.
+verified.

@@ -486,7 +486,7 @@ func test_the_data_segment_is_reported_so_an_offset_becomes_an_address() -> void
 	assert_lt(data, 1 << 20, "and it points inside the megabyte")
 
 
-## The score and the high score, found by reading the disassembly in alley-decomp rather than by scanning:
+## The score and the high score, found by reading the disassembly rather than by scanning:
 ## sub_09922 hands the digit printer a pointer to 0x1f89 and sub_0992C one to 0x1f82, and the printer draws
 ## seven digits with a gap after the third, which is the "000-0000" the fence shows twice.
 func test_the_score_and_high_score_are_seven_decimal_digits_where_the_disassembly_says() -> void:

@@ -114,7 +114,7 @@ const EFFECT_HUE_GAP: float = 0.2
 const REDRAW_HUE_STEP: float = 0.29
 
 ## Where the game keeps its high score, as an offset from the address its data is counted from, and how many
-## digits it is. Found by reading the disassembly in alley-decomp rather than by scanning memory: sub_09922
+## digits it is. Found by reading the disassembly rather than by scanning memory: sub_09922
 ## hands sub_09969 a pointer to 0x1f89 and a screen position, and sub_09969 draws seven digits with a gap
 ## after the third, which is the "000-0000" on the fence. One decimal digit a byte, most significant first.
 const HIGH_SCORE_AT: int = 0x1f89
